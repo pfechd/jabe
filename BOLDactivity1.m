@@ -9,41 +9,41 @@ clear antalStimuli
 clear in_visual_sphere1
 clear response1
 
-%% Detta �r ett fulhack som �r lite mindre h�rdkodat �n orginalscriptet.
-%% L�s d�rf�r instruktionerna nedan noga innan du k�r scriptet. 
+%% Detta är ett fulhack som är lite mindre hårdkodat än orginalscriptet.
+%% Läs därför instruktionerna nedan noga innan du kör scriptet. 
 
-% Innan du k�r scriptet b�r du k�ra clear all och close all.
+% Innan du kör scriptet bör du köra clear all och close all.
 
-% visual_stimuli �r matrisen med onset-tider och inputstyrka. Den ska ha dina
-% onset-tider i f�rsta kolumnen och dina input-styrkor i den andra. Den ska
-% �ven vara sorterad efter tiderna. Sista onset-tiden ska vara n�r sista
+% visual_stimuli är matrisen med onset-tider och inputstyrka. Den ska ha dina
+% onset-tider i första kolumnen och dina input-styrkor i den andra. Den ska
+% även vara sorterad efter tiderna. Sista onset-tiden ska vara när sista
 % fokuskorset slutar visas.
 
-% St�ll dig sedan i den mapp d�r du vill ha output. Jag rekommenderar att du har en mapp
-% per f�rs�ksperson.
+% Ställ dig sedan i den mapp där du vill ha output. Jag rekommenderar att du har en mapp
+% per försöksperson.
 
 
 %% Konsten att anropa funktionen:
 % visual_stimuli = matrisen med onset-tider och inputstyrka. Den ska ha dina
-% onset-tider i f�rsta kolumnen och dina input-styrkor i den andra. Den ska
-% �ven vara sorterad efter tiderna. Sista onset-tiden ska vara n�r sista
-% fokuskorset slutar visas. D�rf�r b�r din visual_stimuli vara en rad
-% l�ngre �n vad du har antal stimuli. 
+% onset-tider i första kolumnen och dina input-styrkor i den andra. Den ska
+% även vara sorterad efter tiderna. Sista onset-tiden ska vara när sista
+% fokuskorset slutar visas. Därför bör din visual_stimuli vara en rad
+% längre än vad du har antal stimuli. 
 
 % tr = tr. Obviously.
 
-% brain1 = vad du nu har d�pt bilden av din hj�rna till n�r du laddade in
+% brain1 = vad du nu har döpt bilden av din hjärna till när du laddade in
 % den. 
 
 % images = antal bilder i  din totala tidsserie
 
-% categorize �r output. Varje rad inneh�ller tidsserien f�r en BOLD-kurva,
-% (0:or finns bara med f�r att ge alla kurvor samma l�ngd i matrisen) och
-% sista kolumnen inneh�ller stimulistyrkan f�r varje kurva. Matrisen �r
+% categorize är output. Varje rad innehöller tidsserien för en BOLD-kurva,
+% (0:or finns bara med för att ge alla kurvor samma längd i matrisen) och
+% sista kolumnen innehåller stimulistyrkan för varje kurva. Matrisen är
 % sorterad efter stimulistyrka.
 
 
-%G�r om onset-tider till image-index.
+%Gör om onset-tider till image-index.
 visual_stimuli = load(strcat(visual_stimuliPath,'.mat'))
 fieldNames = fieldnames(visual_stimuli);
 visual_stimuli=visual_stimuli.(fieldNames{:,1});
@@ -51,22 +51,22 @@ v1 = [visual_stimuli(:,1)/tr];
 v1 = floor(v1);
 v1 = [v1 visual_stimuli(:,2)];
 
-%R�tt format p� hj�rnan
+%Rätt format på hjärnan
 brain1 = load_nii(strcat(brain,'.nii'),[],[],[],[],[],1)
 brain1 = brain1.img;
 brain1 = double(brain1);
 
-%R�tt format p� masken
+%Rätt format på masken
 visual_mask = load_nii(strcat(visual_sphere,'.nii'),[],[],[],[],[],1)
 visual_mask = visual_mask.img;
 visual_mask = double(visual_mask);
 
 
 
-for i = 1:images % Antalet images i hj�rnan (g�r s�kert att ta reda p� automatiskt men jag orkar inte fundera ut hur. Sorry)
+for i = 1:images % Antalet images i hjärnan (går säkert att ta reda på automatiskt men jag orkar inte fundera ut hur. Sorry)
     visual_brain1 = visual_mask.*brain1(:,:,:,i);
 visual_brain_time1 = find(visual_brain1);
-in_visual_sphere1(i) = mean(visual_brain1(visual_brain_time1)); %R�datakurvan f�r hela sessionen
+in_visual_sphere1(i) = mean(visual_brain1(visual_brain_time1)); %Rådatakurvan för hela sessionen
 end
 
 antalStimuli = size(v1,1);
