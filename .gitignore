@@ -138,3 +138,6 @@ slprj/
 Session.vim
 .netrwhist
 *~
+
+# Project specific
+spm12/
