@@ -14,7 +14,7 @@ import matlab.engine
 engine = matlab.engine.connect_matlab()
 
 engine.addpath(engine.pwd() + '/spm12')
-engine.spm('colour')
+engine.spm(nargout=0)
 
 app = QtWidgets.QApplication(sys.argv)
 window = QtWidgets.QMainWindow()
