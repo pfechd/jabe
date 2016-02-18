@@ -16,17 +16,25 @@ python scripts/test-config.py
 
 The repository is structured as follows:
 
-* scripts/
-* src/
-  * matlab/
-    * spm12/
-    * normalize.m
-    * ...
-  * python/
-    * window.py
-    * file.py
-  * gui/
-    * main_window.ui
-* main.py
-* out/
-* README.md
+~~~
+.
+├── BOLDactivity1.m
+├── main.py
+├── makefile
+├── README.md
+├── scripts
+│   ├── download-spm.bash
+│   └── test-config.py
+└── src
+    ├── __init__.py
+    ├── matlab
+    │   └── hello_world.m
+    ├── python
+    │   ├── generated_ui
+    │   │   └── __init__.py
+    │   ├── gui.py
+    │   ├── __init__.py
+    │   └── session_manager.py
+    └── ui
+        └── hello_world.ui
+~~~
