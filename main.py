@@ -1,5 +1,8 @@
+import sys
 from src.python.session_manager import session_manager
+from src.python.gui import GUI
+from PyQt5 import QtWidgets
 
-manager = session_manager()
-
-manager.hello_world()
+app = QtWidgets.QApplication(sys.argv)
+x = GUI()
+sys.exit(app.exec_())
