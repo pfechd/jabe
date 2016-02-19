@@ -22,3 +22,6 @@ button = QtWidgets.QPushButton("Bra jobbat, allt fungerar! :-)")
 window.setCentralWidget(button)
 window.show()
 app.exec_()
+
+assert sys.version_info >= (2,5)
+assert sys.version_info[0] != 3
