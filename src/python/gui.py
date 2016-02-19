@@ -8,9 +8,9 @@ import src.python.session_manager
 class GUI(QtWidgets.QMainWindow):
     def __init__(self):
         super(GUI,self).__init__()
-        self.session = src.python.session_manager.session_manager()
+        self.manager = src.python.session_manager.session_manager()
         # sets the varibale 'data' to 3 in matlab
-        self.session.add_data("data",3)
+        self.manager.add_data("data",3)
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -19,4 +19,4 @@ class GUI(QtWidgets.QMainWindow):
 
     def button_pressed(self,e):
         # retrieves and prints what is in the variable 'data' in matlab
-        print(self.session.get_data("data"))
+        print(self.manager.get_data("data"))
