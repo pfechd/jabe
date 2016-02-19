@@ -8,3 +8,12 @@ class session_manager:
 
     def hello_world(self):
         self.session.hello_world(nargout=0)
+
+    def create_data_list(self):
+        self.session.create_data_list(nargout=0)
+
+    def add_data(self,name,data):
+        self.session.add_data(name,str(data),nargout=0)
+
+    def get_data(self,key):
+        return self.session.get_data(key)
