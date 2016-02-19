@@ -12,6 +12,21 @@ In order to test the configuration, run the following command:
 python scripts/test-config.py
 ~~~
 
+# Running the program
+
+First ensure that the UI-files are compiled to Python-files by
+running:
+
+~~~
+make
+~~~
+
+Then run the main python file with the following command:
+
+~~~
+python main.py
+~~~
+
 # Folder structure
 
 The repository is structured as follows:
