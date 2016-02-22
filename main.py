@@ -1,5 +1,4 @@
 import sys
-from src.python.session_manager import session_manager
 from src.python.gui import GUI
 from PyQt5 import QtWidgets
 
