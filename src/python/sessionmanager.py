@@ -1,7 +1,7 @@
 import matlab.engine
 
 
-class session_manager:
+class SessionManager:
     def __init__(self):
         names = matlab.engine.find_matlab()
         if names:
