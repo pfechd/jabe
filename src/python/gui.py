@@ -10,7 +10,7 @@ class GUI(QtWidgets.QMainWindow):
         super(GUI,self).__init__()
         self.manager = src.python.sessionmanager.SessionManager()
         # sets the varibale 'data' to 3 in matlab
-        self.manager.add_data("data",3)
+        self.manager.set_data("data",3)
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
