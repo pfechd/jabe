@@ -1,3 +1,3 @@
-function y =  get_data(key)
-    y = evalin('base',key);
+function value =  get_data(key)
+    value = evalin('base', key);
 end
