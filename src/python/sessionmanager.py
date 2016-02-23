@@ -16,5 +16,5 @@ class SessionManager:
     def set_data(self, name, data):
         self.session.set_data(name, data, nargout=0)
 
-    def get_data(self,key):
+    def get_data(self, key):
         return self.session.get_data(key)
