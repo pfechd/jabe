@@ -1,12 +1,12 @@
 from PyQt5 import QtWidgets
 from src.python.generated_ui.hello_world import Ui_MainWindow
-import src.python.sessionmanager
+from src.python.sessionmanager import SessionManager
 
 
 class GUI(QtWidgets.QMainWindow):
     def __init__(self):
         super(GUI, self).__init__()
-        self.manager = src.python.sessionmanager.SessionManager()
+        self.manager = SessionManager()
         # sets the variable 'data' to 3 in MATLAB
         self.manager.set_data("data", 3)
 
