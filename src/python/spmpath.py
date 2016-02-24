@@ -4,10 +4,10 @@ import src.python.sessionmanager
 import os.path
 
 
-class SPMPath(QtWidgets.QMainWindow):
-    def __init__(self):
+class SPMPath(QtWidgets.QDialog):
+    def __init__(self, manager):
         super(SPMPath, self).__init__()
-        self.manager = src.python.sessionmanager.SessionManager()
+        self.manager = manager
 
         self.ui = Ui_spm_path()
         self.ui.setupUi(self)

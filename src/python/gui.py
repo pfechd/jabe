@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets
 from src.python.generated_ui.hello_world import Ui_MainWindow
 from src.python.sessionmanager import SessionManager
-
+from src.python.spmpath import SPMPath
 
 class GUI(QtWidgets.QMainWindow):
     def __init__(self):
@@ -13,8 +13,12 @@ class GUI(QtWidgets.QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.ui.pushButton.clicked.connect(self.button_pressed)
+        self.ui.configureSPMButton.clicked.connect(self.configure_spm)
         self.show()
 
     def button_pressed(self, e):
         # retrieves and prints what is in the variable 'data' in MATLAB
         print(self.manager.get_data("data"))
+
+    def configure_spm(self, e):
+        SPMPath(self.manager).exec_()
