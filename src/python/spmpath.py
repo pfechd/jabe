@@ -1,6 +1,6 @@
 from PyQt5 import QtWidgets
 from src.python.generated_ui.spmpathph import Ui_spm_path
-import src.python.sessionmanager
+from src.python.sessionmanager import SessionManager
 import os.path
 
 
@@ -8,7 +8,6 @@ class SPMPath(QtWidgets.QDialog):
     def __init__(self, manager):
         super(SPMPath, self).__init__()
         self.manager = manager
-
         self.ui = Ui_spm_path()
         self.ui.setupUi(self)
         self.ui.submit.clicked.connect(self.button_pressed)
