@@ -27,9 +27,9 @@ class GUI(QtWidgets.QMainWindow):
         mask = Mask("../../test-data/mask", self.manager.session)
         visual_stimuli = VisualStimuli("../../test-data/stimall", 0.5, self.manager.session)
         brain.apply_mask(mask)
-        brain.normalize_to_mean(visual_stimuli)
-        brain.plot_mean()
-        brain.plot_std()
+        data = brain.normalize_to_mean(visual_stimuli)
+        data.plot_mean()
+        data.plot_std()
 
     def configure_spm(self, e):
         SPMPath(self.manager).exec_()

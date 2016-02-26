@@ -1,3 +1,6 @@
+from src.python.data import Data
+
+
 class Brain:
 
     def __init__(self,path,session):
@@ -9,17 +12,12 @@ class Brain:
         self.session.apply_mask(self.id, mask.id, nargout=0)
 
     def normalize_to_mean(self, visual_stimuli):
-        self.session.normalize_to_mean(self.id, visual_stimuli.id, nargout=0)
+        data = self.session.normalize_to_mean(self.id, visual_stimuli.id)
+        return Data(data, self.session)
 
     def calculate_mean(self):
         pass
 
     def calculate_std(self):
         pass
-
-    def plot_mean(self):
-        self.session.plot_mean(self.id, nargout=0)
-
-    def plot_std(self):
-        self.session.plot_std(self.id, nargout=0)
 
