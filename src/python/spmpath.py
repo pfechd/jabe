@@ -36,7 +36,6 @@ class SPMPath(QtWidgets.QDialog):
         else:
             Message("Not an existing directory").exec_()
 
-
     def check_path(self, path):
         """Check if given path is a valid SPM directory."""
         return os.path.exists(path)
