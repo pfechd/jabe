@@ -5,8 +5,8 @@ class Brain:
         self.session = session
         self.id = self.session.load_nifti(path)
 
-    def apply_mask(self,mask):
-        pass
+    def apply_mask(self, mask):
+        self.session.apply_mask(self.id, mask.id, nargout=0)
 
     def normalize_to_mean(self):
         pass
