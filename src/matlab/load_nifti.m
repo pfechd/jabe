@@ -2,6 +2,7 @@ function y = load_nifti(path)
     brain1 = load_nii(strcat(path,'.nii'),[],[],[],[],[],1)
     brain1 = brain1.img;
     brain1 = double(brain1);
-    set_data(path,brain1);
-    y = path;
+    variable_name = matlab.lang.makeValidName(path);
+    set_data(variable_name,brain1);
+    y = variable_name;
 end
