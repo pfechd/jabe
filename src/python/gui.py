@@ -16,6 +16,8 @@ class GUI(QtWidgets.QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.ui.pushButton.clicked.connect(self.button_pressed)
+        self.ui.brainButton.clicked.connect(self.brain_button_pressed)
+        self.ui.maskButton.clicked.connect(self.mask_button_pressed)
         self.ui.configureSPMButton.clicked.connect(self.configure_spm)
         self.show()
 
@@ -29,7 +31,15 @@ class GUI(QtWidgets.QMainWindow):
         brain.apply_mask(mask)
         data = brain.normalize_to_mean(visual_stimuli)
         data.plot_mean()
-        data.plot_std()
+        # data.plot_std()
+
+    def brain_button_pressed(self, e):
+        print "Pick brain"
+        pass
+
+    def mask_button_pressed(self, e):
+        print "Pick mask"
+        pass
 
     def configure_spm(self, e):
         SPMPath(self.manager).exec_()
