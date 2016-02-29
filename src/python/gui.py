@@ -19,10 +19,12 @@ class GUI(QMainWindow):
         self.ui.brainButton.clicked.connect(self.brain_button_pressed)
         self.ui.maskButton.clicked.connect(self.mask_button_pressed)
         self.ui.configureSPMButton.clicked.connect(self.configure_spm)
+        self.ui.stimuliButton.clicked.connect(self.stimuli_button_pressed)
         self.show()
 
         self.brain = None
         self.mask = None
+        self.visual_stimuli = None
 
     def button_pressed(self, e):
         # retrieves and prints what is in the variable 'data' in MATLAB
@@ -32,9 +34,10 @@ class GUI(QMainWindow):
             self.brain = Brain("../../test-data/brain_exp1_1", self.manager.session)
         if not self.mask:
             self.mask = Mask("../../test-data/mask", self.manager.session)
-        visual_stimuli = VisualStimuli("../../test-data/stimall", 0.5, self.manager.session)
+        if not self.visual_stimuli:
+            self.visual_stimuli = VisualStimuli("../../test-data/stimall", 0.5, self.manager.session)
         self.brain.apply_mask(self.mask)
-        data = self.brain.normalize_to_mean(visual_stimuli)
+        data = self.brain.normalize_to_mean(self.visual_stimuli)
         data.plot_mean()
         # data.plot_std()
 
@@ -52,6 +55,13 @@ class GUI(QMainWindow):
             self.mask = Mask(file_name[0][:-len('.nii')], self.manager.session)
         else:
             print 'Mask not chosen'
+
+    def stimuli_button_pressed(self, e):
+        file_name = QFileDialog.getOpenFileName(self, 'Open file')
+        if file_name[0]:
+            self.visual_stimuli = VisualStimuli(file_name[0][:-len('.mat')], 0.5, self.manager.session)
+        else:
+            print 'Stimuli not chosen'
 
     def configure_spm(self, e):
         SPMPath(self.manager).exec_()
