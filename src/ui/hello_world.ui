@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>360</width>
-    <height>147</height>
+    <width>378</width>
+    <height>242</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -40,13 +40,13 @@
      <string>Settings</string>
     </property>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>161</width>
-      <height>72</height>
+      <width>183</width>
+      <height>152</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
@@ -63,6 +63,24 @@
         <widget class="QPushButton" name="brainButton">
          <property name="text">
           <string>Pick brain</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_6">
+       <item>
+        <widget class="QLabel" name="stimuliLabel">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="stimuliButton">
+         <property name="text">
+          <string>Pick Stimuli</string>
          </property>
         </widget>
        </item>
@@ -88,22 +106,17 @@
      </item>
     </layout>
    </widget>
-   <zorder>pushButton</zorder>
    <zorder>configureSPMButton</zorder>
-   <zorder>brainButton</zorder>
-   <zorder>maskButton</zorder>
-   <zorder>brainLabel</zorder>
-   <zorder>maskLabel</zorder>
-   <zorder></zorder>
-   <zorder></zorder>
+   <zorder>layoutWidget</zorder>
+   <zorder>pushButton</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>360</width>
-     <height>26</height>
+     <width>378</width>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
