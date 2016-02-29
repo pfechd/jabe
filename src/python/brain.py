@@ -7,12 +7,13 @@ class Brain:
         self.path = path
         self.session = session
         self.id = self.session.load_nifti(path)
+        self.masked_id = None
 
     def apply_mask(self, mask):
-        self.session.apply_mask(self.id, mask.id, nargout=0)
+        self.masked_id = self.session.apply_mask(self.id, mask.id)
 
     def normalize_to_mean(self, visual_stimuli):
-        data = self.session.normalize_to_mean(self.id, visual_stimuli.id)
+        data = self.session.normalize_to_mean(self.masked_id, visual_stimuli.id)
         return Data(data, self.session)
 
     def calculate_mean(self):
