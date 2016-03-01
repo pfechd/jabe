@@ -10,8 +10,6 @@ class GUI(QMainWindow):
     def __init__(self):
         super(GUI, self).__init__()
         self.manager = SessionManager()
-        # sets the variable 'data' to 3 in MATLAB
-        self.manager.set_data("data", 3)
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -27,8 +25,6 @@ class GUI(QMainWindow):
         self.visual_stimuli = None
 
     def button_pressed(self, e):
-        # retrieves and prints what is in the variable 'data' in MATLAB
-        print(self.manager.get_data("data"))
         # TODO: Prompt user for brain and mask paths
         if not self.brain:
             self.brain = Brain("../../test-data/brain_exp1_1", self.manager.session)
