@@ -1,5 +1,5 @@
 function y = load_stimuli(path, tr)
-    visual_stimuli = load(strcat(path,'.mat'))
+    visual_stimuli = load(path)
     fieldNames = fieldnames(visual_stimuli);
     visual_stimuli=visual_stimuli.(fieldNames{:,1});
     v1 = [visual_stimuli(:,1)/tr];
