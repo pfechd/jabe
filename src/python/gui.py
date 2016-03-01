@@ -54,7 +54,7 @@ class GUI(QMainWindow):
         file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii)")
         if file_name[0]:
             self.mask = Mask(file_name[0], self.manager.session)
-            self.ui.brainLabel.setText("Mask picked!")
+            self.ui.maskLabel.setText("Mask picked!")
         else:
             print 'Mask not chosen'
 
@@ -62,7 +62,7 @@ class GUI(QMainWindow):
         file_name = QFileDialog.getOpenFileName(self, 'Open file')
         if file_name[0]:
             self.visual_stimuli = VisualStimuli(file_name[0][:-len('.mat')], 0.5, self.manager.session)
-            self.ui.brainLabel.setText("Stimuli picked!")
+            self.ui.stimuliLabel.setText("Stimuli picked!")
         else:
             print 'Stimuli not chosen'
 
