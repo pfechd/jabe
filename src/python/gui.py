@@ -43,16 +43,16 @@ class GUI(QMainWindow):
 
     def brain_button_pressed(self, e):
         dialog = QFileDialog()
-        file_name = QFileDialog.getOpenFileName(self, 'Open file')
+        file_name = QFileDialog.getOpenFileName(self, 'Open file', "","Images (*.nii)")
         if file_name[0]:
-            self.brain = Brain(file_name[0][:-len('.nii')], self.manager.session)
+            self.brain = Brain(file_name[0], self.manager.session)
         else:
             print 'File not chosen'
 
     def mask_button_pressed(self, e):
-        file_name = QFileDialog.getOpenFileName(self, 'Open file')
+        file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii)")
         if file_name[0]:
-            self.mask = Mask(file_name[0][:-len('.nii')], self.manager.session)
+            self.mask = Mask(file_name[0], self.manager.session)
         else:
             print 'Mask not chosen'
 
