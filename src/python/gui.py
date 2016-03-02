@@ -10,8 +10,6 @@ class GUI(QMainWindow):
     def __init__(self):
         super(GUI, self).__init__()
         self.manager = SessionManager()
-        # sets the variable 'data' to 3 in MATLAB
-        self.manager.set_data("data", 3)
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -27,8 +25,6 @@ class GUI(QMainWindow):
         self.visual_stimuli = None
 
     def button_pressed(self, e):
-        # retrieves and prints what is in the variable 'data' in MATLAB
-        print(self.manager.get_data("data"))
         # TODO: Prompt user for brain and mask paths
         if not self.brain:
             self.brain = Brain("../../test-data/brain_exp1_1", self.manager.session)
@@ -43,23 +39,26 @@ class GUI(QMainWindow):
 
     def brain_button_pressed(self, e):
         dialog = QFileDialog()
-        file_name = QFileDialog.getOpenFileName(self, 'Open file')
+        file_name = QFileDialog.getOpenFileName(self, 'Open file', "","Images (*.nii)")
         if file_name[0]:
-            self.brain = Brain(file_name[0][:-len('.nii')], self.manager.session)
+            self.brain = Brain(file_name[0], self.manager.session)
+            self.ui.brainLabel.setText("Brain picked!")
         else:
             print 'File not chosen'
 
     def mask_button_pressed(self, e):
-        file_name = QFileDialog.getOpenFileName(self, 'Open file')
+        file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii)")
         if file_name[0]:
-            self.mask = Mask(file_name[0][:-len('.nii')], self.manager.session)
+            self.mask = Mask(file_name[0], self.manager.session)
+            self.ui.maskLabel.setText("Mask picked!")
         else:
             print 'Mask not chosen'
 
     def stimuli_button_pressed(self, e):
-        file_name = QFileDialog.getOpenFileName(self, 'Open file')
+        file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.mat)")
         if file_name[0]:
-            self.visual_stimuli = VisualStimuli(file_name[0][:-len('.mat')], 0.5, self.manager.session)
+            self.visual_stimuli = VisualStimuli(file_name[0], 0.5, self.manager.session)
+            self.ui.stimuliLabel.setText("Stimuli picked!")
         else:
             print 'Stimuli not chosen'
 
