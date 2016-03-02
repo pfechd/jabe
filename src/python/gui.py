@@ -37,8 +37,8 @@ class GUI(QMainWindow):
         if not self.visual_stimuli:
             self.visual_stimuli = VisualStimuli("../../test-data/stimall", 0.5, self.manager.session)
         self.brain.apply_mask(self.mask)
-        data = self.brain.normalize_to_mean(self.visual_stimuli)
-        data.plot_mean()
+        self.brain.normalize_to_mean(self.visual_stimuli)
+        self.brain.plot_mean()
         # data.plot_std()
 
     def brain_button_pressed(self, e):
