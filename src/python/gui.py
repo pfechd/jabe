@@ -1,10 +1,11 @@
 from PyQt5.QtWidgets import QMainWindow, QFileDialog
-from src.python.generated_ui.hello_world import Ui_MainWindow
-from src.python.sessionmanager import SessionManager
-from src.python.spmpath import SPMPath
-from src.python.brain import Brain
-from src.python.mask import Mask
-from src.python.visual_stimuli import VisualStimuli
+from generated_ui.hello_world import Ui_MainWindow
+from sessionmanager import SessionManager
+from spmpath import SPMPath
+from brain import Brain
+from mask import Mask
+from visual_stimuli import VisualStimuli
+
 
 class GUI(QMainWindow):
     def __init__(self):
@@ -24,7 +25,7 @@ class GUI(QMainWindow):
         self.mask = None
         self.visual_stimuli = None
 
-    def button_pressed(self, e):
+    def button_pressed(self):
         # TODO: Prompt user for brain and mask paths
         if not self.brain:
             self.brain = Brain("../../test-data/brain_exp1_1", self.manager.session)
@@ -35,18 +36,17 @@ class GUI(QMainWindow):
         self.brain.apply_mask(self.mask)
         self.brain.normalize_to_mean(self.visual_stimuli)
         self.brain.plot_mean()
-        # data.plot_std()
 
-    def brain_button_pressed(self, e):
-        dialog = QFileDialog()
-        file_name = QFileDialog.getOpenFileName(self, 'Open file', "","Images (*.nii)")
+    def brain_button_pressed(self):
+        file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii)")
         if file_name[0]:
             self.brain = Brain(file_name[0], self.manager.session)
             self.ui.brainLabel.setText("Brain picked!")
         else:
             print 'File not chosen'
 
-    def mask_button_pressed(self, e):
+    def mask_button_pressed(self):
+
         file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii)")
         if file_name[0]:
             self.mask = Mask(file_name[0], self.manager.session)
@@ -54,7 +54,7 @@ class GUI(QMainWindow):
         else:
             print 'Mask not chosen'
 
-    def stimuli_button_pressed(self, e):
+    def stimuli_button_pressed(self):
         file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.mat)")
         if file_name[0]:
             self.visual_stimuli = VisualStimuli(file_name[0], 0.5, self.manager.session)
@@ -62,5 +62,5 @@ class GUI(QMainWindow):
         else:
             print 'Stimuli not chosen'
 
-    def configure_spm(self, e):
+    def configure_spm(self):
         SPMPath(self.manager).exec_()

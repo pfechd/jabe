@@ -1,7 +1,7 @@
 import os.path
 from PyQt5 import QtWidgets
-from src.python.generated_ui.spmpathph import Ui_spm_path
-from src.python.message import Message
+from generated_ui.spmpathph import Ui_spm_path
+from message import Message
 
 
 class SPMPath(QtWidgets.QDialog):
