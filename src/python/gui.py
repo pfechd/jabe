@@ -14,10 +14,10 @@ class GUI(QMainWindow):
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.ui.actionSettings.triggered.connect(self.configure_spm)
         self.ui.pushButton.clicked.connect(self.button_pressed)
         self.ui.brainButton.clicked.connect(self.brain_button_pressed)
         self.ui.maskButton.clicked.connect(self.mask_button_pressed)
-        self.ui.configureSPMButton.clicked.connect(self.configure_spm)
         self.ui.stimuliButton.clicked.connect(self.stimuli_button_pressed)
         self.show()
 

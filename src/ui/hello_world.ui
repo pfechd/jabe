@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>378</width>
-    <height>242</height>
+    <width>475</width>
+    <height>231</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,8 +17,8 @@
    <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
-      <x>190</x>
-      <y>50</y>
+      <x>300</x>
+      <y>140</y>
       <width>161</width>
       <height>27</height>
      </rect>
@@ -27,26 +27,13 @@
      <string>Run analysis</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="configureSPMButton">
-    <property name="geometry">
-     <rect>
-      <x>190</x>
-      <y>10</y>
-      <width>161</width>
-      <height>27</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Settings</string>
-    </property>
-   </widget>
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>183</width>
-      <height>152</height>
+      <width>271</width>
+      <height>171</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
@@ -55,7 +42,7 @@
        <item>
         <widget class="QLabel" name="brainLabel">
          <property name="text">
-          <string>TextLabel</string>
+          <string>No brain chosen</string>
          </property>
         </widget>
        </item>
@@ -73,14 +60,14 @@
        <item>
         <widget class="QLabel" name="stimuliLabel">
          <property name="text">
-          <string>TextLabel</string>
+          <string>No stimuli chosen</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="stimuliButton">
          <property name="text">
-          <string>Pick Stimuli</string>
+          <string>Pick stimuli</string>
          </property>
         </widget>
        </item>
@@ -91,14 +78,14 @@
        <item>
         <widget class="QLabel" name="maskLabel">
          <property name="text">
-          <string>TextLabel</string>
+          <string>No mask chosen</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="maskButton">
          <property name="text">
-          <string>Pick nifti</string>
+          <string>Pick mask</string>
          </property>
         </widget>
        </item>
@@ -106,7 +93,6 @@
      </item>
     </layout>
    </widget>
-   <zorder>configureSPMButton</zorder>
    <zorder>layoutWidget</zorder>
    <zorder>pushButton</zorder>
   </widget>
@@ -115,8 +101,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>378</width>
-     <height>22</height>
+     <width>475</width>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -130,7 +116,7 @@
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionSettings">
    <property name="text">
-    <string>Settings</string>
+    <string>Pick SPM Path</string>
    </property>
   </action>
  </widget>
