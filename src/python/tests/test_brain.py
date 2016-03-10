@@ -3,22 +3,30 @@ import matlab.engine
 from src.python import brain, mask
 
 class TestBrain(unittest.TestCase):
-    def setUp(self):
-        names = matlab.engine.find_matlab()
-        self.session = matlab.engine.connect_matlab(names[0])
-        self.brain = brain.Brain('../python/tests/test-data/brain.nii', self.session)
-        self.mask = mask.Mask('../python/tests/test-data/mask1.nii', self.session)
-        self.session.load_test_data(nargout=0)
+    @classmethod
+    def setUpClass(cls):
+        cls.session = matlab.engine.connect_matlab()
+        cls.brain = brain.Brain('../python/tests/test-data/brain.nii', cls.session)
+        cls.mask = mask.Mask('../python/tests/test-data/mask1.nii', cls.session)
+        cls.session.load_test_data(nargout=0)
+
+    def test_brain_loaded_correctly(self):
+        ref = self.session.get_data('brain_ref')
+        loaded_brain = self.session.get_data(self.brain.id)
+        self.assertEqual(self.session.isequal(ref, loaded_brain), True)
 
     def test_apply_mask(self):
         self.brain.apply_mask(self.mask)
-        a = self.session.get_data('apply_mask_ref')
-        b = self.session.get_data(self.brain.masked_id)
-        self.assertEqual(self.session.isequal(a, b), True)
+        ref = self.session.get_data('apply_mask_ref')
+        brain_masked = self.session.get_data(self.brain.masked_id)
+        self.assertEqual(self.session.isequal(ref, brain_masked), True)
 
-    def tearDown(self):
-        self.session = None
-        self.brain = None
+    @classmethod
+    def tearDownClass(cls):
+        cls.session.clear(nargout=0)
+        cls.brain = None
+        cls.mask = None
+        cls.session.quit()
 
 if __name__ == '__main__':
     unittest.main()
