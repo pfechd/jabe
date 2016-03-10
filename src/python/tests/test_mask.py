@@ -14,9 +14,11 @@ class TestBrain(unittest.TestCase):
         loaded_mask = self.session.get_data(self.mask.id)
         self.assertEqual(self.session.isequal(ref, loaded_mask), True)
 
-    def tearDown(self):
-        self.session = None
-        self.mask = None
+    @classmethod
+    def tearDownClass(cls):
+        cls.session.clear(nargout=0)
+        cls.session.quit()
+        cls.mask = None
 
 if __name__ == '__main__':
     unittest.main()
