@@ -5,6 +5,7 @@
 
 import os
 import subprocess
+import sys
 import matlab.engine
 
 pwd = os.getcwd()
@@ -17,7 +18,10 @@ print '#' + ' '*5 + 'RUNNING TESTS' + ' '*5 + '#'
 print '=' * 25
 print
 
-t = subprocess.Popen(['python', '-m', 'unittest', 'discover', '-v', '-s', pwd + '/src/python/tests', '-p', 'test_*'])
+if sys.version_info[0] != 2:
+    t = subprocess.Popen(['python2.7', '-m', 'unittest', 'discover', '-v', '-s', pwd + '/src/python/tests', '-p', 'test_*'])
+else:
+    t = subprocess.Popen(['python', '-m', 'unittest', 'discover', '-v', '-s', pwd + '/src/python/tests', '-p', 'test_*'])
 
 t.wait()
 
