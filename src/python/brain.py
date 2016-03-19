@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import scipy
 import nibabel as nib
 
 
@@ -9,14 +8,14 @@ class Brain:
         self.path = path
         brain_file = nib.load(path)
         self.data = brain_file.get_data()
+        self.images = self.data.shape[3]
         self.masked_data = None
         self.response = None
 
     def apply_mask(self, mask):
-        images = self.data.shape[3]
-        self.masked_data = np.zeros(images)
+        self.masked_data = np.zeros(self.images)
 
-        for i in range(images):
+        for i in range(self.images):
             visual_brain = mask.data * self.data[:,:,:,i]
             visual_brain_time = np.nonzero(visual_brain) # Denna var knepig
             self.masked_data[i] = np.mean(visual_brain[visual_brain_time])
@@ -24,7 +23,7 @@ class Brain:
 
     def normalize_to_mean(self, visual_stimuli):
         number_of_stimuli = visual_stimuli.amount
-        self.response = np.zeros((number_of_stimuli - 1, self.data.shape[3]))
+        self.response = np.zeros((number_of_stimuli - 1, self.images))
 
         # Split up data into responses. (Tog mycket tid)
         for i in range(number_of_stimuli - 1):
@@ -40,16 +39,16 @@ class Brain:
         pass
 
     def plot_mean(self):
-        response_mean = np.zeros(self.data.shape[3])
+        response_mean = np.zeros(self.images)
 
-        # Calculate average response
+            # Calculate average response
         for i in range(self.data.shape[3]):
             rm1 = np.nonzero(self.response[:, i])
             response_mean[i] = np.mean(self.response[:, i])
 
         # Plot average response
         plt.plot(response_mean)
-        plt.title('Utraknat varde fran skript')
+        plt.title('Uträknat varde fran skript')
         plt.axis([0, 45, -2, 19])
         plt.show()
 
@@ -63,6 +62,6 @@ class Brain:
 
         # Plot average response
         plt.plot(response_std)
-        plt.title('Utraknat varde fran skript')
+        plt.title('Uträknat varde fran skript')
         plt.axis([0, 45, -2, 19])
         plt.show()
