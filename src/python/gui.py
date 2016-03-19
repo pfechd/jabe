@@ -1,6 +1,5 @@
 from PyQt5.QtWidgets import QMainWindow, QFileDialog
 from generated_ui.hello_world import Ui_MainWindow
-from sessionmanager import SessionManager
 from spmpath import SPMPath
 from brain import Brain
 from mask import Mask
@@ -10,7 +9,6 @@ from visual_stimuli import VisualStimuli
 class GUI(QMainWindow):
     def __init__(self):
         super(GUI, self).__init__()
-        self.manager = SessionManager()
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -28,11 +26,11 @@ class GUI(QMainWindow):
     def button_pressed(self):
         # TODO: Prompt user for brain and mask paths
         if not self.brain:
-            self.brain = Brain("../../test-data/brain_exp1_1", self.manager.session)
+            self.brain = Brain("../../test-data/brain_exp1_1")
         if not self.mask:
-            self.mask = Mask("../../test-data/mask", self.manager.session)
+            self.mask = Mask("../../test-data/mask")
         if not self.visual_stimuli:
-            self.visual_stimuli = VisualStimuli("../../test-data/stimall", 0.5, self.manager.session)
+            self.visual_stimuli = VisualStimuli("../../test-data/stimall", 0.5)
         self.brain.apply_mask(self.mask)
         self.brain.normalize_to_mean(self.visual_stimuli)
         self.brain.plot_mean()
@@ -40,7 +38,7 @@ class GUI(QMainWindow):
     def brain_button_pressed(self):
         file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii)")
         if file_name[0]:
-            self.brain = Brain(file_name[0], self.manager.session)
+            self.brain = Brain(file_name[0])
             self.ui.brainLabel.setText("Brain picked!")
         else:
             print 'File not chosen'
@@ -49,7 +47,7 @@ class GUI(QMainWindow):
 
         file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii)")
         if file_name[0]:
-            self.mask = Mask(file_name[0], self.manager.session)
+            self.mask = Mask(file_name[0])
             self.ui.maskLabel.setText("Mask picked!")
         else:
             print 'Mask not chosen'
@@ -57,7 +55,7 @@ class GUI(QMainWindow):
     def stimuli_button_pressed(self):
         file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.mat)")
         if file_name[0]:
-            self.visual_stimuli = VisualStimuli(file_name[0], 0.5, self.manager.session)
+            self.visual_stimuli = VisualStimuli(file_name[0], 0.5)
             self.ui.stimuliLabel.setText("Stimuli picked!")
         else:
             print 'Stimuli not chosen'

@@ -1,16 +1,37 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import scipy
+import nibabel as nib
+
+
 class Brain:
-    def __init__(self, path, session):
+    def __init__(self, path):
         self.path = path
-        self.session = session
-        self.id = self.session.load_nifti(path)
-        self.masked_id = None
-        self.data_id = None
+        brain_file = nib.load(path)
+        self.data = brain_file.get_data()
+        self.masked_data = None
+        self.response = None
 
     def apply_mask(self, mask):
-        self.masked_id = self.session.apply_mask(self.id, mask.id)
+        images = self.data.shape[3]
+        self.masked_data = np.zeros(images)
+
+        for i in range(images):
+            visual_brain = mask.data * self.data[:,:,:,i]
+            visual_brain_time = np.nonzero(visual_brain) # Denna var knepig
+            self.masked_data[i] = np.mean(visual_brain[visual_brain_time])
+
 
     def normalize_to_mean(self, visual_stimuli):
-        self.data_id = self.session.normalize_to_mean(self.masked_id, visual_stimuli.id)
+        number_of_stimuli = visual_stimuli.amount
+        self.response = np.zeros((number_of_stimuli - 1, self.data.shape[3]))
+
+        # Split up data into responses. (Tog mycket tid)
+        for i in range(number_of_stimuli - 1):
+            v1i = int(visual_stimuli.data[0, i])
+            v1i1 = int(visual_stimuli.data[0, i + 1])
+            number_of_images = v1i1 - v1i
+            self.response[i, 0:number_of_images-1] = self.masked_data[v1i:v1i1-1] - self.masked_data[v1i]
 
     def calculate_mean(self):
         pass
@@ -19,9 +40,29 @@ class Brain:
         pass
 
     def plot_mean(self):
-        if self.data_id:
-            self.session.plot_mean(self.data_id, nargout=0)
+        response_mean = np.zeros(self.data.shape[3])
+
+        # Calculate average response
+        for i in range(self.data.shape[3]):
+            rm1 = np.nonzero(self.response[:, i])
+            response_mean[i] = np.mean(self.response[:, i])
+
+        # Plot average response
+        plt.plot(response_mean)
+        plt.title('Utraknat varde fran skript')
+        plt.axis([0, 45, -2, 19])
+        plt.show()
 
     def plot_std(self):
-        if self.data_id:
-            self.session.plot_std(self.data_id, nargout=0)
+        response_std = np.zeros(self.data.shape[3])
+
+        # Calculate average response
+        for i in range(self.data.shape[3]):
+            rm1 = np.nonzero(self.response[:, i])
+            response_std[i] = np.std(self.response[:, i])
+
+        # Plot average response
+        plt.plot(response_std)
+        plt.title('Utraknat varde fran skript')
+        plt.axis([0, 45, -2, 19])
+        plt.show()
