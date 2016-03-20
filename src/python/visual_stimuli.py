@@ -4,6 +4,7 @@ import scipy
 class VisualStimuli:
     def __init__(self, path, tr):
         self.path = path
+        # TODO: Handle loading wrong files
         visual_stimuli_file = scipy.io.loadmat(path) # Trivialt
         visual_stimuli = visual_stimuli_file['visual_stimuli']
         self.amount = visual_stimuli.shape[0]

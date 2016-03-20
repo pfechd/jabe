@@ -24,7 +24,8 @@ class GUI(QMainWindow):
         self.visual_stimuli = None
 
     def button_pressed(self):
-        # TODO: Prompt user for brain and mask paths
+        # TODO: Prompt user for brain and mask paths instead of falling
+        # back unto hardcoded defaults
         if not self.brain:
             self.brain = Brain("../../test-data/brain_exp1_1")
         if not self.mask:
