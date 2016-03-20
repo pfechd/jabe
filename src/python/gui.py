@@ -45,7 +45,6 @@ class GUI(QMainWindow):
             print 'File not chosen'
 
     def mask_button_pressed(self):
-
         file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii)")
         if file_name[0]:
             self.mask = Mask(file_name[0])

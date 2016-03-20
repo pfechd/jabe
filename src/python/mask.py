@@ -1,5 +1,6 @@
 import nibabel as nib
 
+
 class Mask:
     def __init__(self, path):
         self.path = path

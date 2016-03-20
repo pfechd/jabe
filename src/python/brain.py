@@ -16,16 +16,15 @@ class Brain:
         self.masked_data = np.zeros(self.images)
 
         for i in range(self.images):
-            visual_brain = mask.data * self.data[:,:,:,i]
-            visual_brain_time = np.nonzero(visual_brain) # Denna var knepig
+            visual_brain = mask.data * self.data[:, :, :, i]
+            visual_brain_time = np.nonzero(visual_brain)
             self.masked_data[i] = np.mean(visual_brain[visual_brain_time])
-
 
     def normalize_to_mean(self, visual_stimuli):
         number_of_stimuli = visual_stimuli.amount
         self.response = np.zeros((number_of_stimuli - 1, self.images))
 
-        # Split up data into responses. (Tog mycket tid)
+        # Split up data into responses.
         for i in range(number_of_stimuli - 1):
             v1i = int(visual_stimuli.data[0, i])
             v1i1 = int(visual_stimuli.data[0, i + 1])
@@ -41,7 +40,7 @@ class Brain:
     def plot_mean(self):
         response_mean = np.zeros(self.images)
 
-            # Calculate average response
+        # Calculate average response
         for i in range(self.data.shape[3]):
             rm1 = np.nonzero(self.response[:, i])
             response_mean[i] = np.mean(self.response[:, i])
