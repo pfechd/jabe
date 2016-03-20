@@ -4,17 +4,17 @@
 # the following applications are correctly installed:
 # * Qt5
 # * PyQt5
-# * Matlab
-# * SPM
+# * numpy
+# * matplotlib
+# * scipy
+# * nibabel
 
 import sys
+import numpy
+import scipy
+import nibabel
+import matplotlib.pyplot
 from PyQt5 import QtWidgets
-import matlab.engine
-
-engine = matlab.engine.connect_matlab()
-
-engine.addpath(engine.pwd() + '/spm12')
-engine.spm(nargout=0)
 
 app = QtWidgets.QApplication(sys.argv)
 window = QtWidgets.QMainWindow()

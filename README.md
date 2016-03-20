@@ -1,3 +1,14 @@
+# Dependencies
+
+This application is implemented in Python 2.7 and needs the folling
+libraries to be installed:
+
+* numpy
+* scipy
+* nibabel
+* matplotlib
+* PyQt5
+
 # Configuration help
 
 In order to install SPM12, run the following command:
