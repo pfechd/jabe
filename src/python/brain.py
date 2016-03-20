@@ -48,7 +48,7 @@ class Brain:
 
         # Plot average response
         plt.plot(response_mean)
-        plt.title('Uträknat varde fran skript')
+        plt.title('Average response (mean)')
         plt.axis([0, 45, -2, 19])
         plt.show()
 
@@ -62,6 +62,6 @@ class Brain:
 
         # Plot average response
         plt.plot(response_std)
-        plt.title('Uträknat varde fran skript')
+        plt.title('Average response (std)')
         plt.axis([0, 45, -2, 19])
         plt.show()
