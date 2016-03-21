@@ -1,6 +1,6 @@
 # Dependencies
 
-This application is implemented in Python 2.7 and needs the folling
+This application is implemented in Python 2.7 and needs the following
 libraries to be installed:
 
 * numpy
@@ -8,6 +8,9 @@ libraries to be installed:
 * nibabel
 * matplotlib
 * PyQt5
+
+If you get problems with matplotlib while running the test-config.py, install python-tk (TKinter) for Linux and ActiveTcl for Mac OS X.
+
 
 # Configuration help
 
