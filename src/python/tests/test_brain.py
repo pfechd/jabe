@@ -21,6 +21,9 @@ class TestBrain(unittest.TestCase):
         brain_masked = self.session.get_data(self.brain.masked_id)
         self.assertEqual(self.session.isequal(ref, brain_masked), True)
 
+    def test_calculate_mean(self):
+        pass
+
     @classmethod
     def tearDownClass(cls):
         cls.session.clear(nargout=0)
