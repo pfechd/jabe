@@ -1,7 +1,7 @@
 import sys
-from src.python.gui import GUI
+from src.python.mainwindow import MainWindow
 from PyQt5 import QtWidgets
 
 app = QtWidgets.QApplication(sys.argv)
-x = GUI()
+x = MainWindow()
 sys.exit(app.exec_())
