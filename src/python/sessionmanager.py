@@ -2,6 +2,7 @@ import matlab.engine
 
 
 class SessionManager:
+    """ Manager for setting up and handling a single connection to MATLAB."""
     def __init__(self):
         names = matlab.engine.find_matlab()
         if names:

@@ -4,6 +4,12 @@ import nibabel as nib
 
 
 class Brain:
+    """
+    Class used for representing and doing calculations with brain data
+
+    The brain data is initially read from a NIfTI-file (.nii) and the original
+    data is stored in the member data
+    """
     def __init__(self, path):
         self.path = path
         brain_file = nib.load(path)
@@ -13,6 +19,12 @@ class Brain:
         self.response = None
 
     def apply_mask(self, mask):
+        """
+        Apply the given mask to the brain and save the data for further
+        calculations in the member masked_data.
+
+        :param mask: Mask object which should be applied
+        """
         self.masked_data = np.zeros(self.images)
 
         for i in range(self.images):
@@ -21,6 +33,12 @@ class Brain:
             self.masked_data[i] = np.mean(visual_brain[visual_brain_time])
 
     def normalize_to_mean(self, visual_stimuli):
+        """
+        Normalize the function to mean with the given visual stimuli
+
+        :param visual_stimuli: VisualStimuli object which should be used
+        :return:
+        """
         number_of_stimuli = visual_stimuli.amount
         self.response = np.zeros((number_of_stimuli - 1, self.images))
 
@@ -32,12 +50,15 @@ class Brain:
             self.response[i, 0:number_of_images-1] = self.masked_data[v1i:v1i1-1] - self.masked_data[v1i]
 
     def calculate_mean(self):
+        # TODO: Extract the calculation part of plot_mean function
         pass
 
     def calculate_std(self):
+        # TODO: Extract the calculation part of plot_std function
         pass
 
     def plot_mean(self):
+        """ Plot the mean response."""
         response_mean = np.zeros(self.images)
 
         # Calculate average response
@@ -52,14 +73,15 @@ class Brain:
         plt.show()
 
     def plot_std(self):
+        """ Plot the standard error of the response."""
         response_std = np.zeros(self.data.shape[3])
 
-        # Calculate average response
+        # Calculate the standard error of the response
         for i in range(self.data.shape[3]):
             rm1 = np.nonzero(self.response[:, i])
             response_std[i] = np.std(self.response[:, i])
 
-        # Plot average response
+        # Plot the standard error of the response
         plt.plot(response_std)
         plt.title('Average response (std)')
         plt.axis([0, 45, -2, 19])
