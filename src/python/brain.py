@@ -50,39 +50,43 @@ class Brain:
             self.response[i, 0:number_of_images-1] = self.masked_data[v1i:v1i1-1] - self.masked_data[v1i]
 
     def calculate_mean(self):
-        # TODO: Extract the calculation part of plot_mean function
-        pass
+        """ Calculate the mean response """
+        response_mean = np.zeros(self.images)
+
+        for i in range(self.images):
+            rm1 = np.nonzero(self.response[:, i])
+            response_mean[i] = np.mean(self.response[:, i])
+        return response_mean
 
     def calculate_std(self):
-        # TODO: Extract the calculation part of plot_std function
-        pass
+        """ Calculate the standard error of the response """
+        response_std = np.zeros(self.images)
+
+        for i in range(self.images):
+            rm1 = np.nonzero(self.response[:, i])
+            response_std[i] = np.std(self.response[:, i])
+        return response_std
 
     def plot_mean(self):
         """ Plot the mean response."""
-        response_mean = np.zeros(self.images)
-
-        # Calculate average response
-        for i in range(self.data.shape[3]):
-            rm1 = np.nonzero(self.response[:, i])
-            response_mean[i] = np.mean(self.response[:, i])
-
-        # Plot average response
-        plt.plot(response_mean)
+        plt.plot(self.calculate_mean())
         plt.title('Average response (mean)')
         plt.axis([0, 45, -2, 19])
         plt.show()
 
     def plot_std(self):
         """ Plot the standard error of the response."""
-        response_std = np.zeros(self.data.shape[3])
-
-        # Calculate the standard error of the response
-        for i in range(self.data.shape[3]):
-            rm1 = np.nonzero(self.response[:, i])
-            response_std[i] = np.std(self.response[:, i])
-
-        # Plot the standard error of the response
-        plt.plot(response_std)
+        plt.plot(self.calculate_std())
         plt.title('Average response (std)')
         plt.axis([0, 45, -2, 19])
         plt.show()
+
+    def sub_from_baseline(self, response):
+        """ Subtract baseline from a response """
+        sub_value = response[0]
+
+        for i in range(self.images):
+            response[i] -= sub_value
+
+        return response
+
