@@ -46,7 +46,7 @@ class MainWindow(QMainWindow):
 
         self.brain.apply_mask(self.mask)
         self.brain.normalize_to_mean(self.visual_stimuli)
-        self.brain.plot_mean()
+        self.brain.plot_std()
 
     def brain_button_pressed(self):
         """ Callback function run when the choose brain button is pressed."""

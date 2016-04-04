@@ -76,9 +76,12 @@ class Brain:
 
     def plot_std(self):
         """ Plot the standard error of the response."""
-        plt.plot(self.calculate_std())
+        y = self.calculate_mean()
+        x = np.arange(y.size)
+
+        plt.errorbar(x, y, yerr=self.calculate_std())
         plt.title('Average response (std)')
-        plt.axis([0, 45, -2, 19])
+        plt.axis([0, 45, -20, 30])
         plt.show()
 
     def sub_from_baseline(self, response):
