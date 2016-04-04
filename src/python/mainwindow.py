@@ -38,11 +38,11 @@ class MainWindow(QMainWindow):
 
         # Check for the data needed for data extraction
         if not self.brain:
-            self.brain = Brain("../../test-data/brain_exp1_1")
+            self.brain = Brain("test-data/brain_exp1_1.nii")
         if not self.mask:
-            self.mask = Mask("../../test-data/mask")
+            self.mask = Mask("test-data/mask.nii")
         if not self.visual_stimuli:
-            self.visual_stimuli = VisualStimuli("../../test-data/stimall", 0.5)
+            self.visual_stimuli = VisualStimuli("test-data/stimall.mat", 0.5)
 
         self.brain.apply_mask(self.mask)
         self.brain.normalize_to_mean(self.visual_stimuli)
