@@ -26,6 +26,8 @@ class MainWindow(QMainWindow):
         self.ui.stimuliButton.clicked.connect(self.stimuli_button_pressed)
         self.show()
 
+        #self.masktest = Mask(None,(3,3,3),(10,10,10),"cube", 3)
+        #print self.masktest.data
         self.brain = None
         self.mask = None
         self.visual_stimuli = None
