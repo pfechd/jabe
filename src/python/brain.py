@@ -1,3 +1,5 @@
+# -*- encoding: utf-8 -*-
+
 import matplotlib.pyplot as plt
 import numpy as np
 import nibabel as nib
@@ -68,9 +70,15 @@ class Brain:
             response_std[i] = np.std(self.response[:, i])
         return response_std
 
-    def plot_mean(self):
+    def plot_mean(self, fwhm = False):
         """ Plot the mean response."""
-        plt.plot(self.calculate_mean())
+        y = self.calculate_mean()
+        if fwhm:
+            x = np.arange(y.size)
+            smoothing_factor = 20
+            r1, r2 = self.calculate_fwhm(x, y, smoothing_factor)
+            plt.axvspan(r1, r2, facecolor='g', alpha=0.2)
+        plt.plot(y)
         plt.title('Average response (mean)')
         plt.axis([0, 45, -2, 19])
         plt.show()
@@ -94,15 +102,11 @@ class Brain:
 
         return response
 
-    def plot_fwhm(self):
-       mean = self.calculate_mean() #vet ej om det går med array?
-       std = self.calculate_mean() #vet ej om det går med array?
-       x = np.arange(mean) #längden på x, kolla plot_std
-
-       norm_distance = 1.0/(std*np.sqrt(2*np.pi))*np.exp(-(x - mean)**2/(2*std**2)) #wiki
-
-       spline = UnivariateSpline(x, norm_distance-np.max(norm_distance)/2, s=0)
-       r1, r2 = spline.roots()
-       plt.plot(x,norm_distance)
-       plt.axvspan(r1, r2, facecolor='g', alpha=0.5) #hittade på nätet för att rita området
-       plt.show()
+    def calculate_fwhm(self, x, y, s):
+        half_maximum = np.max(y)/2
+        spline = UnivariateSpline(x, y - half_maximum, s=s)
+        roots = spline.roots()
+        assert len(roots) == 2   # Higher smoothing factor required
+        r1, r2 = roots
+        # plt.plot(x, spline(x) + half_maximum) DEBUG
+        return r1, r2
