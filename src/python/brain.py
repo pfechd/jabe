@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import nibabel as nib
+from scipy.interpolate import UnivariateSpline
 
 
 class Brain:
@@ -93,3 +94,15 @@ class Brain:
 
         return response
 
+    def plot_fwhm(self):
+       mean = self.calculate_mean() #vet ej om det går med array?
+       std = self.calculate_mean() #vet ej om det går med array?
+       x = np.arange(mean) #längden på x, kolla plot_std
+
+       norm_distance = 1.0/(std*np.sqrt(2*np.pi))*np.exp(-(x - mean)**2/(2*std**2)) #wiki
+
+       spline = UnivariateSpline(x, norm_distance-np.max(norm_distance)/2, s=0)
+       r1, r2 = spline.roots()
+       plt.plot(x,norm_distance)
+       plt.axvspan(r1, r2, facecolor='g', alpha=0.5) #hittade på nätet för att rita området
+       plt.show()
