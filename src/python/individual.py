@@ -4,7 +4,7 @@ class Individual:
         if not configuration:
             self.brain = None
             self.stimuli = None
-            self.Mask = None
+            self.mask = None
             self.normalization = None
             self.plot_settings = []
             self.name = None
