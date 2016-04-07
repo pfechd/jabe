@@ -12,8 +12,8 @@ class Brain:
     """
     def __init__(self, path):
         self.path = path
-        brain_file = nib.load(path)
-        self.data = brain_file.get_data()
+        self.brain_file = nib.load(path)
+        self.data = self.brain_file.get_data()
         self.images = self.data.shape[3]
         self.masked_data = None
         self.response = None
@@ -93,3 +93,6 @@ class Brain:
 
         return response
 
+    def get_voxel_size(self):
+        """ Returns the size of one voxel in the image. """
+        return self.brain_file._header.get_zooms()
