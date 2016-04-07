@@ -49,7 +49,7 @@ class MainWindow(QMainWindow):
         self.brain.plot_mean(fwhm=True)
 
     def brain_button_pressed(self):
-        """ Callback function run when the choose brain button is pressed."""
+        """ Callback function, run when the choose brain button is pressed."""
         file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii)")
         if file_name[0]:
             self.brain = Brain(file_name[0])
@@ -58,7 +58,7 @@ class MainWindow(QMainWindow):
             print 'File not chosen'
 
     def mask_button_pressed(self):
-        """ Callback function run when the choose mask button is pressed."""
+        """ Callback function, run when the choose mask button is pressed."""
         file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii)")
         if file_name[0]:
             self.mask = Mask(file_name[0])
@@ -67,7 +67,7 @@ class MainWindow(QMainWindow):
             print 'Mask not chosen'
 
     def stimuli_button_pressed(self):
-        """ Callback function run when the choose stimuli button is pressed."""
+        """ Callback function, run when the choose stimuli button is pressed."""
         file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.mat)")
         if file_name[0]:
             self.visual_stimuli = VisualStimuli(file_name[0], 0.5)
@@ -76,5 +76,5 @@ class MainWindow(QMainWindow):
             print 'Stimuli not chosen'
 
     def configure_spm(self):
-        """ Callback function run when the spm menu item is pressed."""
+        """ Callback function, run when the spm menu item is pressed."""
         SPMPath(self.manager).exec_()

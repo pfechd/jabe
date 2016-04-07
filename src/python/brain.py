@@ -86,7 +86,6 @@ class Brain:
             response_sem.append(sem(self.response[:, i]))
         return response_sem
 
-
     def plot_mean(self, fwhm = False):
         """ Plot the mean response."""
         y = self.calculate_mean()
