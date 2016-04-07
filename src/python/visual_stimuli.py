@@ -11,6 +11,7 @@ class VisualStimuli:
     """
     def __init__(self, path, tr):
         self.path = path
+        self.tr = tr
         # TODO: Handle loading wrong files
         visual_stimuli_file = scipy.io.loadmat(path)
         visual_stimuli = visual_stimuli_file['visual_stimuli']
@@ -18,3 +19,9 @@ class VisualStimuli:
 
         self.data = np.floor(visual_stimuli[:, 0] / tr)
         self.data = np.array([self.data, visual_stimuli[:, 1]])
+
+    def get_configuration(self):
+        return {
+            'stimuli_onset_path': self.path,
+            'tr': self.tr
+        }

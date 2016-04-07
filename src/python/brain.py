@@ -22,6 +22,9 @@ class Brain:
         self.masked_data = None
         self.response = None
 
+    def get_configuration(self):
+        return {'brain_path': self.path}
+
     def apply_mask(self, mask):
         """
         Apply the given mask to the brain and save the data for further

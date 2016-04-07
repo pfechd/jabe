@@ -156,3 +156,6 @@ target/
 
 # pyenv
 .python-version
+
+# Application configuration
+configuration.json

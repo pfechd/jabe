@@ -1,3 +1,5 @@
+import json
+import os
 from PyQt5.QtWidgets import QMainWindow, QFileDialog
 from generated_ui.hello_world import Ui_MainWindow
 from spmpath import SPMPath
@@ -24,11 +26,34 @@ class MainWindow(QMainWindow):
         self.ui.brainButton.clicked.connect(self.brain_button_pressed)
         self.ui.maskButton.clicked.connect(self.mask_button_pressed)
         self.ui.stimuliButton.clicked.connect(self.stimuli_button_pressed)
+        self.ui.print_configuration.clicked.connect(self.save_configuration)
+        self.ui.load_configuration.clicked.connect(self.load_configuration)
         self.show()
 
         self.brain = None
         self.mask = None
         self.visual_stimuli = None
+
+    def save_configuration(self):
+        configuration = {
+            'brains': [self.brain.get_configuration()],
+            'mask': self.mask.get_configuration(),
+            'stimuli_onset': self.visual_stimuli.get_configuration()
+        }
+        with open('configuration.json', 'w') as f:
+            json.dump(configuration, f, indent=4)
+
+    def load_configuration(self):
+        if os.path.exists('configuration.json'):
+            with open('configuration.json', 'r') as f:
+                configuration = json.load(f)
+
+            for brain in configuration['brains']:
+                self.brain = Brain(brain['brain_path'])
+
+            self.visual_stimuli = VisualStimuli(configuration['stimuli_onset']['stimuli_onset_path'],
+                                                configuration['stimuli_onset']['tr'])
+            self.mask = Mask(configuration['mask']['mask_path'])
 
     def calculate_button_pressed(self):
         """ Callback function run when the calculate button is pressed."""
