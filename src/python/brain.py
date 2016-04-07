@@ -52,8 +52,8 @@ class Brain:
 
         # Split up data into responses.
         for i in range(number_of_stimuli - 1):
-            v1i = int(visual_stimuli.data[0, i])
-            v1i1 = int(visual_stimuli.data[0, i + 1])
+            v1i = int(visual_stimuli.data[i, 0])
+            v1i1 = int(visual_stimuli.data[i + 1, 0])
 
             number_of_images = v1i1 - v1i
             if number_of_images > max_nr_of_img:
@@ -72,15 +72,18 @@ class Brain:
             rm1 = np.nonzero(self.response[:, i])
             if rm1[0].any():
                 response_mean[:, i] = np.mean(self.response[rm1[0], i])
+
         return response_mean
 
     def calculate_std(self):
         """ Calculate the standard error of the response """
-        response_std = np.zeros(self.response.shape[1])
+        response_std = np.zeros((1, self.response.shape[1]))
 
         for i in range(self.response.shape[1]):
             rm1 = np.nonzero(self.response[:, i])
-            response_std[i] = np.std(self.response[:, i])
+            if rm1[0].any():
+                response_std[:, i] = np.std(self.response[rm1[0], i], ddof=1) # ddof=1 to work like MATLAB std()
+
         return response_std
 
     def calculate_sem(self):
@@ -102,7 +105,7 @@ class Brain:
             r1, r2 = self.calculate_fwhm(x, y, smoothing_factor)
             plt.axvspan(r1, r2, facecolor='g', alpha=0.3)
         plt.plot(self.calculate_sem())
-        plt.plot(y)
+        plt.plot(y[0])
         plt.title('Average response (mean)')
         plt.axis([0, 45, -2, 19])
         plt.show()
