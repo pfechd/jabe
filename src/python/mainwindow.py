@@ -48,12 +48,12 @@ class MainWindow(QMainWindow):
             with open('configuration.json', 'r') as f:
                 configuration = json.load(f)
 
-            for brain in configuration['brains']:
-                self.brain = Brain(brain['brain_path'])
+            self.load_brain(configuration['brains'][0]['brain_path'])
 
-            self.visual_stimuli = VisualStimuli(configuration['stimuli_onset']['stimuli_onset_path'],
-                                                configuration['stimuli_onset']['tr'])
-            self.mask = Mask(configuration['mask']['mask_path'])
+            self.load_mask(configuration['mask']['mask_path'])
+
+            self.load_stimuli(configuration['stimuli_onset']['stimuli_onset_path'])
+            self.visual_stimuli.tr = configuration['stimuli_onset']['tr']
 
     def calculate_button_pressed(self):
         """ Callback function, run when the calculate button is pressed."""
@@ -77,8 +77,7 @@ class MainWindow(QMainWindow):
         """ Callback function, run when the choose brain button is pressed."""
         file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii)")
         if file_name[0]:
-            self.brain = Brain(file_name[0])
-            self.ui.brainLabel.setText('EPI-images chosen: ' + file_name[0])
+            self.load_brain(file_name[0])
         else:
             print 'File not chosen'
 
@@ -86,8 +85,7 @@ class MainWindow(QMainWindow):
         """ Callback function, run when the choose mask button is pressed."""
         file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii)")
         if file_name[0]:
-            self.mask = Mask(file_name[0])
-            self.ui.maskLabel.setText('Mask picked: ' + file_name[0])
+            self.load_mask(file_name[0])
         else:
             print 'Mask not chosen'
 
@@ -95,10 +93,21 @@ class MainWindow(QMainWindow):
         """ Callback function, run when the choose stimuli button is pressed."""
         file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.mat)")
         if file_name[0]:
-            self.visual_stimuli = VisualStimuli(file_name[0], 0.5)
-            self.ui.stimuliLabel.setText('Stimuli picked: ' + file_name[0])
+            self.load_stimuli(file_name[0])
         else:
             print 'Stimuli not chosen'
+
+    def load_brain(self, path):
+        self.brain = Brain(path)
+        self.ui.brainLabel.setText('EPI-images chosen: ' + path)
+
+    def load_mask(self, path):
+        self.mask = Mask(path)
+        self.ui.maskLabel.setText('Mask picked: ' + path)
+
+    def load_stimuli(self, path):
+        self.visual_stimuli = VisualStimuli(path, 0.5)
+        self.ui.stimuliLabel.setText('Stimuli picked: ' + path)
 
     def configure_spm(self):
         """ Callback function, run when the spm menu item is pressed."""
