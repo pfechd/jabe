@@ -70,6 +70,7 @@ class MainWindow(QMainWindow):
         if not self.visual_stimuli:
             self.visual_stimuli = VisualStimuli("test-data/stimall.mat", 0.5)
 
+        # Check if dimensions of 'Brain' and 'Mask' match.
         if self.brain.data.shape[0:3] != self.mask.data.shape:
             Message('Brain image dimensions does not match Mask dimensions\n\nBrain: '
                     + str(self.brain.data.shape[0:3]) + '\nMask: ' + str(self.mask.data.shape)).exec_()
