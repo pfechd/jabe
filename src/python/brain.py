@@ -82,7 +82,7 @@ class Brain:
         """ Calculate the standard error of the mean (SEM) of the response """
         response_sem = []
 
-        for i in range(self.images):
+        for i in range(self.response.shape[1]):
             response_sem.append(sem(self.response[:, i]))
         return response_sem
 
