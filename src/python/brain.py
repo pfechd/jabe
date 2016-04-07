@@ -75,9 +75,9 @@ class Brain:
         y = self.calculate_mean()
         if fwhm:
             x = np.arange(y.size)
-            smoothing_factor = 20
+            smoothing_factor = 30
             r1, r2 = self.calculate_fwhm(x, y, smoothing_factor)
-            plt.axvspan(r1, r2, facecolor='g', alpha=0.2)
+            plt.axvspan(r1, r2, facecolor='g', alpha=0.3)
         plt.plot(y)
         plt.title('Average response (mean)')
         plt.axis([0, 45, -2, 19])
@@ -102,11 +102,26 @@ class Brain:
 
         return response
 
-    def calculate_fwhm(self, x, y, s):
+    def calculate_fwhm(self, x, y, smoothing):
+        """
+        Returns two positions showing the full width half maximum(fwhm) of a given array y.
+
+        Calculates two positions r1 and r2 on the x axis where y'[r1] and y'[r2]
+        are equal to half of the maximum value of y where y' is a smoothed version of y.
+
+        :param x: Time axis
+        :param y: Value axis, for which fwhm is calculated
+        :param smoothing: Smoothing factor for y. Must be less then the length of y and 0 or larger.
+        0 gives no smoothing.
+        :return: Two positions on the x axis.
+        """
+
+        assert 0 <= smoothing < len(y)
         half_maximum = np.max(y)/2
-        spline = UnivariateSpline(x, y - half_maximum, s=s)
+        spline = UnivariateSpline(x, y - half_maximum, s=smoothing)
         roots = spline.roots()
         assert len(roots) == 2   # Higher smoothing factor required
         r1, r2 = roots
-        # plt.plot(x, spline(x) + half_maximum) DEBUG
+        # DEBUG
+        # plt.plot(x, spline(x) + half_maximum)
         return r1, r2
