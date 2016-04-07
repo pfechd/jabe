@@ -18,4 +18,10 @@ class Group:
         pass
 
     def get_configuration(self):
-        pass
+        return {
+            'brain': [brain.get_configuration() for brain in self.brains],
+            'mask': self.mask.get_configuration(),
+            'normalization': self.normalization,
+            'plot_settings': self.plot_settings,
+        }
+

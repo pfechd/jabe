@@ -13,7 +13,14 @@ class Individual:
             pass
 
     def get_configuration(self):
-        pass
+        return {
+            'brain': self.brain.get_configuration(),
+            'mask': self.mask.get_configuration(),
+            'normalization': self.normalization,
+            'plot_settings': self.plot_settings,
+            'name': self.name,
+            'group_name': self.group_name
+        }
 
     def calculate(self):
         pass
