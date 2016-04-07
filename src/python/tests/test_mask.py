@@ -16,7 +16,7 @@ class TestBrain(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        pass
+        cls.mask = None
 
 
 if __name__ == '__main__':
