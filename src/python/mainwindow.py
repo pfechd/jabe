@@ -5,7 +5,7 @@ from generated_ui.hello_world import Ui_MainWindow
 from spmpath import SPMPath
 from brain import Brain
 from mask import Mask
-from visual_stimuli import VisualStimuli
+from visual_stimuli import StimuliOnset
 from message import Message
 
 
@@ -68,7 +68,7 @@ class MainWindow(QMainWindow):
         if not self.mask:
             self.mask = Mask("test-data/mask.nii")
         if not self.visual_stimuli:
-            self.visual_stimuli = VisualStimuli("test-data/stimall.mat", 0.5)
+            self.visual_stimuli = StimuliOnset("test-data/stimall.mat", 0.5)
 
         # Check if dimensions of 'Brain' and 'Mask' match.
         if self.brain.data.shape[0:3] != self.mask.data.shape:
@@ -112,7 +112,7 @@ class MainWindow(QMainWindow):
         self.ui.maskLabel.setText('Mask picked: ' + path)
 
     def load_stimuli(self, path):
-        self.visual_stimuli = VisualStimuli(path, 0.5)
+        self.visual_stimuli = StimuliOnset(path, 0.5)
         self.ui.stimuliLabel.setText('Stimuli picked: ' + path)
 
     def configure_spm(self):

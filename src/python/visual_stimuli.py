@@ -2,9 +2,9 @@ import numpy as np
 import scipy
 
 
-class VisualStimuli:
+class StimuliOnset:
     """
-    Class used for representing Visual Stimuli data
+    Class used for representing Stimuli Onset data
 
     The stimuli is read from a .mat file. The data can be accessed through
     the member called data.
@@ -13,13 +13,13 @@ class VisualStimuli:
         self.path = path
         self.tr = tr
         # TODO: Handle loading wrong files
-        visual_stimuli_file = scipy.io.loadmat(path)
-        visual_stimuli = visual_stimuli_file['visual_stimuli']
-        self.amount = visual_stimuli.shape[0]
+        stimuli_onset_file = scipy.io.loadmat(path)
+        stimuli_onset = stimuli_onset_file['visual_stimuli']
+        self.amount = stimuli_onset.shape[0]
 
-        self.data = np.zeros((visual_stimuli.shape[0], visual_stimuli.shape[1]))
-        self.data[:, 0] = np.floor(visual_stimuli[:, 0] / tr)
-        self.data[:, 1] = visual_stimuli[:, 1]
+        self.data = np.zeros((stimuli_onset.shape[0], stimuli_onset.shape[1]))
+        self.data[:, 0] = np.floor(stimuli_onset[:, 0] / tr)
+        self.data[:, 1] = stimuli_onset[:, 1]
 
 
     def get_configuration(self):

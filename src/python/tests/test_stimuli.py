@@ -8,7 +8,7 @@ class TestBrain(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.stimuli = visual_stimuli.VisualStimuli('src/python/tests/test-data/stimuli.mat', 0.5)
+        cls.stimuli = visual_stimuli.StimuliOnset('src/python/tests/test-data/stimuli.mat', 0.5)
 
     def test_stimuli_loaded_correctly(self):
         expected_stimuli = sio.loadmat('src/python/tests/test-data/expectedStimuli.mat')['stimuli']

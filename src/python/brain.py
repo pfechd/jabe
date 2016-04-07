@@ -43,7 +43,7 @@ class Brain:
         """
         Normalize the function to mean with the given visual stimuli
 
-        :param visual_stimuli: VisualStimuli object which should be used
+        :param visual_stimuli: StimuliOnset object which should be used
         :return:
         """
         number_of_stimuli = visual_stimuli.amount
