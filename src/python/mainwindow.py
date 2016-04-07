@@ -5,7 +5,7 @@ from generated_ui.hello_world import Ui_MainWindow
 from spmpath import SPMPath
 from brain import Brain
 from mask import Mask
-from visual_stimuli import StimuliOnset
+from stimulionset import StimuliOnset
 from message import Message
 
 
