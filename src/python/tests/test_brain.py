@@ -59,7 +59,15 @@ class TestBrain(unittest.TestCase):
         self.assertEqual(np.array_equal(r_response_std, r_expected_response_std), True)
 
     def test_calculate_sem(self):
-        pass
+        expected_response_sem = sio.loadmat('src/python/tests/test-data/expectedResponseSem')['responseSem']
+        r_expected_response_sem = np.around(expected_response_sem, decimals=10)
+
+        self.brain.apply_mask(self.mask)
+        self.brain.normalize_to_mean(self.stimuli)
+
+        r_response_sem = np.around(self.brain.calculate_sem(), decimals=10)
+
+        self.assertEqual(np.array_equal(r_response_sem, r_expected_response_sem), True)
 
     def test_calculate_fwhm(self):
         pass
