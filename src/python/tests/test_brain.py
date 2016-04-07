@@ -48,7 +48,15 @@ class TestBrain(unittest.TestCase):
         self.assertEqual(np.array_equal(r_response_mean, r_expected_response_mean), True)
 
     def test_calculate_std(self):
-        pass
+        expected_response_std = sio.loadmat('src/python/tests/test-data/expectedResponseStd')['responseStd']
+        r_expected_response_std = np.around(expected_response_std, decimals=10)
+
+        self.brain.apply_mask(self.mask)
+        self.brain.normalize_to_mean(self.stimuli)
+
+        r_response_std = np.around(self.brain.calculate_std(), decimals=10)
+
+        self.assertEqual(np.array_equal(r_response_std, r_expected_response_std), True)
 
     def test_calculate_sem(self):
         pass
