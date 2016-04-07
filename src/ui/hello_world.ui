@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>475</width>
-    <height>231</height>
+    <width>641</width>
+    <height>270</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,8 +17,8 @@
    <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
-      <x>300</x>
-      <y>140</y>
+      <x>470</x>
+      <y>180</y>
       <width>161</width>
       <height>27</height>
      </rect>
@@ -27,77 +27,11 @@
      <string>Run analysis</string>
     </property>
    </widget>
-   <widget class="QWidget" name="layoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>271</width>
-      <height>171</height>
-     </rect>
-    </property>
-    <layout class="QVBoxLayout" name="verticalLayout">
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <item>
-        <widget class="QLabel" name="brainLabel">
-         <property name="text">
-          <string>No brain chosen</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="brainButton">
-         <property name="text">
-          <string>Pick brain</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_6">
-       <item>
-        <widget class="QLabel" name="stimuliLabel">
-         <property name="text">
-          <string>No stimuli chosen</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="stimuliButton">
-         <property name="text">
-          <string>Pick stimuli</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <item>
-        <widget class="QLabel" name="maskLabel">
-         <property name="text">
-          <string>No mask chosen</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="maskButton">
-         <property name="text">
-          <string>Pick mask</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-    </layout>
-   </widget>
    <widget class="QPushButton" name="print_configuration">
     <property name="geometry">
      <rect>
-      <x>300</x>
-      <y>100</y>
+      <x>470</x>
+      <y>140</y>
       <width>161</width>
       <height>30</height>
      </rect>
@@ -109,8 +43,8 @@
    <widget class="QPushButton" name="load_configuration">
     <property name="geometry">
      <rect>
-      <x>300</x>
-      <y>60</y>
+      <x>470</x>
+      <y>100</y>
       <width>161</width>
       <height>30</height>
      </rect>
@@ -119,17 +53,84 @@
      <string>Load configuration</string>
     </property>
    </widget>
-   <zorder>layoutWidget</zorder>
-   <zorder>pushButton</zorder>
-   <zorder>print_configuration</zorder>
-   <zorder>load_configuration</zorder>
+   <widget class="QWidget" name="horizontalLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>421</width>
+      <height>201</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <widget class="QLabel" name="brainLabel">
+         <property name="text">
+          <string>No EPI-images chosen</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="stimuliLabel">
+         <property name="text">
+          <string>No stimuli chosen</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="maskLabel">
+         <property name="text">
+          <string>No mask chosen</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QPushButton" name="brainButton">
+         <property name="text">
+          <string>Choose EPI-images</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="stimuliButton">
+         <property name="text">
+          <string>Choose stimuli</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="maskButton">
+         <property name="text">
+          <string>Choose mask</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>475</width>
+     <width>641</width>
      <height>26</height>
     </rect>
    </property>
