@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import nibabel as nib
 from scipy.interpolate import UnivariateSpline
+from scipy.stats import sem
 
 
 class Brain:
@@ -70,6 +71,15 @@ class Brain:
             response_std[i] = np.std(self.response[:, i])
         return response_std
 
+    def calculate_sem(self):
+        """ Calculate the standard error of the mean (SEM) of the response """
+        response_sem = []
+
+        for i in range(self.images):
+            response_sem.append(sem(self.response[:, i]))
+        return response_sem
+
+
     def plot_mean(self, fwhm = False):
         """ Plot the mean response."""
         y = self.calculate_mean()
@@ -78,6 +88,7 @@ class Brain:
             smoothing_factor = 30
             r1, r2 = self.calculate_fwhm(x, y, smoothing_factor)
             plt.axvspan(r1, r2, facecolor='g', alpha=0.3)
+        plt.plot(self.calculate_sem())
         plt.plot(y)
         plt.title('Average response (mean)')
         plt.axis([0, 45, -2, 19])
@@ -88,6 +99,7 @@ class Brain:
         y = self.calculate_mean()
         x = np.arange(y.size)
 
+        plt.plot(self.calculate_sem())
         plt.errorbar(x, y, yerr=self.calculate_std())
         plt.title('Average response (std)')
         plt.axis([0, 45, -20, 30])
