@@ -7,7 +7,7 @@ class Group:
             self.stimuli_onset = None
             self.normalization = None
             self.normalize_on = None
-            self.plot = []
+            self.plot_settings = []
         else:
             pass
 

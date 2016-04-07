@@ -6,7 +6,7 @@ class Individual:
             self.stimuli = None
             self.Mask = None
             self.normalization = None
-            self.plot = []
+            self.plot_settings = []
             self.name = None
             self.group_name = None
         else:
