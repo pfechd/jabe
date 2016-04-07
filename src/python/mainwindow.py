@@ -6,6 +6,7 @@ from spmpath import SPMPath
 from brain import Brain
 from mask import Mask
 from visual_stimuli import VisualStimuli
+from message import Message
 
 
 class MainWindow(QMainWindow):
@@ -69,9 +70,13 @@ class MainWindow(QMainWindow):
         if not self.visual_stimuli:
             self.visual_stimuli = VisualStimuli("test-data/stimall.mat", 0.5)
 
-        self.brain.apply_mask(self.mask)
-        self.brain.normalize_to_mean(self.visual_stimuli)
-        self.brain.plot_mean(fwhm=True)
+        if self.brain.data.shape[0:3] != self.mask.data.shape:
+            Message('Brain image dimensions does not match Mask dimensions\n\nBrain: '
+                    + str(self.brain.data.shape[0:3]) + '\nMask: ' + str(self.mask.data.shape)).exec_()
+        else:
+            self.brain.apply_mask(self.mask)
+            self.brain.normalize_to_mean(self.visual_stimuli)
+            self.brain.plot_mean(fwhm=True)
 
     def brain_button_pressed(self):
         """ Callback function, run when the choose brain button is pressed."""
