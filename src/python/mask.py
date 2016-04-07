@@ -34,3 +34,5 @@ class Mask:
                             if (coordinates[2]-z)**2 + (coordinates[1] - y)**2 + (coordinates[0] - x)**2 <= shape_size**2:
                                 self.data[z,y,x] = 1
 
+    def get_configuration(self):
+        return {'mask_path': self.path}

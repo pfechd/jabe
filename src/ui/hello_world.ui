@@ -93,8 +93,36 @@
      </item>
     </layout>
    </widget>
+   <widget class="QPushButton" name="print_configuration">
+    <property name="geometry">
+     <rect>
+      <x>300</x>
+      <y>100</y>
+      <width>161</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Save configuration</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="load_configuration">
+    <property name="geometry">
+     <rect>
+      <x>300</x>
+      <y>60</y>
+      <width>161</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Load configuration</string>
+    </property>
+   </widget>
    <zorder>layoutWidget</zorder>
    <zorder>pushButton</zorder>
+   <zorder>print_configuration</zorder>
+   <zorder>load_configuration</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -102,7 +130,7 @@
      <x>0</x>
      <y>0</y>
      <width>475</width>
-     <height>20</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
