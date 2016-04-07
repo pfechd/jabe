@@ -47,7 +47,6 @@ class MainWindow(QMainWindow):
 
     def load_configuration(self):
         if os.path.exists('configuration.json'):
-            configuration = None
             with open('configuration.json', 'r') as f:
                 configuration = json.load(f)
 
