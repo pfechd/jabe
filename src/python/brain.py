@@ -59,17 +59,19 @@ class Brain:
             if number_of_images > max_nr_of_img:
                 max_nr_of_img = number_of_images
 
-            self.response[i, 0:number_of_images-1] = self.masked_data[:, v1i:v1i1-1] - self.masked_data[:, v1i]
+            self.response[i, 0:number_of_images] = self.masked_data[:, (v1i-1):(v1i1-1)] - self.masked_data[:, v1i-1]
 
         self.response = self.response[:, 0:max_nr_of_img]
 
+
     def calculate_mean(self):
         """ Calculate the mean response """
-        response_mean = np.zeros(self.response.shape[1])
+        response_mean = np.zeros((1, self.response.shape[1]))
 
         for i in range(self.response.shape[1]):
             rm1 = np.nonzero(self.response[:, i])
-            response_mean[i] = np.mean(self.response[:, i])
+            if rm1[0].any():
+                response_mean[:, i] = np.mean(self.response[rm1[0], i])
         return response_mean
 
     def calculate_std(self):
