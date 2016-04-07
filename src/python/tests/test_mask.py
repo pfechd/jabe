@@ -1,24 +1,23 @@
 import unittest
-import matlab.engine
+import numpy as np
+import scipy.io as sio
 from src.python import mask
 
+
 class TestBrain(unittest.TestCase):
+
     @classmethod
     def setUpClass(cls):
-        cls.session = matlab.engine.connect_matlab()
-        cls.mask = mask.Mask('../python/tests/test-data/mask1.nii', cls.session)
-        cls.session.load_test_data(nargout=0)
+        cls.mask = mask.Mask('src/python/tests/test-data/mask.nii')
 
     def test_mask_loaded_correctly(self):
-        ref = self.session.get_data('mask_ref')
-        loaded_mask = self.session.get_data(self.mask.id)
-        self.assertEqual(self.session.isequal(ref, loaded_mask), True)
+        expected_mask = sio.loadmat('src/python/tests/test-data/expectedMask.mat')['mask']
+        self.assertEqual(np.array_equal(self.mask.data, expected_mask), True)
 
     @classmethod
     def tearDownClass(cls):
-        cls.session.clear(nargout=0)
-        cls.session.quit()
-        cls.mask = None
+        pass
+
 
 if __name__ == '__main__':
     unittest.main()
