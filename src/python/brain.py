@@ -96,8 +96,8 @@ class Brain:
 
     def plot_mean(self, fwhm = False):
         """ Plot the mean response."""
-        y = self.calculate_mean()
-        smoothing_factor = 30
+        y = self.calculate_mean()[0]
+        smoothing_factor = 20
         x = np.arange(y.size)
 
         self.plot_amplitude(x, y, smoothing_factor)
@@ -105,18 +105,18 @@ class Brain:
             r1, r2 = self.calculate_fwhm(x, y, smoothing_factor)
             plt.axvspan(r1, r2, facecolor='g', alpha=0.3)
         plt.plot(self.calculate_sem())
-        plt.plot(y[0])
+        plt.plot(y)
         plt.title('Average response (mean)')
         plt.axis([0, 45, -2, 19])
         plt.show()
 
     def plot_std(self):
         """ Plot the standard error of the response."""
-        y = self.calculate_mean()
+        y = self.calculate_mean()[0]
         x = np.arange(y.size)
 
         plt.plot(self.calculate_sem())
-        plt.errorbar(x, y, yerr=self.calculate_std())
+        plt.errorbar(x, y, yerr=self.calculate_std()[0])
         plt.title('Average response (std)')
         plt.axis([0, 45, -20, 30])
         plt.show()
@@ -164,8 +164,6 @@ class Brain:
         return r1, r2
 
     def calculate_amplitude(self, x, y, smoothing):
-        y = self.calculate_mean()
-        x = np.arange(y.size)
 
         spline = UnivariateSpline(x, y, s=smoothing) # Remove spline if smoothing is unnecessary
         max_amp = np.argmax(spline(x))
