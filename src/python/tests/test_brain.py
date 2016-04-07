@@ -61,6 +61,18 @@ class TestBrain(unittest.TestCase):
     def test_calculate_sem(self):
         pass
 
+    def test_calculate_fwhm(self):
+        pass
+
+    def test_calulate_sem(self):
+        pass
+
+    def test_calulate_amplitude(self):
+        pass
+
+    def test_sub_to_baseline(self):
+        pass
+
     @classmethod
     def tearDownClass(cls):
         cls.brain = None
