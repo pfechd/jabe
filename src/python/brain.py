@@ -29,12 +29,12 @@ class Brain:
 
         :param mask: Mask object which should be applied
         """
-        self.masked_data = np.zeros(self.images)
+        self.masked_data = np.zeros((1, self.images))
 
         for i in range(self.images):
             visual_brain = mask.data * self.data[:, :, :, i]
             visual_brain_time = np.nonzero(visual_brain)
-            self.masked_data[i] = np.mean(visual_brain[visual_brain_time])
+            self.masked_data[:, i] = np.mean(visual_brain[visual_brain_time])
 
     def normalize_to_mean(self, visual_stimuli):
         """
@@ -45,28 +45,35 @@ class Brain:
         """
         number_of_stimuli = visual_stimuli.amount
         self.response = np.zeros((number_of_stimuli - 1, self.images))
+        max_nr_of_img = 0
 
         # Split up data into responses.
         for i in range(number_of_stimuli - 1):
             v1i = int(visual_stimuli.data[0, i])
             v1i1 = int(visual_stimuli.data[0, i + 1])
+
             number_of_images = v1i1 - v1i
-            self.response[i, 0:number_of_images-1] = self.masked_data[v1i:v1i1-1] - self.masked_data[v1i]
+            if number_of_images > max_nr_of_img:
+                max_nr_of_img = number_of_images
+
+            self.response[i, 0:number_of_images-1] = self.masked_data[:, v1i:v1i1-1] - self.masked_data[:, v1i]
+
+        self.response = self.response[:, 0:max_nr_of_img]
 
     def calculate_mean(self):
         """ Calculate the mean response """
-        response_mean = np.zeros(self.images)
+        response_mean = np.zeros(self.response.shape[1])
 
-        for i in range(self.images):
+        for i in range(self.response.shape[1]):
             rm1 = np.nonzero(self.response[:, i])
             response_mean[i] = np.mean(self.response[:, i])
         return response_mean
 
     def calculate_std(self):
         """ Calculate the standard error of the response """
-        response_std = np.zeros(self.images)
+        response_std = np.zeros(self.response.shape[1])
 
-        for i in range(self.images):
+        for i in range(self.response.shape[1]):
             rm1 = np.nonzero(self.response[:, i])
             response_std[i] = np.std(self.response[:, i])
         return response_std
