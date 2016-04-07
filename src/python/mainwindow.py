@@ -56,7 +56,7 @@ class MainWindow(QMainWindow):
             self.mask = Mask(configuration['mask']['mask_path'])
 
     def calculate_button_pressed(self):
-        """ Callback function run when the calculate button is pressed."""
+        """ Callback function, run when the calculate button is pressed."""
 
         # TODO: Prompt user for brain and mask paths instead of falling
         # back unto hardcoded defaults
