@@ -29,18 +29,35 @@ class TestBrain(unittest.TestCase):
         expected_norm_to_mean = sio.loadmat('src/python/tests/test-data/expectedNormToMean')['normToMean']
         r_expected_norm_to_mean = np.around(expected_norm_to_mean, decimals=10)
 
+        self.brain.apply_mask(self.mask)
         self.brain.normalize_to_mean(self.stimuli)
+
         r_norm_to_mean = np.around(self.brain.response, decimals=10)
 
-        self.assertEqual(r_expected_norm_to_mean.shape, r_norm_to_mean.shape)
+        self.assertEqual(np.array_equal(r_expected_norm_to_mean, r_norm_to_mean), True)
 
     def test_calculate_mean(self):
+        expected_response_mean = sio.loadmat('src/python/tests/test-data/expectedResponseMean')['responseMean']
+        r_expected_response_mean = np.around(expected_response_mean, decimals=10)
+
+        self.brain.apply_mask(self.mask)
+        self.brain.normalize_to_mean(self.stimuli)
+
+        r_response_mean = np.around(self.brain.calculate_mean(), decimals=10)
+
+        self.assertEqual(np.array_equal(r_response_mean, r_expected_response_mean), True)
+
+    def test_calculate_std(self):
+        pass
+
+    def test_calculate_sem(self):
         pass
 
     @classmethod
     def tearDownClass(cls):
         cls.brain = None
         cls.mask = None
+        cls.stimuli = None
 
 
 if __name__ == '__main__':
