@@ -17,8 +17,10 @@ class VisualStimuli:
         visual_stimuli = visual_stimuli_file['visual_stimuli']
         self.amount = visual_stimuli.shape[0]
 
-        self.data = np.floor(visual_stimuli[:, 0] / tr)
-        self.data = np.array([self.data, visual_stimuli[:, 1]])
+        self.data = np.zeros((visual_stimuli.shape[0], visual_stimuli.shape[1]))
+        self.data[:, 0] = np.floor(visual_stimuli[:, 0] / tr)
+        self.data[:, 1] = visual_stimuli[:, 1]
+
 
     def get_configuration(self):
         return {
