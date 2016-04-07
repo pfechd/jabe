@@ -142,15 +142,20 @@ class Brain:
         0 gives no smoothing.
         :return: Two positions on the x axis.
         """
+        y[0] = y[-1] = 0     # Temporary code due to bugged y values
 
         assert 0 <= smoothing < len(y)
         half_maximum = np.max(y)/2
         spline = UnivariateSpline(x, y - half_maximum, s=smoothing)
         roots = spline.roots()
-        assert len(roots) == 2   # Higher smoothing factor required
+        try:
+            assert len(roots) == 2   # Higher smoothing factor required
+        except AssertionError:
+            print "Smoothed function contains ", len(roots), " roots, 2 required"
+            return 0, 1
         r1, r2 = roots
         # DEBUG
-        # plt.plot(x, spline(x) + half_maximum)
+        #plt.plot(x, spline(x) + half_maximum)
         return r1, r2
 
     def calculate_amplitude(self, x, y, smoothing):
