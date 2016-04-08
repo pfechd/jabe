@@ -76,7 +76,7 @@ class Brain:
         return response_mean
 
     def calculate_std(self):
-        """ Calculate the standard error of the response """
+        """ Calculate the standard deviation of the response """
         response_std = np.zeros((1, self.response.shape[1]))
 
         for i in range(self.response.shape[1]):
