@@ -1,26 +1,52 @@
+from brain import Brain
+from mask import Mask
+from stimulionset import StimuliOnset
+
+
 class Individual:
 
     def __init__(self, configuration=None):
-        if not configuration:
-            self.brain = None
-            self.stimuli_onset = None
-            self.mask = None
-            self.normalization = None
-            self.plot_settings = []
-            self.name = None
-            self.group_name = None
-        else:
-            pass
+        self.brain = None
+        self.stimuli_onset = None
+        self.mask = None
+        self.normalization = None
+        self.plot_settings = []
+        self.name = None
+        self.group_name = None
+
+        if configuration:
+            if 'brain' in configuration:
+                self.brain = Brain(configuration['brain']['brain_path'])
+
+            if 'mask' in configuration:
+                self.mask = Mask(configuration['mask']['mask_path'])
+
+            if 'stimuli_onset' in configuration:
+                path = configuration['stimuli_onset']['stimuli_onset_path']
+                tr = configuration['stimuli_onset']['tr']
+
+                self.stimuli_onset = StimuliOnset(path, tr)
+
+            self.name = configuration['name']
 
     def get_configuration(self):
-        return {
-            'brain': self.brain.get_configuration(),
-            'mask': self.mask.get_configuration(),
+        configuration = {
             'normalization': self.normalization,
             'plot_settings': self.plot_settings,
             'name': self.name,
             'group_name': self.group_name
         }
+
+        if self.brain:
+            configuration['brain'] = self.brain.get_configuration()
+
+        if self.mask:
+            configuration['mask'] = self.mask.get_configuration()
+
+        if self.stimuli_onset:
+            configuration['stimuli_onset'] = self.stimuli_onset.get_configuration()
+
+        return configuration
 
     def ready_for_calculation(self):
         return all([self.brain, self.stimuli_onset, self.mask])

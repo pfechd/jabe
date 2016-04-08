@@ -43,9 +43,8 @@ class MainWindow(QMainWindow):
 
     def save_configuration(self):
         configuration = {
-            'brains': [self.brain.get_configuration()],
-            'mask': self.mask.get_configuration(),
-            'stimuli_onset': self.visual_stimuli.get_configuration()
+            'individuals': [individual.get_configuration() for individual in self.individuals],
+            'current': self.ui.list_widget.currentRow()
         }
         with open('configuration.json', 'w') as f:
             json.dump(configuration, f, indent=4)
@@ -55,23 +54,20 @@ class MainWindow(QMainWindow):
             with open('configuration.json', 'r') as f:
                 configuration = json.load(f)
 
-            self.load_brain(configuration['brains'][0]['brain_path'])
+            self.individuals = []
+            self.ui.list_widget.clear()
 
-            self.load_mask(configuration['mask']['mask_path'])
+            for individual_configuration in configuration['individuals']:
+                individual = Individual(individual_configuration)
+                self.individuals.append(individual)
+                self.ui.list_widget.addItem(individual.name)
 
-            self.load_stimuli(configuration['stimuli_onset']['stimuli_onset_path'])
-            self.visual_stimuli.tr = configuration['stimuli_onset']['tr']
+            self.update_gui()
 
     def add_individual_pressed(self):
         current_row = len(self.individuals)
         text = 'New individual ' + str(current_row)
-
-        individual = Individual()
-        individual.name = text
-        self.individuals.append(individual)
-
-        self.ui.list_widget.addItem(text)
-        self.ui.list_widget.setCurrentRow(current_row)
+        self.add_individual(text)
 
     def remove_individual_pressed(self):
         current_row = self.ui.list_widget.currentRow()
@@ -80,8 +76,9 @@ class MainWindow(QMainWindow):
             del self.individuals[current_row]
 
     def current_item_changed(self, row):
-        individual = self.individuals[row]
-        self.update_gui()
+        if row != -1:
+            individual = self.individuals[row]
+            self.update_gui()
 
     def update_buttons(self):
         current_row = self.ui.list_widget.currentRow()
@@ -131,6 +128,15 @@ class MainWindow(QMainWindow):
         else:
             print 'Stimuli not chosen'
         self.update_gui()
+
+    def add_individual(self, text):
+        current_row = len(self.individuals)
+        individual = Individual()
+        individual.name = text
+        self.individuals.append(individual)
+
+        self.ui.list_widget.addItem(text)
+        self.ui.list_widget.setCurrentRow(current_row)
 
     def load_brain(self, path):
         individual = self.individuals[self.ui.list_widget.currentRow()]
