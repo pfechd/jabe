@@ -39,7 +39,11 @@ class MainWindow(QMainWindow):
                                    self.ui.maskButton, self.ui.stimuliButton]
 
         self.individuals = []
+        self.load_configuration()
         self.update_gui()
+
+    def closeEvent(self, event):
+        self.save_configuration()
 
     def save_configuration(self):
         configuration = {
