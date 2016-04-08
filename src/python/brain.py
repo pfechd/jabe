@@ -23,7 +23,7 @@ class Brain:
         self.response = None
 
     def get_configuration(self):
-        return {'brain_path': self.path}
+        return {'path': self.path}
 
     def apply_mask(self, mask):
         """

@@ -21,9 +21,8 @@ class StimuliOnset:
         self.data[:, 0] = np.floor(stimuli_onset[:, 0] / tr)
         self.data[:, 1] = stimuli_onset[:, 1]
 
-
     def get_configuration(self):
         return {
-            'stimuli_onset_path': self.path,
+            'path': self.path,
             'tr': self.tr
         }

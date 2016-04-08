@@ -46,4 +46,4 @@ class Mask:
                                 self.data[z,y,x] = 1
 
     def get_configuration(self):
-        return {'mask_path': self.path}
+        return {'path': self.path}

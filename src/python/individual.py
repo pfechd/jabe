@@ -16,13 +16,13 @@ class Individual:
 
         if configuration:
             if 'brain' in configuration:
-                self.brain = Brain(configuration['brain']['brain_path'])
+                self.brain = Brain(configuration['brain']['path'])
 
             if 'mask' in configuration:
-                self.mask = Mask(configuration['mask']['mask_path'])
+                self.mask = Mask(configuration['mask']['path'])
 
             if 'stimuli_onset' in configuration:
-                path = configuration['stimuli_onset']['stimuli_onset_path']
+                path = configuration['stimuli_onset']['path']
                 tr = configuration['stimuli_onset']['tr']
 
                 self.stimuli_onset = StimuliOnset(path, tr)
