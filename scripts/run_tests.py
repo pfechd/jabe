@@ -14,7 +14,7 @@ print '#' + ' '*5 + 'RUNNING TESTS' + ' '*5 + '#'
 print '=' * 25
 print
 
-t = subprocess.Popen(['python', '-m', 'unittest', 'discover', '-v', '-s', pwd + '/src/python/tests', '-p', 'test_*'])
+t = subprocess.Popen(['python', '-m', 'unittest', 'discover', '-b', '-v', '-s', pwd + '/src/python/tests', '-p', 'test_*'])
 
 t.wait()
 
