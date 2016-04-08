@@ -39,6 +39,7 @@ class MainWindow(QMainWindow):
                                    self.ui.maskButton, self.ui.stimuliButton]
 
         self.individuals = []
+        self.update_gui()
 
     def save_configuration(self):
         configuration = {
@@ -80,7 +81,7 @@ class MainWindow(QMainWindow):
 
     def current_item_changed(self, row):
         individual = self.individuals[row]
-        self.update_buttons()
+        self.update_gui()
 
     def update_buttons(self):
         current_row = self.ui.list_widget.currentRow()
@@ -111,6 +112,7 @@ class MainWindow(QMainWindow):
             self.load_brain(file_name[0])
         else:
             print 'File not chosen'
+        self.update_gui()
 
     def mask_button_pressed(self):
         """ Callback function, run when the choose mask button is pressed."""
@@ -119,6 +121,7 @@ class MainWindow(QMainWindow):
             self.load_mask(file_name[0])
         else:
             print 'Mask not chosen'
+        self.update_gui()
 
     def stimuli_button_pressed(self):
         """ Callback function, run when the choose stimuli button is pressed."""
@@ -127,24 +130,49 @@ class MainWindow(QMainWindow):
             self.load_stimuli(file_name[0])
         else:
             print 'Stimuli not chosen'
+        self.update_gui()
 
     def load_brain(self, path):
         individual = self.individuals[self.ui.list_widget.currentRow()]
         individual.brain = Brain(path)
-        self.ui.brainLabel.setText('EPI-images chosen: ' + path)
-        self.update_buttons()
+        self.update_gui()
 
     def load_mask(self, path):
         individual = self.individuals[self.ui.list_widget.currentRow()]
         individual.mask = Mask(path)
-        self.ui.maskLabel.setText('Mask picked: ' + path)
-        self.update_buttons()
+        self.update_gui()
 
     def load_stimuli(self, path):
         individual = self.individuals[self.ui.list_widget.currentRow()]
         individual.stimuli_onset = StimuliOnset(path, 0.5)
-        self.ui.stimuliLabel.setText('Stimuli picked: ' + path)
+        self.update_gui()
+
+    def update_gui(self):
         self.update_buttons()
+        self.update_text()
+
+    def update_text(self):
+        current_row = self.ui.list_widget.currentRow()
+        if current_row != -1:
+            individual = self.individuals[current_row]
+
+            if individual.brain:
+                self.ui.brainLabel.setText('EPI-images chosen: ' + individual.brain.path)
+            else:
+                self.ui.brainLabel.setText('No EPI-images chosen')
+
+            if individual.mask:
+                self.ui.maskLabel.setText('Mask picked: ' + individual.brain.path)
+            else:
+                self.ui.maskLabel.setText('No mask chosen')
+
+            if individual.stimuli_onset:
+                self.ui.stimuliLabel.setText('Stimuli picked: ' + individual.stimuli_onset.path)
+            else:
+                self.ui.stimuliLabel.setText('No stimuli chosen')
+        else:
+            for label in [self.ui.brainLabel, self.ui.maskLabel, self.ui.stimuliLabel]:
+                label.setText('')
 
     def configure_spm(self):
         """ Callback function, run when the spm menu item is pressed."""
