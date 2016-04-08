@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>641</width>
-    <height>270</height>
+    <width>722</width>
+    <height>407</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,8 +17,8 @@
    <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
-      <x>470</x>
-      <y>180</y>
+      <x>540</x>
+      <y>300</y>
       <width>161</width>
       <height>27</height>
      </rect>
@@ -27,24 +27,11 @@
      <string>Run analysis</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="print_configuration">
-    <property name="geometry">
-     <rect>
-      <x>470</x>
-      <y>140</y>
-      <width>161</width>
-      <height>30</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Save configuration</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="load_configuration">
     <property name="geometry">
      <rect>
-      <x>470</x>
-      <y>100</y>
+      <x>540</x>
+      <y>220</y>
       <width>161</width>
       <height>30</height>
      </rect>
@@ -56,7 +43,7 @@
    <widget class="QWidget" name="horizontalLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>280</x>
       <y>10</y>
       <width>421</width>
       <height>201</height>
@@ -124,13 +111,62 @@
      </item>
     </layout>
    </widget>
+   <widget class="QPushButton" name="print_configuration">
+    <property name="geometry">
+     <rect>
+      <x>540</x>
+      <y>260</y>
+      <width>161</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Save configuration</string>
+    </property>
+   </widget>
+   <widget class="QListWidget" name="list_widget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>60</y>
+      <width>261</width>
+      <height>291</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="add_individual_button">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>111</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Add individual</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="remove_individual_button">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>10</y>
+      <width>141</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Remove individual</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>641</width>
+     <width>722</width>
      <height>26</height>
     </rect>
    </property>

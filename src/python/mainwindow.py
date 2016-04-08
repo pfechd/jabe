@@ -1,11 +1,12 @@
 import json
 import os
-from PyQt5.QtWidgets import QMainWindow, QFileDialog
+from PyQt5.QtWidgets import QMainWindow, QFileDialog, QLabel
 from generated_ui.hello_world import Ui_MainWindow
 from spmpath import SPMPath
 from brain import Brain
 from mask import Mask
 from stimulionset import StimuliOnset
+from individual import Individual
 from message import Message
 
 
@@ -29,8 +30,12 @@ class MainWindow(QMainWindow):
         self.ui.stimuliButton.clicked.connect(self.stimuli_button_pressed)
         self.ui.print_configuration.clicked.connect(self.save_configuration)
         self.ui.load_configuration.clicked.connect(self.load_configuration)
+        self.ui.add_individual_button.clicked.connect(self.add_individual_pressed)
+        self.ui.remove_individual_button.clicked.connect(self.remove_individual_pressed)
+        self.ui.list_widget.currentRowChanged.connect(self.current_item_changed)
         self.show()
 
+        self.individuals = []
         self.brain = None
         self.mask = None
         self.visual_stimuli = None
@@ -55,6 +60,26 @@ class MainWindow(QMainWindow):
 
             self.load_stimuli(configuration['stimuli_onset']['stimuli_onset_path'])
             self.visual_stimuli.tr = configuration['stimuli_onset']['tr']
+
+    def add_individual_pressed(self):
+        current_row = len(self.individuals)
+        text = 'New individual ' + str(current_row)
+
+        individual = Individual()
+        individual.name = text
+        self.individuals.append(individual)
+
+        self.ui.list_widget.addItem(text)
+        self.ui.list_widget.setCurrentRow(current_row)
+
+    def remove_individual_pressed(self):
+        current_row = self.ui.list_widget.currentRow()
+        if current_row != -1:
+            self.ui.list_widget.takeItem(current_row)
+            del self.individuals[current_row]
+
+    def current_item_changed(self, row):
+        individual = self.individuals[row]
 
     def calculate_button_pressed(self):
         """ Callback function, run when the calculate button is pressed."""
