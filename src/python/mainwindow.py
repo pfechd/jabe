@@ -28,8 +28,6 @@ class MainWindow(QMainWindow):
         self.ui.brainButton.clicked.connect(self.brain_button_pressed)
         self.ui.maskButton.clicked.connect(self.mask_button_pressed)
         self.ui.stimuliButton.clicked.connect(self.stimuli_button_pressed)
-        self.ui.print_configuration.clicked.connect(self.save_configuration)
-        self.ui.load_configuration.clicked.connect(self.load_configuration)
         self.ui.add_individual_button.clicked.connect(self.add_individual_pressed)
         self.ui.remove_individual_button.clicked.connect(self.remove_individual_pressed)
         self.ui.list_widget.currentRowChanged.connect(self.current_item_changed)
@@ -81,6 +79,7 @@ class MainWindow(QMainWindow):
         if current_row != -1:
             self.ui.list_widget.takeItem(current_row)
             del self.individuals[current_row]
+        self.update_gui()
 
     def current_item_changed(self, row):
         if row != -1:
