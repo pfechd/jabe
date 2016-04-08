@@ -3,7 +3,7 @@ class Individual:
     def __init__(self, configuration=None):
         if not configuration:
             self.brain = None
-            self.stimuli = None
+            self.stimuli_onset = None
             self.mask = None
             self.normalization = None
             self.plot_settings = []
@@ -22,8 +22,26 @@ class Individual:
             'group_name': self.group_name
         }
 
+    def ready_for_calculation(self):
+        return all([self.brain, self.stimuli_onset, self.mask])
+
     def calculate(self):
-        pass
+        # Check for the data needed for data extraction
+        if not self.brain:
+            self.brain = Brain("test-data/brain_exp1_1.nii")
+        if not self.mask:
+            self.mask = Mask("test-data/mask.nii")
+        if not self.stimuli_onset:
+            self.stimuli_onset = StimuliOnset("test-data/stimall.mat", 0.5)
+
+        # Check if dimensions of 'Brain' and 'Mask' match.
+        if self.brain.data.shape[0:3] != self.mask.data.shape:
+            return 'Brain image dimensions does not match Mask dimensions\n\nBrain: ' \
+                   + str(self.brain.data.shape[0:3]) + '\nMask: ' + str(self.mask.data.shape)
+        else:
+            self.brain.apply_mask(self.mask)
+            self.brain.normalize_to_mean(self.stimuli_onset)
+            self.brain.plot_mean(fwhm=True)
 
     def plot(self):
         pass

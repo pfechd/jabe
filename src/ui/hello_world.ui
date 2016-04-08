@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Run analysis</string>
+     <string>Extract data</string>
     </property>
    </widget>
    <widget class="QPushButton" name="load_configuration">

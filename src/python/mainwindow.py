@@ -35,10 +35,10 @@ class MainWindow(QMainWindow):
         self.ui.list_widget.currentRowChanged.connect(self.current_item_changed)
         self.show()
 
+        self.individual_buttons = [self.ui.pushButton, self.ui.brainButton,
+                                   self.ui.maskButton, self.ui.stimuliButton]
+
         self.individuals = []
-        self.brain = None
-        self.mask = None
-        self.visual_stimuli = None
 
     def save_configuration(self):
         configuration = {
@@ -80,6 +80,20 @@ class MainWindow(QMainWindow):
 
     def current_item_changed(self, row):
         individual = self.individuals[row]
+        self.update_buttons()
+
+    def update_buttons(self):
+        current_row = self.ui.list_widget.currentRow()
+        if current_row == -1:
+            for button in self.individual_buttons:
+                button.setEnabled(False)
+        else:
+            individual = self.individuals[current_row]
+
+            for button in self.individual_buttons:
+                button.setEnabled(True)
+            print individual.ready_for_calculation()
+            self.ui.pushButton.setEnabled(individual.ready_for_calculation())
 
     def calculate_button_pressed(self):
         """ Callback function, run when the calculate button is pressed."""
@@ -87,22 +101,8 @@ class MainWindow(QMainWindow):
         # TODO: Prompt user for brain and mask paths instead of falling
         # back unto hardcoded defaults
 
-        # Check for the data needed for data extraction
-        if not self.brain:
-            self.brain = Brain("test-data/brain_exp1_1.nii")
-        if not self.mask:
-            self.mask = Mask("test-data/mask.nii")
-        if not self.visual_stimuli:
-            self.visual_stimuli = StimuliOnset("test-data/stimall.mat", 0.5)
-
-        # Check if dimensions of 'Brain' and 'Mask' match.
-        if self.brain.data.shape[0:3] != self.mask.data.shape:
-            Message('Brain image dimensions does not match Mask dimensions\n\nBrain: '
-                    + str(self.brain.data.shape[0:3]) + '\nMask: ' + str(self.mask.data.shape)).exec_()
-        else:
-            self.brain.apply_mask(self.mask)
-            self.brain.normalize_to_mean(self.visual_stimuli)
-            self.brain.plot_mean(fwhm=True)
+        individual = self.individuals[self.ui.list_widget.currentRow()]
+        individual.calculate()
 
     def brain_button_pressed(self):
         """ Callback function, run when the choose brain button is pressed."""
@@ -129,16 +129,22 @@ class MainWindow(QMainWindow):
             print 'Stimuli not chosen'
 
     def load_brain(self, path):
-        self.brain = Brain(path)
+        individual = self.individuals[self.ui.list_widget.currentRow()]
+        individual.brain = Brain(path)
         self.ui.brainLabel.setText('EPI-images chosen: ' + path)
+        self.update_buttons()
 
     def load_mask(self, path):
-        self.mask = Mask(path)
+        individual = self.individuals[self.ui.list_widget.currentRow()]
+        individual.mask = Mask(path)
         self.ui.maskLabel.setText('Mask picked: ' + path)
+        self.update_buttons()
 
     def load_stimuli(self, path):
-        self.visual_stimuli = StimuliOnset(path, 0.5)
+        individual = self.individuals[self.ui.list_widget.currentRow()]
+        individual.stimuli_onset = StimuliOnset(path, 0.5)
         self.ui.stimuliLabel.setText('Stimuli picked: ' + path)
+        self.update_buttons()
 
     def configure_spm(self):
         """ Callback function, run when the spm menu item is pressed."""
