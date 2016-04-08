@@ -27,7 +27,8 @@ class Individual:
 
                 self.stimuli_onset = StimuliOnset(path, tr)
 
-            self.name = configuration['name']
+            if 'name' in configuration:
+                self.name = configuration['name']
 
     def get_configuration(self):
         configuration = {

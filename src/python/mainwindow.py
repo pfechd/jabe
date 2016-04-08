@@ -56,11 +56,14 @@ class MainWindow(QMainWindow):
 
             self.individuals = []
             self.ui.list_widget.clear()
+            if 'individuals' in configuration:
+                for individual_configuration in configuration['individuals']:
+                    individual = Individual(individual_configuration)
+                    self.individuals.append(individual)
+                    self.ui.list_widget.addItem(individual.name)
 
-            for individual_configuration in configuration['individuals']:
-                individual = Individual(individual_configuration)
-                self.individuals.append(individual)
-                self.ui.list_widget.addItem(individual.name)
+            if 'current' in configuration:
+                self.ui.list_widget.setCurrentRow(configuration['current'])
 
             self.update_gui()
 
@@ -168,7 +171,7 @@ class MainWindow(QMainWindow):
                 self.ui.brainLabel.setText('No EPI-images chosen')
 
             if individual.mask:
-                self.ui.maskLabel.setText('Mask picked: ' + individual.brain.path)
+                self.ui.maskLabel.setText('Mask picked: ' + individual.mask.path)
             else:
                 self.ui.maskLabel.setText('No mask chosen')
 
