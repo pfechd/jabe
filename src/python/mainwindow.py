@@ -8,6 +8,7 @@ from mask import Mask
 from stimulionset import StimuliOnset
 from individual import Individual
 from message import Message
+from plotWindow import CustomPlot
 
 
 class MainWindow(QMainWindow):
@@ -107,6 +108,22 @@ class MainWindow(QMainWindow):
 
         individual = self.individuals[self.ui.list_widget.currentRow()]
         individual.calculate()
+        # Check for the data needed for data extraction
+        if not self.brain:
+            self.brain = Brain("test-data/brain_exp1_1.nii")
+        if not self.mask:
+            self.mask = Mask("test-data/mask.nii")
+        if not self.visual_stimuli:
+            self.visual_stimuli = StimuliOnset("test-data/stimall.mat", 0.5)
+
+        # Check if dimensions of 'Brain' and 'Mask' match.
+        if self.brain.data.shape[0:3] != self.mask.data.shape:
+            Message('Brain image dimensions does not match Mask dimensions\n\nBrain: '
+                    + str(self.brain.data.shape[0:3]) + '\nMask: ' + str(self.mask.data.shape)).open()
+        else:
+            self.brain.apply_mask(self.mask)
+            self.brain.normalize_to_mean(self.visual_stimuli)
+            CustomPlot(self.brain).show()
 
     def brain_button_pressed(self):
         """ Callback function, run when the choose brain button is pressed."""
