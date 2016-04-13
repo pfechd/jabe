@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>Dialog</class>
  <widget class="QDialog" name="Dialog">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -13,6 +16,9 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
+  <property name="sizeGripEnabled">
+   <bool>false</bool>
+  </property>
   <property name="modal">
    <bool>false</bool>
   </property>
@@ -23,6 +29,12 @@
       <widget class="QGroupBox" name="groupBox_3">
        <property name="title">
         <string>Tools</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+       <property name="flat">
+        <bool>false</bool>
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
@@ -140,6 +152,9 @@
        <layout class="QVBoxLayout" name="verticalLayout_5">
         <item>
          <widget class="QCheckBox" name="checkBox_amp">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Peak and Amplitude</string>
           </property>
@@ -147,8 +162,21 @@
         </item>
         <item>
          <widget class="QCheckBox" name="checkBox_fwhm">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>FWHM</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkBox_points">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Points</string>
           </property>
          </widget>
         </item>
