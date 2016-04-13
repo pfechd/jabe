@@ -1,6 +1,7 @@
 from brain import Brain
 from mask import Mask
 from stimulionset import StimuliOnset
+from plotWindow import CustomPlot
 
 
 class Individual:
@@ -68,7 +69,7 @@ class Individual:
         else:
             self.brain.apply_mask(self.mask)
             self.brain.normalize_to_mean(self.stimuli_onset)
-            self.brain.plot_mean(fwhm=True)
+            CustomPlot(self.brain)
 
     def plot(self):
         pass
