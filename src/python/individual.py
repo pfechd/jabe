@@ -69,7 +69,7 @@ class Individual:
         else:
             self.brain.apply_mask(self.mask)
             self.brain.normalize_to_mean(self.stimuli_onset)
-            CustomPlot(self.brain)
+            CustomPlot(self)
 
     def plot(self):
         pass

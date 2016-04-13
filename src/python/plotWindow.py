@@ -8,13 +8,12 @@ from src.python.generated_ui.custom_plot import Ui_Dialog
 
 
 class CustomPlot(QDialog):
-    def __init__(self, brain):
+    def __init__(self, individual):
         super(CustomPlot, self).__init__()
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
-        self.setWindowTitle('Plot - ' + brain.path)
 
-        self.brain = brain
+        self.brain = individual.brain
         self.fig = plt.figure()
         self.ax = self.fig.add_subplot(111)
         self.canvas = FigureCanvas(self.fig)
@@ -33,6 +32,8 @@ class CustomPlot(QDialog):
         self.ui.toolButton_export.clicked.connect(self.tool_export)
         self.ui.toolButton_pan.clicked.connect(self.tool_pan)
         self.ui.toolButton_zoom.clicked.connect(self.tool_zoom)
+
+        self.setWindowTitle('Plot - ' + individual.name)
 
         self.show()
 
@@ -53,7 +54,8 @@ class CustomPlot(QDialog):
             if self.mean is not None:
                 y = self.ax.lines[0].get_ydata()
                 x = np.arange(len(y))
-                r1, r2 = self.brain.calculate_fwhm(x, y, 20)
+                smooth = self.ui.spinBox.value()
+                r1, r2 = self.brain.calculate_fwhm(x, y, smooth)
                 self.fwhm = self.ax.axvspan(r1, r2, facecolor='g', alpha=0.3)
                 self.canvas.draw()
             else:
@@ -77,17 +79,23 @@ class CustomPlot(QDialog):
             mean = self.brain.calculate_mean()[0]
             self.ax.relim()
             self.mean, = self.ax.plot(mean, color=self.generate_random_color())
+
             self.canvas.draw()
+
             self.ui.checkBox_fwhm.setEnabled(True)
             self.ui.checkBox_amp.setEnabled(True)
             self.ui.checkBox_points.setEnabled(True)
+            self.ui.spinBox.setEnabled(True)
         else:
             self.mean.remove()
             self.mean = None
+
             self.canvas.draw()
+
             self.ui.checkBox_amp.setDisabled(True)
             self.ui.checkBox_fwhm.setDisabled(True)
             self.ui.checkBox_points.setDisabled(True)
+            self.ui.spinBox.setDisabled(True)
 
     def plot_std(self):
         if self.ui.checkBox_std.isChecked():
