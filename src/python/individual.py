@@ -61,7 +61,7 @@ class Individual:
         else:
             self.brain.apply_mask(self.mask)
             self.brain.separate_into_responses(self.stimuli_onset)
-            self.brain.subtract_baseline()
+            self.brain.subtract_baseline(self.brain.get_local_baseline())
 
             # TODO: Remove old way
             #self.brain.normalize_to_mean(self.stimuli_onset)
