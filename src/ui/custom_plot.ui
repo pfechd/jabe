@@ -81,7 +81,14 @@
         <item>
          <widget class="QToolButton" name="toolButton_export">
           <property name="text">
-           <string>Export</string>
+           <string>Export as image</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="toolButton_export_mat">
+          <property name="text">
+           <string>Export as .mat</string>
           </property>
          </widget>
         </item>

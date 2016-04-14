@@ -1,9 +1,10 @@
 import random
-from PyQt5.QtWidgets import QDialog
+from PyQt5.QtWidgets import QDialog, QFileDialog
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 import matplotlib.pyplot as plt
 import numpy as np
+import scipy.io as sio
 from src.python.generated_ui.custom_plot import Ui_Dialog
 
 
@@ -30,6 +31,7 @@ class CustomPlot(QDialog):
 
         self.ui.toolButton_home.clicked.connect(self.tool_home)
         self.ui.toolButton_export.clicked.connect(self.tool_export)
+        self.ui.toolButton_export_mat.clicked.connect(self.tool_export_mat)
         self.ui.toolButton_pan.clicked.connect(self.tool_pan)
         self.ui.toolButton_zoom.clicked.connect(self.tool_zoom)
 
@@ -42,6 +44,11 @@ class CustomPlot(QDialog):
 
     def tool_export(self):
         self.toolbar.save_figure()
+
+    def tool_export_mat(self):
+        filename = QFileDialog.getSaveFileName(None,"Save file as mat","",".mat")
+        sio.savemat(filename[0] + filename[1], {'data':self.brain.response})
+
 
     def tool_pan(self):
         self.toolbar.pan()
