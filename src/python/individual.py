@@ -54,21 +54,18 @@ class Individual:
         return all([self.brain, self.stimuli_onset, self.mask])
 
     def calculate(self):
-        # Check for the data needed for data extraction
-        if not self.brain:
-            self.brain = Brain("test-data/brain_exp1_1.nii")
-        if not self.mask:
-            self.mask = Mask("test-data/mask.nii")
-        if not self.stimuli_onset:
-            self.stimuli_onset = StimuliOnset("test-data/stimall.mat", 0.5)
-
         # Check if dimensions of 'Brain' and 'Mask' match.
         if self.brain.data.shape[0:3] != self.mask.data.shape:
             return 'Brain image dimensions does not match Mask dimensions\n\nBrain: ' \
                    + str(self.brain.data.shape[0:3]) + '\nMask: ' + str(self.mask.data.shape)
         else:
             self.brain.apply_mask(self.mask)
-            self.brain.normalize_to_mean(self.stimuli_onset)
+            self.brain.separate_into_responses(self.stimuli_onset)
+            self.brain.new_normalize_to_mean()
+
+            TODO: Remove old way
+            #self.brain.normalize_to_mean(self.stimuli_onset)
+
             CustomPlot(self.brain)
 
     def plot(self):

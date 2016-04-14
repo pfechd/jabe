@@ -39,6 +39,32 @@ class Brain:
             visual_brain_time = np.nonzero(visual_brain)
             self.masked_data[:, i] = np.mean(visual_brain[visual_brain_time])
 
+    def separate_into_responses(self, visual_stimuli):
+        number_of_stimuli = visual_stimuli.amount
+        shortest_duration = self.images  # The longest duration possible is if every image is part in one single stimuli
+
+        for i in range(number_of_stimuli - 1):
+            # The start and end of the stimuli
+            start = int(np.floor(visual_stimuli.data[i, 0]))
+            end = int(np.floor(visual_stimuli.data[i + 1, 0]))
+
+            duration = end - start  # TODO: Should we floor/ceil this value?
+            shortest_duration = min(duration, shortest_duration)
+
+        least_number_of_images = int(shortest_duration)
+        self.response = np.zeros((number_of_stimuli, least_number_of_images))
+
+        # TODO: Should we exclude the last stimuli, as in the given script?
+        for i in range(number_of_stimuli):
+            start = int(np.floor(visual_stimuli.data[i, 0]))
+            end = int(np.floor(start + shortest_duration))
+            self.response[i, 0:(end - start)] = self.masked_data[:, (start-1):(end-1)]
+
+    def new_normalize_to_mean(self):
+        number_of_stimuli = self.response.shape[0]
+        for i in range(number_of_stimuli):
+            self.response[i, :] = self.response[i, :] - self.response[i, 0]
+
     def normalize_to_mean(self, visual_stimuli):
         """
         Normalize the function to mean with the given visual stimuli
