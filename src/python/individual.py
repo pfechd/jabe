@@ -61,9 +61,9 @@ class Individual:
         else:
             self.brain.apply_mask(self.mask)
             self.brain.separate_into_responses(self.stimuli_onset)
-            self.brain.new_normalize_to_mean()
+            self.brain.subtract_baseline()
 
-            TODO: Remove old way
+            # TODO: Remove old way
             #self.brain.normalize_to_mean(self.stimuli_onset)
 
             CustomPlot(self.brain)

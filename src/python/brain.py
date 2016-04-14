@@ -60,7 +60,7 @@ class Brain:
             end = int(np.floor(start + shortest_duration))
             self.response[i, 0:(end - start)] = self.masked_data[:, (start-1):(end-1)]
 
-    def new_normalize_to_mean(self):
+    def subtract_baseline(self):
         number_of_stimuli = self.response.shape[0]
         for i in range(number_of_stimuli):
             self.response[i, :] = self.response[i, :] - self.response[i, 0]
