@@ -48,7 +48,7 @@ class CustomPlot(QDialog):
         self.toolbar.zoom()
 
     def tool_export(self):
-        ExportWindow(self.brain)
+        self.exportwindow = ExportWindow(self.brain, self.toolbar)
 
     def apply_fwhm(self):
         if self.ui.checkBox_fwhm.isChecked():
