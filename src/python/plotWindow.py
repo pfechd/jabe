@@ -32,6 +32,7 @@ class CustomPlot(QDialog):
         self.ui.toolButton_home.clicked.connect(self.tool_home)
         self.ui.toolButton_export.clicked.connect(self.tool_export)
         self.ui.toolButton_export_mat.clicked.connect(self.tool_export_mat)
+        self.ui.toolButton_export_txt.clicked.connect(self.tool_export_txt)
         self.ui.toolButton_pan.clicked.connect(self.tool_pan)
         self.ui.toolButton_zoom.clicked.connect(self.tool_zoom)
 
@@ -47,8 +48,11 @@ class CustomPlot(QDialog):
 
     def tool_export_mat(self):
         filename = QFileDialog.getSaveFileName(None,"Save file as mat","",".mat")
-        sio.savemat(filename[0] + filename[1], {'data':self.brain.response})
+        sio.savemat(filename[0] + filename[1], {'data':self.brain.calculate_mean()[0]})
 
+    def tool_export_txt(self):
+        filename = QFileDialog.getSaveFileName(None,"Save file as txt","",".txt")
+        np.savetxt(filename[0] + filename[1],self.brain.calculate_mean()[0], "%.18f")
 
     def tool_pan(self):
         self.toolbar.pan()
