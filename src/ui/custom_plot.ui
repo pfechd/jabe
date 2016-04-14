@@ -86,14 +86,14 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="toolButton_export_mat">
+         <widget class="QToolButton" name="toolButton_export_mat">
           <property name="text">
            <string>Export as .mat</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="toolButton_export_txt">
+         <widget class="QToolButton" name="toolButton_export_txt">
           <property name="text">
            <string>Export as .txt</string>
           </property>
