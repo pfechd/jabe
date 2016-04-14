@@ -1,7 +1,7 @@
 import json
 import os
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QLabel
-from generated_ui.hello_world import Ui_MainWindow
+from generated_ui.mainwindow import Ui_MainWindow
 from spmpath import SPMPath
 from brain import Brain
 from mask import Mask
