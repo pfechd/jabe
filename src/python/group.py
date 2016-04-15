@@ -1,15 +1,13 @@
 class Group:
-
     def __init__(self, configuration=None):
-        if not configuration:
-            self.individuals = []
-            self.mask = None
-            self.stimuli_onset = None
-            self.normalization = None
-            self.normalize_on = None
-            self.plot_settings = []
-        else:
-            pass
+        self.individuals = []
+        self.mask = None
+        self.stimuli_onset = None
+        self.normalization = None
+        self.normalize_on = None
+        self.plot_settings = []
+
+        #if configuration:
 
     def add_individual(self, individual):
         self.individuals.append(individual)

@@ -14,8 +14,14 @@ class Session:
     The brain data is initially read from a NIfTI-file (.nii) and the original
     data is stored in the member data
     """
-    def __init__(self, path):
-        self.path = path
+    def __init__(self, path=None, configuration=None):
+        if path:
+            self.path = path
+        elif configuration:
+            self.path = configuration['path']
+        else:
+            raise NotImplementedError("This error message is not implemented")
+
         self.brain_file = nib.load(path)
         self.data = self.brain_file.get_data()
         self.images = self.data.shape[3]

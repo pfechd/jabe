@@ -7,13 +7,11 @@ from plotWindow import CustomPlot
 class Individual:
 
     def __init__(self, configuration=None):
-        self.brain = None
-        self.stimuli_onset = None
-        self.mask = None
-        self.normalization = None
-        self.plot_settings = []
         self.name = None
-        self.group_name = None
+        self.sessions = []
+        self.mask = None
+        self.anatomic_image = None
+        self.plot_settings = []
 
         if configuration:
             if 'brain' in configuration:
@@ -50,8 +48,11 @@ class Individual:
 
         return configuration
 
+    def add_session(self, session):
+        self.sessions.append(session)
+
     def ready_for_calculation(self):
-        return all([self.brain, self.stimuli_onset, self.mask])
+        return True #all([self.sessions, self.stimuli_onset, self.mask])
 
     def calculate(self):
         # Check for the data needed for data extraction
