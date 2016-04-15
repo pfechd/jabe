@@ -18,8 +18,12 @@ class StimuliOnset:
         self.amount = stimuli_onset.shape[0]
 
         self.data = np.zeros((stimuli_onset.shape[0], stimuli_onset.shape[1]))
+
+        # Convert time stamps to image indices
         self.data[:, 0] = np.floor(stimuli_onset[:, 0] / tr)
+
         self.data[:, 1] = stimuli_onset[:, 1]
+        self.data = self.data.astype(int)  # TODO: Ensure value field always integer
 
     def get_configuration(self):
         return {

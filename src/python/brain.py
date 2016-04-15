@@ -41,35 +41,33 @@ class Brain:
 
     def separate_into_responses(self, visual_stimuli):
         number_of_stimuli = visual_stimuli.amount
-        shortest_duration = self.images  # The longest duration possible is if every image is part in one single stimuli
+        shortest_interval = self.images  # The longest duration possible is if every image is part in one single stimuli
 
         for i in range(number_of_stimuli - 1):
             # The start and end of the stimuli
-            start = int(np.floor(visual_stimuli.data[i, 0]))
-            end = int(np.floor(visual_stimuli.data[i + 1, 0]))
+            start = visual_stimuli.data[i, 0]
+            end = visual_stimuli.data[i + 1, 0]
 
-            duration = end - start  # TODO: Should we floor/ceil this value?
-            shortest_duration = min(duration, shortest_duration)
+            duration = end - start
+            shortest_interval = min(duration, shortest_interval)
 
-        least_number_of_images = int(shortest_duration)
-        self.response = np.zeros((number_of_stimuli, least_number_of_images))
+        self.response = np.zeros((number_of_stimuli, shortest_interval))
 
         # Ignore the images after the last time stamp
         for i in range(number_of_stimuli - 1):
-            start = int(np.floor(visual_stimuli.data[i, 0]))
-            end = int(np.floor(start + shortest_duration))
+            start = visual_stimuli.data[i, 0]
+            end = start + shortest_interval
             self.response[i, 0:(end - start)] = self.masked_data[:, (start-1):(end-1)]
 
-    def subtract_local_baseline(self):
+    def normalize_local(self):
         """
         Subtract every value of the response with the local baseline.
 
         :return:
         """
-        baseline = self.response[:0]
         number_of_stimuli = self.response.shape[0]
         for i in range(number_of_stimuli):
-            self.response[i, :] = self.response[i, :] - baseline[i]
+            self.response[i, :] = self.response[i, :] - self.response[i, 0]
 
     def calculate_mean(self):
         """ Calculate the mean response """
