@@ -13,7 +13,9 @@ class Group:
 
     def add_individual(self, individual):
         self.individuals.append(individual)
-        print self.individuals
+
+    def remove_individual(self, individual):
+        self.individuals.remove(individual)
 
     def calculate(self):
         pass

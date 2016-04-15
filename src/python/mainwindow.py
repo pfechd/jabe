@@ -34,8 +34,7 @@ class MainWindow(QMainWindow):
         self.ui.stimuliButton.clicked.connect(self.stimuli_button_pressed)
         self.ui.add_individual_button.clicked.connect(self.add_individual_pressed)
         self.ui.add_group_button.clicked.connect(self.add_group_pressed)
-        self.ui.remove_individual_button.clicked.connect(self.remove_individual_pressed)
-        self.ui.remove_individual_button.clicked.connect(self.remove_group_pressed)
+        self.ui.remove_button.clicked.connect(self.remove_pressed)
         self.ui.tree_widget.itemSelectionChanged.connect(self.update_gui)
         self.show()
 
@@ -76,8 +75,10 @@ class MainWindow(QMainWindow):
             self.update_gui()
 
     def add_individual_pressed(self):
-        if isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
-            self.ui.tree_widget.selectedItems()[0].add_individual("test")
+        if self.ui.tree_widget.selectedItems():
+            if isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
+                self.ui.tree_widget.selectedItems()[0].add_individual("test")
+                self.ui.tree_widget.selectedItems()[0].setExpanded(True)
 
     def add_group_pressed(self):
         current_row = len(self.groups)
@@ -86,23 +87,15 @@ class MainWindow(QMainWindow):
         self.groups.append(group)
         self.ui.tree_widget.addTopLevelItem(GroupTreeItem(text,group))
 
-    def remove_individual_pressed(self):
-        current_row = self.ui.list_widget.currentRow()
-        if current_row != -1:
-            self.ui.list_widget.takeItem(current_row)
-            del self.individuals[current_row]
-        self.update_gui()
-
-    def remove_group_pressed(self):
-        current_row = self.ui.list_widget.currentRow()
-        if current_row != -1:
-            self.ui.list_widget.takeItem(current_row)
-            del self.individuals[current_row]
-        self.update_gui()
-
-    def current_item_changed(self, row):
-        if row != -1:
-            individual = self.individuals[row]
+    def remove_pressed(self):
+        if self.ui.tree_widget.selectedItems():
+            selected = self.ui.tree_widget.selectedItems()[0]
+            if isinstance(selected,IndividualTreeItem):
+                selected.parent().group.remove_individual(selected.individual)
+                selected.parent().removeChild(selected)
+            elif isinstance(selected,GroupTreeItem):
+                self.groups.remove(selected.group)
+                self.ui.tree_widget.takeTopLevelItem(self.ui.tree_widget.indexFromItem(selected).row())
             self.update_gui()
 
     def update_buttons(self):
@@ -156,19 +149,6 @@ class MainWindow(QMainWindow):
             print 'Stimuli not chosen'
         self.update_gui()
 
-    def add_individual(self, text):
-        current_row = len(self.individuals)
-        individual = Individual()
-        individual.name = text
-        self.individuals.append(individual)
-
-        self.ui.list_widget.addItem(text)
-        self.ui.list_widget.setCurrentRow(current_row)
-
-    def add_group(self, text):
-        group = Group()
-        self.groups.append(group)
-
     def load_brain(self, path):
         if isinstance(self.ui.tree_widget.selectedItems()[0],IndividualTreeItem):
             individual = self.ui.tree_widget.selectedItems()[0].individual
@@ -190,7 +170,7 @@ class MainWindow(QMainWindow):
     def update_gui(self):
         self.update_buttons()
         self.update_text()
-        pass
+        self.ui.tree_widget.update()
 
     def update_text(self):
         if self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0],IndividualTreeItem):

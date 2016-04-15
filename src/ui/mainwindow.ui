@@ -111,30 +111,17 @@
      <string>Add individual</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="remove_individual_button">
+   <widget class="QPushButton" name="remove_button">
     <property name="geometry">
      <rect>
-      <x>130</x>
+      <x>120</x>
       <y>40</y>
       <width>141</width>
       <height>30</height>
      </rect>
     </property>
     <property name="text">
-     <string>Remove individual</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="remove_group_button">
-    <property name="geometry">
-     <rect>
-      <x>130</x>
-      <y>10</y>
-      <width>141</width>
-      <height>30</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Remove group</string>
+     <string>Remove selected</string>
     </property>
    </widget>
    <widget class="QPushButton" name="add_group_button">
