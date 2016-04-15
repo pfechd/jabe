@@ -9,12 +9,12 @@ from src.python.generated_ui.custom_plot import Ui_Dialog
 
 
 class CustomPlot(QDialog):
-    def __init__(self, parent, individual):
+    def __init__(self, parent, session):
         super(CustomPlot, self).__init__(parent)
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
 
-        self.brain = individual.brain
+        self.session = session
         self.fig = plt.figure()
         self.ax = self.fig.add_subplot(111)
         self.canvas = FigureCanvas(self.fig)
@@ -34,7 +34,7 @@ class CustomPlot(QDialog):
         self.ui.toolButton_pan.clicked.connect(self.tool_pan)
         self.ui.toolButton_zoom.clicked.connect(self.tool_zoom)
 
-        self.setWindowTitle('Plot - ' + individual.name)
+        self.setWindowTitle('Plot - ' + session.name)
 
         self.show()
 
@@ -48,7 +48,7 @@ class CustomPlot(QDialog):
         self.toolbar.zoom()
 
     def tool_export(self):
-        self.exportwindow = ExportWindow(self.brain, self.toolbar)
+        self.exportwindow = ExportWindow(self.session, self.toolbar)
 
     def apply_fwhm(self):
         if self.ui.checkBox_fwhm.isChecked():
@@ -56,7 +56,7 @@ class CustomPlot(QDialog):
                 y = self.ax.lines[0].get_ydata()
                 x = np.arange(len(y))
                 smooth = self.ui.spinBox.value()
-                r1, r2 = self.brain.calculate_fwhm(x, y, smooth)
+                r1, r2 = self.session.calculate_fwhm(x, y, smooth)
                 self.fwhm = self.ax.axvspan(r1, r2, facecolor='g', alpha=0.3)
                 self.canvas.draw()
             else:
@@ -68,7 +68,7 @@ class CustomPlot(QDialog):
 
     def plot_response(self):
         if self.ui.checkBox_response.isChecked():
-            self.resp = self.ax.plot(self.brain.response)
+            self.resp = self.ax.plot(self.session.response)
             self.canvas.draw()
         else:
             for line in self.resp:
@@ -77,7 +77,7 @@ class CustomPlot(QDialog):
 
     def plot_mean(self):
         if self.ui.checkBox_mean.isChecked():
-            mean = self.brain.calculate_mean()[0]
+            mean = self.session.calculate_mean()[0]
             self.ax.relim()
             self.mean, = self.ax.plot(mean, color=self.generate_random_color())
 
@@ -100,10 +100,10 @@ class CustomPlot(QDialog):
 
     def plot_std(self):
         if self.ui.checkBox_std.isChecked():
-            mean = self.brain.calculate_mean()[0]
+            mean = self.session.calculate_mean()[0]
             x = np.arange(mean.size)
             self.ax.relim()
-            self.std = self.ax.errorbar(x, mean, yerr=self.brain.calculate_std()[0])
+            self.std = self.ax.errorbar(x, mean, yerr=self.session.calculate_std()[0])
             self.canvas.draw()
         else:
             self.std[0].remove()
@@ -118,7 +118,7 @@ class CustomPlot(QDialog):
         if self.ui.checkBox_amp.isChecked():
             y = self.ax.lines[0].get_ydata()
             x = np.arange(len(y))
-            max_amp = self.brain.calculate_amplitude(x, y, 0)
+            max_amp = self.session.calculate_amplitude(x, y, 0)
             self.amp = self.ax.annotate(
                 'Time: %.2f\nAmp: %.2f' % (max_amp[0], max_amp[1]),
                 xy=(max_amp[0], max_amp[1]), xytext=(max_amp[0] + 12, max_amp[1] - 1),

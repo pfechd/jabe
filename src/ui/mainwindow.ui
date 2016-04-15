@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>722</width>
-    <height>296</height>
+    <height>324</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -98,17 +98,33 @@
      </item>
     </layout>
    </widget>
-   <widget class="QListWidget" name="list_widget">
+   <widget class="QPushButton" name="add_individual_button">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>60</y>
-      <width>261</width>
-      <height>181</height>
+      <y>40</y>
+      <width>111</width>
+      <height>30</height>
      </rect>
     </property>
+    <property name="text">
+     <string>Add individual</string>
+    </property>
    </widget>
-   <widget class="QPushButton" name="add_individual_button">
+   <widget class="QPushButton" name="remove_button">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>40</y>
+      <width>141</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Remove selected</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="add_group_button">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -118,20 +134,35 @@
      </rect>
     </property>
     <property name="text">
-     <string>Add individual</string>
+     <string>Add group</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="remove_individual_button">
+   <widget class="QTreeWidget" name="tree_widget">
     <property name="geometry">
      <rect>
-      <x>130</x>
+      <x>10</x>
+      <y>80</y>
+      <width>256</width>
+      <height>192</height>
+     </rect>
+    </property>
+    <column>
+     <property name="text">
+      <string>Name</string>
+     </property>
+    </column>
+   </widget>
+   <widget class="QPushButton" name="add_session_button">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
       <y>10</y>
       <width>141</width>
-      <height>30</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>Remove individual</string>
+     <string>Add session</string>
     </property>
    </widget>
   </widget>
@@ -141,7 +172,7 @@
      <x>0</x>
      <y>0</y>
      <width>722</width>
-     <height>26</height>
+     <height>28</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

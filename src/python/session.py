@@ -5,25 +5,69 @@ import numpy as np
 import nibabel as nib
 from scipy.interpolate import UnivariateSpline
 from scipy.stats import sem
+from mask import Mask
+from stimulionset import StimuliOnset
 
 
-class Brain:
+class Session:
     """
     Class used for representing and doing calculations with brain data
 
     The brain data is initially read from a NIfTI-file (.nii) and the original
     data is stored in the member data
     """
-    def __init__(self, path):
+    def __init__(self, name=None, configuration=None):
+        self.path = None
+        self.brain_file = None
+        self.data = None
+        self.images = None
+        self.masked_data = None
+        self.response = None
+        self.stimuli = None
+        self.mask = None
+
+        if name:
+            self.name = name
+        elif configuration:
+            self.name = configuration['name']
+
+            if 'path' in configuration:
+                self.load_data(configuration['path'])
+
+            if 'mask' in configuration:
+                self.mask = Mask(configuration['mask']['path'])
+
+            if 'stimuli' in configuration:
+                self.stimuli = StimuliOnset(configuration['stimuli']['path'],
+                                            configuration['stimuli']['tr'])
+        else:
+            raise NotImplementedError('Error not implemented')
+
+    def get_configuration(self):
+        configuration = {}
+
+        if self.path:
+            configuration['path'] = self.path
+
+        if self.mask:
+            configuration['mask'] = self.mask.get_configuration()
+
+        if self.stimuli:
+            configuration['stimuli'] = self.stimuli.get_configuration()
+
+        if self.name:
+            configuration['name'] = self.name
+
+        return configuration
+
+    def load_data(self, path):
         self.path = path
         self.brain_file = nib.load(path)
         self.data = self.brain_file.get_data()
         self.images = self.data.shape[3]
-        self.masked_data = None
-        self.response = None
 
-    def get_configuration(self):
-        return {'path': self.path}
+    def ready_for_calculation(self):
+        return all([self.brain_file, self.stimuli, self.mask])
 
     def apply_mask(self, mask):
         """
@@ -173,4 +217,13 @@ class Brain:
         max_amp = self.calculate_amplitude(x, y, 0)
         plt.plot([x[0], x[-1]], [max_amp[1]] * 2, '--')
         plt.plot([max_amp[0]] * 2, [-100, 100], '--')
+
+    def calculate(self):
+        # Check if dimensions of 'Session' and 'Mask' match.
+        if self.data.shape[0:3] != self.mask.data.shape:
+            return 'Session image dimensions does not match Mask dimensions\n\nSession: ' \
+                   + str(self.brain.data.shape[0:3]) + '\nMask: ' + str(self.mask.data.shape)
+        else:
+            self.apply_mask(self.mask)
+            self.normalize_to_mean(self.stimuli)
 
