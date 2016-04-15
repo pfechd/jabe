@@ -10,5 +10,6 @@ class GroupTreeItem(QTreeWidgetItem):
 
     def add_individual(self,name):
         individual = Individual()
+        individual.name = name
         self.group.add_individual(individual)
         self.addChild(IndividualTreeItem(name,individual))

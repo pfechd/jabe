@@ -36,6 +36,7 @@ class MainWindow(QMainWindow):
         self.ui.add_group_button.clicked.connect(self.add_group_pressed)
         self.ui.remove_individual_button.clicked.connect(self.remove_individual_pressed)
         self.ui.remove_individual_button.clicked.connect(self.remove_group_pressed)
+        self.ui.tree_widget.itemSelectionChanged.connect(self.update_gui)
         self.show()
 
         self.individual_buttons = [self.ui.pushButton, self.ui.brainButton,
@@ -105,17 +106,16 @@ class MainWindow(QMainWindow):
             self.update_gui()
 
     def update_buttons(self):
-        current_row = self.ui.list_widget.currentRow()
-        if current_row == -1:
-            for button in self.individual_buttons:
-                button.setEnabled(False)
-        else:
-            individual = self.individuals[current_row]
-
+        if self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0],IndividualTreeItem):
+            individual = self.ui.tree_widget.selectedItems()[0].individual
             for button in self.individual_buttons:
                 button.setEnabled(True)
             print individual.ready_for_calculation()
             self.ui.pushButton.setEnabled(individual.ready_for_calculation())
+        else:
+            for button in self.individual_buttons:
+                button.setEnabled(False)
+
 
     def calculate_button_pressed(self):
         """ Callback function, run when the calculate button is pressed."""
@@ -123,9 +123,10 @@ class MainWindow(QMainWindow):
         # TODO: Prompt user for brain and mask paths instead of falling
         # back unto hardcoded defaults
 
-        individual = self.individuals[self.ui.list_widget.currentRow()]
-        individual.calculate()
-        CustomPlot(self, individual)
+        if self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0],IndividualTreeItem):
+            individual = self.ui.tree_widget.selectedItems()[0].individual
+            individual.calculate()
+            CustomPlot(self, individual)
 
 
     def brain_button_pressed(self):
@@ -169,29 +170,31 @@ class MainWindow(QMainWindow):
         self.groups.append(group)
 
     def load_brain(self, path):
-        individual = self.individuals[self.ui.list_widget.currentRow()]
-        individual.brain = Session(path)
-        self.update_gui()
+        if isinstance(self.ui.tree_widget.selectedItems()[0],IndividualTreeItem):
+            individual = self.ui.tree_widget.selectedItems()[0].individual
+            individual.brain = Session(path)
+            self.update_gui()
 
     def load_mask(self, path):
-        individual = self.individuals[self.ui.list_widget.currentRow()]
-        individual.mask = Mask(path)
-        self.update_gui()
+        if isinstance(self.ui.tree_widget.selectedItems()[0],IndividualTreeItem):
+            individual = self.ui.tree_widget.selectedItems()[0].individual
+            individual.mask = Mask(path)
+            self.update_gui()
 
     def load_stimuli(self, path):
-        individual = self.individuals[self.ui.list_widget.currentRow()]
-        individual.stimuli_onset = StimuliOnset(path, 0.5)
-        self.update_gui()
+        if isinstance(self.ui.tree_widget.selectedItems()[0],IndividualTreeItem):
+            individual = self.ui.tree_widget.selectedItems()[0].individual
+            individual.stimuli_onset = StimuliOnset(path, 0.5)
+            self.update_gui()
 
     def update_gui(self):
-        #self.update_buttons()
-        #self.update_text()
+        self.update_buttons()
+        self.update_text()
         pass
 
     def update_text(self):
-        current_row = self.ui.list_widget.currentRow()
-        if current_row != -1:
-            individual = self.individuals[current_row]
+        if self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0],IndividualTreeItem):
+            individual = self.ui.tree_widget.selectedItems()[0].individual
 
             if individual.brain:
                 self.ui.brainLabel.setText('EPI-images chosen: ' + individual.brain.path)
@@ -199,7 +202,7 @@ class MainWindow(QMainWindow):
                 self.ui.brainLabel.setText('No EPI-images chosen')
 
             if individual.mask:
-                self.ui.maskLabel.setText('Mask picked: ' + individual.mask.path)
+               self.ui.maskLabel.setText('Mask picked: ' + individual.mask.path)
             else:
                 self.ui.maskLabel.setText('No mask chosen')
 
