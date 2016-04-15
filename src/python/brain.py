@@ -60,24 +60,16 @@ class Brain:
             end = int(np.floor(start + shortest_duration))
             self.response[i, 0:(end - start)] = self.masked_data[:, (start-1):(end-1)]
 
-    def subtract_baseline(self, baseline):
+    def subtract_local_baseline(self):
         """
-        Subtract every value of the response with the given baseline. The
-        n'th baseline value corresponds to the value which n'th stimuli
-        should be subtracted with.
+        Subtract every value of the response with the local baseline.
 
-        :param baseline: 1D array of the same length as the number of stimuli
         :return:
         """
+        baseline = self.response[:0]
         number_of_stimuli = self.response.shape[0]
         for i in range(number_of_stimuli):
             self.response[i, :] = self.response[i, :] - baseline[i]
-
-    def get_local_baseline(self):
-        """
-        :return: 1D array containing the first value of every stimuli
-        """
-        return self.response[:, 0]
 
     def normalize_to_mean(self, visual_stimuli):
         """
