@@ -10,6 +10,7 @@ from individual import Individual
 from group import Group
 from tree_items.grouptreeitem import GroupTreeItem
 from tree_items.individualtreeitem import IndividualTreeItem
+from tree_items.sessiontreeitem import SessionTreeItem
 from message import Message
 from plotWindow import CustomPlot
 
@@ -32,8 +33,9 @@ class MainWindow(QMainWindow):
         self.ui.brainButton.clicked.connect(self.brain_button_pressed)
         self.ui.maskButton.clicked.connect(self.mask_button_pressed)
         self.ui.stimuliButton.clicked.connect(self.stimuli_button_pressed)
-        self.ui.add_individual_button.clicked.connect(self.add_individual_pressed)
         self.ui.add_group_button.clicked.connect(self.add_group_pressed)
+        self.ui.add_individual_button.clicked.connect(self.add_individual_pressed)
+        self.ui.add_session_button.clicked.connect(self.add_session_pressed)
         self.ui.remove_button.clicked.connect(self.remove_pressed)
         self.ui.tree_widget.itemSelectionChanged.connect(self.update_gui)
         self.show()
@@ -74,6 +76,12 @@ class MainWindow(QMainWindow):
 
             self.update_gui()
 
+    def add_session_pressed(self):
+        if self.ui.tree_widget.selectedItems():
+            if isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
+                self.ui.tree_widget.selectedItems()[0].add_session()
+                self.ui.tree_widget.selectedItems()[0].setExpanded(True)
+
     def add_individual_pressed(self):
         if self.ui.tree_widget.selectedItems():
             if isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
@@ -99,8 +107,8 @@ class MainWindow(QMainWindow):
             self.update_gui()
 
     def update_buttons(self):
-        if self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0],IndividualTreeItem):
-            individual = self.ui.tree_widget.selectedItems()[0].individual
+        if self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
+            individual = self.ui.tree_widget.selectedItems()[0].session
             for button in self.individual_buttons:
                 button.setEnabled(True)
             print individual.ready_for_calculation()
@@ -109,17 +117,16 @@ class MainWindow(QMainWindow):
             for button in self.individual_buttons:
                 button.setEnabled(False)
 
-
     def calculate_button_pressed(self):
         """ Callback function, run when the calculate button is pressed."""
 
         # TODO: Prompt user for brain and mask paths instead of falling
         # back unto hardcoded defaults
 
-        if self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0],IndividualTreeItem):
-            individual = self.ui.tree_widget.selectedItems()[0].individual
-            individual.calculate()
-            CustomPlot(self, individual)
+        if self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
+            session = self.ui.tree_widget.selectedItems()[0].session
+            session.calculate()
+            CustomPlot(self, session)
 
 
     def brain_button_pressed(self):
@@ -150,21 +157,21 @@ class MainWindow(QMainWindow):
         self.update_gui()
 
     def load_brain(self, path):
-        if isinstance(self.ui.tree_widget.selectedItems()[0],IndividualTreeItem):
-            individual = self.ui.tree_widget.selectedItems()[0].individual
-            individual.brain = Session(path)
+        if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
+            session = self.ui.tree_widget.selectedItems()[0].session
+            session.load_data(path)
             self.update_gui()
 
     def load_mask(self, path):
-        if isinstance(self.ui.tree_widget.selectedItems()[0],IndividualTreeItem):
-            individual = self.ui.tree_widget.selectedItems()[0].individual
-            individual.mask = Mask(path)
+        if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
+            session = self.ui.tree_widget.selectedItems()[0].session
+            session.mask = Mask(path)
             self.update_gui()
 
     def load_stimuli(self, path):
-        if isinstance(self.ui.tree_widget.selectedItems()[0],IndividualTreeItem):
-            individual = self.ui.tree_widget.selectedItems()[0].individual
-            individual.stimuli_onset = StimuliOnset(path, 0.5)
+        if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
+            session = self.ui.tree_widget.selectedItems()[0].session
+            session.stimuli = StimuliOnset(path, 0.5)
             self.update_gui()
 
     def update_gui(self):
@@ -173,21 +180,21 @@ class MainWindow(QMainWindow):
         self.ui.tree_widget.update()
 
     def update_text(self):
-        if self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0],IndividualTreeItem):
-            individual = self.ui.tree_widget.selectedItems()[0].individual
+        if self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
+            individual = self.ui.tree_widget.selectedItems()[0].session
 
-            if individual.brain:
-                self.ui.brainLabel.setText('EPI-images chosen: ' + individual.brain.path)
+            if individual.path:
+                self.ui.brainLabel.setText('EPI-images chosen: ' + individual.path)
             else:
                 self.ui.brainLabel.setText('No EPI-images chosen')
 
             if individual.mask:
-               self.ui.maskLabel.setText('Mask picked: ' + individual.mask.path)
+                self.ui.maskLabel.setText('Mask picked: ' + individual.mask.path)
             else:
                 self.ui.maskLabel.setText('No mask chosen')
 
-            if individual.stimuli_onset:
-                self.ui.stimuliLabel.setText('Stimuli picked: ' + individual.stimuli_onset.path)
+            if individual.stimuli:
+                self.ui.stimuliLabel.setText('Stimuli picked: ' + individual.stimuli.path)
             else:
                 self.ui.stimuliLabel.setText('No stimuli chosen')
         else:

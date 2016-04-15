@@ -14,22 +14,36 @@ class Session:
     The brain data is initially read from a NIfTI-file (.nii) and the original
     data is stored in the member data
     """
-    def __init__(self, path=None, configuration=None):
-        if path:
-            self.path = path
+    def __init__(self, name=None, configuration=None):
+        if name:
+            self.name = name
         elif configuration:
-            self.path = configuration['path']
+            self.name = configuration['name']
+            self.load_data(configuration['path'])
         else:
-            raise NotImplementedError("This error message is not implemented")
+            raise NotImplementedError('Error not implemented')
 
-        self.brain_file = nib.load(path)
-        self.data = self.brain_file.get_data()
-        self.images = self.data.shape[3]
+        self.path = None
+        self.brain_file = None
+        self.data = None
+        self.images = None
         self.masked_data = None
         self.response = None
+        self.stimuli = None
+        self.mask = None
+
 
     def get_configuration(self):
         return {'path': self.path}
+
+    def load_data(self, path):
+        self.path = path
+        self.brain_file = nib.load(path)
+        self.data = self.brain_file.get_data()
+        self.images = self.data.shape[3]
+
+    def ready_for_calculation(self):
+        return all([self.brain_file, self.stimuli, self.mask])
 
     def apply_mask(self, mask):
         """
@@ -179,4 +193,13 @@ class Session:
         max_amp = self.calculate_amplitude(x, y, 0)
         plt.plot([x[0], x[-1]], [max_amp[1]] * 2, '--')
         plt.plot([max_amp[0]] * 2, [-100, 100], '--')
+
+    def calculate(self):
+        # Check if dimensions of 'Session' and 'Mask' match.
+        if self.data.shape[0:3] != self.mask.data.shape:
+            return 'Session image dimensions does not match Mask dimensions\n\nSession: ' \
+                   + str(self.brain.data.shape[0:3]) + '\nMask: ' + str(self.mask.data.shape)
+        else:
+            self.apply_mask(self.mask)
+            self.normalize_to_mean(self.stimuli)
 
