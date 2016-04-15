@@ -108,6 +108,7 @@ class MainWindow(QMainWindow):
 
         individual = self.individuals[self.ui.list_widget.currentRow()]
         individual.calculate()
+        CustomPlot(self, individual)
 
 
     def brain_button_pressed(self):

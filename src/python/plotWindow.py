@@ -9,8 +9,8 @@ from src.python.generated_ui.custom_plot import Ui_Dialog
 
 
 class CustomPlot(QDialog):
-    def __init__(self, individual):
-        super(CustomPlot, self).__init__()
+    def __init__(self, parent, individual):
+        super(CustomPlot, self).__init__(parent)
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
 
