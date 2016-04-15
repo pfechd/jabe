@@ -1,14 +1,14 @@
 import unittest
 import scipy.io as sio
 import numpy as np
-from src.python import brain, mask, visual_stimuli
+from src.python import session, mask, visual_stimuli
 
 
 class TestBrain(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.brain = brain.Brain('src/python/tests/test-data/brain.nii')
+        cls.brain = session.Session('src/python/tests/test-data/brain.nii')
         cls.mask = mask.Mask('src/python/tests/test-data/mask.nii')
         cls.stimuli = visual_stimuli.VisualStimuli('src/python/tests/test-data/stimuli.mat', 0.5)
 

@@ -2,7 +2,7 @@ class Group:
 
     def __init__(self, configuration=None):
         if not configuration:
-            self.brains = []
+            self.individuals = []
             self.mask = None
             self.stimuli_onset = None
             self.normalization = None
@@ -10,6 +10,10 @@ class Group:
             self.plot_settings = []
         else:
             pass
+
+    def add_individual(self, individual):
+        self.individuals.append(individual)
+        print self.individuals
 
     def calculate(self):
         pass

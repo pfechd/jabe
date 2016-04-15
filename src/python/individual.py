@@ -1,4 +1,4 @@
-from brain import Brain
+from session import Session
 from mask import Mask
 from stimulionset import StimuliOnset
 from plotWindow import CustomPlot
@@ -17,7 +17,7 @@ class Individual:
 
         if configuration:
             if 'brain' in configuration:
-                self.brain = Brain(configuration['brain']['path'])
+                self.brain = Session(configuration['brain']['path'])
 
             if 'mask' in configuration:
                 self.mask = Mask(configuration['mask']['path'])
@@ -56,15 +56,15 @@ class Individual:
     def calculate(self):
         # Check for the data needed for data extraction
         if not self.brain:
-            self.brain = Brain("test-data/brain_exp1_1.nii")
+            self.brain = Session("test-data/brain_exp1_1.nii")
         if not self.mask:
             self.mask = Mask("test-data/mask.nii")
         if not self.stimuli_onset:
             self.stimuli_onset = StimuliOnset("test-data/stimall.mat", 0.5)
 
-        # Check if dimensions of 'Brain' and 'Mask' match.
+        # Check if dimensions of 'Session' and 'Mask' match.
         if self.brain.data.shape[0:3] != self.mask.data.shape:
-            return 'Brain image dimensions does not match Mask dimensions\n\nBrain: ' \
+            return 'Session image dimensions does not match Mask dimensions\n\nSession: ' \
                    + str(self.brain.data.shape[0:3]) + '\nMask: ' + str(self.mask.data.shape)
         else:
             self.brain.apply_mask(self.mask)

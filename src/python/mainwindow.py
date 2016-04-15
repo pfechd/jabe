@@ -1,12 +1,15 @@
 import json
 import os
-from PyQt5.QtWidgets import QMainWindow, QFileDialog, QLabel
+from PyQt5.QtWidgets import QMainWindow, QFileDialog, QTreeWidgetItem
 from generated_ui.mainwindow import Ui_MainWindow
 from spmpath import SPMPath
-from brain import Brain
+from session import Session
 from mask import Mask
 from stimulionset import StimuliOnset
 from individual import Individual
+from group import Group
+from tree_items.grouptreeitem import GroupTreeItem
+from tree_items.individualtreeitem import IndividualTreeItem
 from message import Message
 from plotWindow import CustomPlot
 
@@ -30,14 +33,15 @@ class MainWindow(QMainWindow):
         self.ui.maskButton.clicked.connect(self.mask_button_pressed)
         self.ui.stimuliButton.clicked.connect(self.stimuli_button_pressed)
         self.ui.add_individual_button.clicked.connect(self.add_individual_pressed)
+        self.ui.add_group_button.clicked.connect(self.add_group_pressed)
         self.ui.remove_individual_button.clicked.connect(self.remove_individual_pressed)
-        self.ui.list_widget.currentRowChanged.connect(self.current_item_changed)
+        self.ui.remove_individual_button.clicked.connect(self.remove_group_pressed)
         self.show()
 
         self.individual_buttons = [self.ui.pushButton, self.ui.brainButton,
                                    self.ui.maskButton, self.ui.stimuliButton]
 
-        self.individuals = []
+        self.groups = []
         self.load_configuration()
         self.update_gui()
 
@@ -58,12 +62,12 @@ class MainWindow(QMainWindow):
                 configuration = json.load(f)
 
             self.individuals = []
-            self.ui.list_widget.clear()
+            #self.ui.list_widget.clear()
             if 'individuals' in configuration:
                 for individual_configuration in configuration['individuals']:
                     individual = Individual(individual_configuration)
                     self.individuals.append(individual)
-                    self.ui.list_widget.addItem(individual.name)
+                    #self.ui.list_widget.addItem(individual.name)
 
             if 'current' in configuration:
                 self.ui.list_widget.setCurrentRow(configuration['current'])
@@ -71,11 +75,24 @@ class MainWindow(QMainWindow):
             self.update_gui()
 
     def add_individual_pressed(self):
-        current_row = len(self.individuals)
-        text = 'New individual ' + str(current_row)
-        self.add_individual(text)
+        if isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
+            self.ui.tree_widget.selectedItems()[0].add_individual("test")
+
+    def add_group_pressed(self):
+        current_row = len(self.groups)
+        text = 'New group ' + str(current_row)
+        group = Group()
+        self.groups.append(group)
+        self.ui.tree_widget.addTopLevelItem(GroupTreeItem(text,group))
 
     def remove_individual_pressed(self):
+        current_row = self.ui.list_widget.currentRow()
+        if current_row != -1:
+            self.ui.list_widget.takeItem(current_row)
+            del self.individuals[current_row]
+        self.update_gui()
+
+    def remove_group_pressed(self):
         current_row = self.ui.list_widget.currentRow()
         if current_row != -1:
             self.ui.list_widget.takeItem(current_row)
@@ -147,9 +164,13 @@ class MainWindow(QMainWindow):
         self.ui.list_widget.addItem(text)
         self.ui.list_widget.setCurrentRow(current_row)
 
+    def add_group(self, text):
+        group = Group()
+        self.groups.append(group)
+
     def load_brain(self, path):
         individual = self.individuals[self.ui.list_widget.currentRow()]
-        individual.brain = Brain(path)
+        individual.brain = Session(path)
         self.update_gui()
 
     def load_mask(self, path):
@@ -163,8 +184,9 @@ class MainWindow(QMainWindow):
         self.update_gui()
 
     def update_gui(self):
-        self.update_buttons()
-        self.update_text()
+        #self.update_buttons()
+        #self.update_text()
+        pass
 
     def update_text(self):
         current_row = self.ui.list_widget.currentRow()

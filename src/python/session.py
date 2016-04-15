@@ -7,7 +7,7 @@ from scipy.interpolate import UnivariateSpline
 from scipy.stats import sem
 
 
-class Brain:
+class Session:
     """
     Class used for representing and doing calculations with brain data
 
