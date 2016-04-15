@@ -71,31 +71,6 @@ class Brain:
         for i in range(number_of_stimuli):
             self.response[i, :] = self.response[i, :] - baseline[i]
 
-    def normalize_to_mean(self, visual_stimuli):
-        """
-        Normalize the function to mean with the given visual stimuli
-
-        :param visual_stimuli: StimuliOnset object which should be used
-        :return:
-        """
-        number_of_stimuli = visual_stimuli.amount
-        self.response = np.zeros((number_of_stimuli - 1, self.images))
-        max_nr_of_img = 0
-
-        # Split up data into responses.
-        for i in range(number_of_stimuli - 1):
-            v1i = int(visual_stimuli.data[i, 0])
-            v1i1 = int(visual_stimuli.data[i + 1, 0])
-
-            number_of_images = v1i1 - v1i
-            if number_of_images > max_nr_of_img:
-                max_nr_of_img = number_of_images
-
-            self.response[i, 0:number_of_images] = self.masked_data[:, (v1i-1):(v1i1-1)] - self.masked_data[:, v1i-1]
-
-        self.response = self.response[:, 0:max_nr_of_img]
-
-
     def calculate_mean(self):
         """ Calculate the mean response """
         response_mean = np.zeros((1, self.response.shape[1]))
