@@ -33,6 +33,7 @@ class Individual:
             if 'name' in configuration:
                 self.name = configuration['name']
 
+
     def get_configuration(self):
         configuration = {
             'name': self.name,

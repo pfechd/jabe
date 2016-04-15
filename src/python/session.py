@@ -83,30 +83,35 @@ class Session:
             visual_brain_time = np.nonzero(visual_brain)
             self.masked_data[:, i] = np.mean(visual_brain[visual_brain_time])
 
-    def normalize_to_mean(self, visual_stimuli):
-        """
-        Normalize the function to mean with the given visual stimuli
+    def separate_into_responses(self, visual_stimuli):
+        number_of_stimuli = visual_stimuli.amount
+        shortest_interval = self.images  # The longest duration possible is if every image is part in one single stimuli
 
-        :param visual_stimuli: StimuliOnset object which should be used
+        for i in range(number_of_stimuli - 1):
+            # The start and end of the stimuli
+            start = visual_stimuli.data[i, 0]
+            end = visual_stimuli.data[i + 1, 0]
+
+            duration = end - start
+            shortest_interval = min(duration, shortest_interval)
+
+        self.response = np.zeros((number_of_stimuli, shortest_interval))
+
+        # Ignore the images after the last time stamp
+        for i in range(number_of_stimuli - 1):
+            start = visual_stimuli.data[i, 0]
+            end = start + shortest_interval
+            self.response[i, 0:(end - start)] = self.masked_data[:, (start-1):(end-1)]
+
+    def normalize_local(self):
+        """
+        Subtract every value of the response with the local baseline.
+
         :return:
         """
-        number_of_stimuli = visual_stimuli.amount
-        self.response = np.zeros((number_of_stimuli - 1, self.images))
-        max_nr_of_img = 0
-
-        # Split up data into responses.
-        for i in range(number_of_stimuli - 1):
-            v1i = int(visual_stimuli.data[i, 0])
-            v1i1 = int(visual_stimuli.data[i + 1, 0])
-
-            number_of_images = v1i1 - v1i
-            if number_of_images > max_nr_of_img:
-                max_nr_of_img = number_of_images
-
-            self.response[i, 0:number_of_images] = self.masked_data[:, (v1i-1):(v1i1-1)] - self.masked_data[:, v1i-1]
-
-        self.response = self.response[:, 0:max_nr_of_img]
-
+        number_of_stimuli = self.response.shape[0]
+        for i in range(number_of_stimuli):
+            self.response[i, :] = self.response[i, :] - self.response[i, 0]
 
     def calculate_mean(self):
         """ Calculate the mean response """
@@ -225,5 +230,6 @@ class Session:
                    + str(self.brain.data.shape[0:3]) + '\nMask: ' + str(self.mask.data.shape)
         else:
             self.apply_mask(self.mask)
-            self.normalize_to_mean(self.stimuli)
+            self.separate_into_responses(self.stimuli)
+            self.normalize_local()
 
