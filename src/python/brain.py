@@ -54,8 +54,8 @@ class Brain:
         least_number_of_images = int(shortest_duration)
         self.response = np.zeros((number_of_stimuli, least_number_of_images))
 
-        # TODO: Should we exclude the last stimuli, as in the given script?
-        for i in range(number_of_stimuli):
+        # Ignore the images after the last time stamp
+        for i in range(number_of_stimuli - 1):
             start = int(np.floor(visual_stimuli.data[i, 0]))
             end = int(np.floor(start + shortest_duration))
             self.response[i, 0:(end - start)] = self.masked_data[:, (start-1):(end-1)]
