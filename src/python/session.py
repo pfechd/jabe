@@ -5,6 +5,8 @@ import numpy as np
 import nibabel as nib
 from scipy.interpolate import UnivariateSpline
 from scipy.stats import sem
+from mask import Mask
+from stimulionset import StimuliOnset
 
 
 class Session:
@@ -15,14 +17,6 @@ class Session:
     data is stored in the member data
     """
     def __init__(self, name=None, configuration=None):
-        if name:
-            self.name = name
-        elif configuration:
-            self.name = configuration['name']
-            self.load_data(configuration['path'])
-        else:
-            raise NotImplementedError('Error not implemented')
-
         self.path = None
         self.brain_file = None
         self.data = None
@@ -32,9 +26,39 @@ class Session:
         self.stimuli = None
         self.mask = None
 
+        if name:
+            self.name = name
+        elif configuration:
+            self.name = configuration['name']
+
+            if 'path' in configuration:
+                self.load_data(configuration['path'])
+
+            if 'mask' in configuration:
+                self.mask = Mask(configuration['mask']['path'])
+
+            if 'stimuli' in configuration:
+                self.stimuli = StimuliOnset(configuration['stimuli']['path'],
+                                            configuration['stimuli']['tr'])
+        else:
+            raise NotImplementedError('Error not implemented')
 
     def get_configuration(self):
-        return {'path': self.path}
+        configuration = {}
+
+        if self.path:
+            configuration['path'] = self.path
+
+        if self.mask:
+            configuration['mask'] = self.mask.get_configuration()
+
+        if self.stimuli:
+            configuration['stimuli'] = self.stimuli.get_configuration()
+
+        if self.name:
+            configuration['name'] = self.name
+
+        return configuration
 
     def load_data(self, path):
         self.path = path

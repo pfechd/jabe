@@ -14,6 +14,10 @@ class Individual:
         self.plot_settings = []
 
         if configuration:
+            if 'sessions' in configuration:
+                for session_configuration in configuration['sessions']:
+                    self.sessions.append(Session(configuration=session_configuration))
+
             if 'brain' in configuration:
                 self.brain = Session(configuration['brain']['path'])
 
@@ -31,20 +35,9 @@ class Individual:
 
     def get_configuration(self):
         configuration = {
-            'normalization': self.normalization,
-            'plot_settings': self.plot_settings,
             'name': self.name,
-            'group_name': self.group_name
+            'sessions': [session.get_configuration() for session in self.sessions]
         }
-
-        if self.brain:
-            configuration['brain'] = self.brain.get_configuration()
-
-        if self.mask:
-            configuration['mask'] = self.mask.get_configuration()
-
-        if self.stimuli_onset:
-            configuration['stimuli_onset'] = self.stimuli_onset.get_configuration()
 
         return configuration
 

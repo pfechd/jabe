@@ -3,7 +3,6 @@ import os
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QTreeWidgetItem
 from generated_ui.mainwindow import Ui_MainWindow
 from spmpath import SPMPath
-from session import Session
 from mask import Mask
 from stimulionset import StimuliOnset
 from individual import Individual
@@ -11,7 +10,6 @@ from group import Group
 from tree_items.grouptreeitem import GroupTreeItem
 from tree_items.individualtreeitem import IndividualTreeItem
 from tree_items.sessiontreeitem import SessionTreeItem
-from message import Message
 from plotWindow import CustomPlot
 
 
@@ -52,9 +50,10 @@ class MainWindow(QMainWindow):
 
     def save_configuration(self):
         configuration = {
-            'individuals': [individual.get_configuration() for individual in self.individuals],
-            'current': self.ui.list_widget.currentRow()
+            'groups': [group.get_configuration() for group in self.groups],
+            'current': 0
         }
+
         with open('configuration.json', 'w') as f:
             json.dump(configuration, f, indent=4)
 
@@ -63,16 +62,29 @@ class MainWindow(QMainWindow):
             with open('configuration.json', 'r') as f:
                 configuration = json.load(f)
 
-            self.individuals = []
-            #self.ui.list_widget.clear()
-            if 'individuals' in configuration:
-                for individual_configuration in configuration['individuals']:
-                    individual = Individual(individual_configuration)
-                    self.individuals.append(individual)
-                    #self.ui.list_widget.addItem(individual.name)
+            self.groups = []
+
+            if 'groups' in configuration:
+                for group_configuration in configuration['groups']:
+                    group = Group(configuration=group_configuration)
+                    self.groups.append(group)
+
+            for group in self.groups:
+                group_tree_item = GroupTreeItem(group)
+                self.ui.tree_widget.addTopLevelItem(group_tree_item)
+                for individual in group.individuals:
+                    individual_tree_item = IndividualTreeItem(individual)
+
+                    group_tree_item.addChild(individual_tree_item)
+
+                    for session in individual.sessions:
+                        session_tree_item = SessionTreeItem(session)
+                        individual_tree_item.addChild(session_tree_item)
+
+            self.update_gui()
 
             if 'current' in configuration:
-                self.ui.list_widget.setCurrentRow(configuration['current'])
+                print 'Please select the', configuration['current'] # TODO: Do something about this!
 
             self.update_gui()
 
@@ -90,10 +102,10 @@ class MainWindow(QMainWindow):
 
     def add_group_pressed(self):
         current_row = len(self.groups)
-        text = 'New group ' + str(current_row)
-        group = Group()
+        name = 'New group ' + str(current_row)
+        group = Group(name=name)
         self.groups.append(group)
-        self.ui.tree_widget.addTopLevelItem(GroupTreeItem(text,group))
+        self.ui.tree_widget.addTopLevelItem(GroupTreeItem(group))
 
     def remove_pressed(self):
         if self.ui.tree_widget.selectedItems():
@@ -104,6 +116,7 @@ class MainWindow(QMainWindow):
             elif isinstance(selected,GroupTreeItem):
                 self.groups.remove(selected.group)
                 self.ui.tree_widget.takeTopLevelItem(self.ui.tree_widget.indexFromItem(selected).row())
+            # TODO: elif isinstance(selected, SessionTreeItem):
             self.update_gui()
 
     def update_buttons(self):
