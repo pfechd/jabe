@@ -66,6 +66,12 @@ class Session:
         self.data = self.brain_file.get_data()
         self.images = self.data.shape[3]
 
+    def load_stimuli(self, path, tr):
+        self.stimuli = StimuliOnset(path, tr)
+
+    def load_mask(self, mask):
+        self.mask = mask
+
     def ready_for_calculation(self):
         return all([self.brain_file, self.stimuli, self.mask])
 
@@ -87,13 +93,7 @@ class Session:
         number_of_stimuli = visual_stimuli.amount
         shortest_interval = self.images  # The longest duration possible is if every image is part in one single stimuli
 
-        for i in range(number_of_stimuli - 1):
-            # The start and end of the stimuli
-            start = visual_stimuli.data[i, 0]
-            end = visual_stimuli.data[i + 1, 0]
-
-            duration = end - start
-            shortest_interval = min(duration, shortest_interval)
+        shortest_interval = min([j - i for i, j in zip(visual_stimuli.data[:-1, 0], visual_stimuli.data[1:, 0])])
 
         self.response = np.zeros((number_of_stimuli, shortest_interval))
 
