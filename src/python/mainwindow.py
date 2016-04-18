@@ -10,7 +10,7 @@ from group import Group
 from tree_items.grouptreeitem import GroupTreeItem
 from tree_items.individualtreeitem import IndividualTreeItem
 from tree_items.sessiontreeitem import SessionTreeItem
-from plotWindow import CustomPlot
+from plotwindow import CustomPlot
 
 
 class MainWindow(QMainWindow):

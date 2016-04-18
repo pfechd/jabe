@@ -9,7 +9,20 @@ from src.python.generated_ui.custom_plot import Ui_Dialog
 
 
 class CustomPlot(QDialog):
+    """
+    Class used to create a plot window
+
+    Data is read from session object
+    """
+
     def __init__(self, parent, session):
+        """
+        Create plot window
+
+        :param parent: Parent window object
+        :param session: Session object to plot data from
+        :return:
+        """
         super(CustomPlot, self).__init__(parent)
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
@@ -29,10 +42,10 @@ class CustomPlot(QDialog):
         self.ui.checkBox_amp.clicked.connect(self.plot_amplitude)
         self.ui.checkBox_points.clicked.connect(self.show_points)
 
-        self.ui.toolButton_home.clicked.connect(self.tool_home)
+        self.ui.toolButton_home.clicked.connect(self.toolbar.home)
         self.ui.toolButton_export.clicked.connect(self.tool_export)
-        self.ui.toolButton_pan.clicked.connect(self.tool_pan)
-        self.ui.toolButton_zoom.clicked.connect(self.tool_zoom)
+        self.ui.toolButton_pan.clicked.connect(self.toolbar.pan)
+        self.ui.toolButton_zoom.clicked.connect(self.toolbar.zoom)
 
         self.setWindowTitle('Plot - ' + session.name)
 
@@ -40,19 +53,20 @@ class CustomPlot(QDialog):
 
         self.show()
 
-    def tool_home(self):
-        self.toolbar.home()
-
-    def tool_pan(self):
-        self.toolbar.pan()
-
-    def tool_zoom(self):
-        self.toolbar.zoom()
-
     def tool_export(self):
+        """
+        Export button callback. Creates a custom export window
+        :return:
+        """
         self.exportwindow = ExportWindow(self.session, self.toolbar)
 
     def apply_fwhm(self):
+        """
+        FWHM checkbox callback. Plot FWHM for current graph. Disabled if no graph plotted
+
+        :return:
+        """
+
         if self.ui.checkBox_fwhm.isChecked():
             if self.mean is not None:
                 y = self.ax.lines[0].get_ydata()
@@ -68,16 +82,12 @@ class CustomPlot(QDialog):
                 self.fwhm.remove()
             self.canvas.draw()
 
-    def plot_response(self):
-        if self.ui.checkBox_response.isChecked():
-            self.resp = self.ax.plot(self.session.response)
-            self.canvas.draw()
-        else:
-            for line in self.resp:
-                line.remove()
-            self.canvas.draw()
-
     def plot_mean(self):
+        """
+        Mean checkbox callback. Plot mean from session object
+
+        :return:
+        """
         if self.ui.checkBox_mean.isChecked():
             mean = self.session.calculate_mean()[0]
             self.ax.relim()
@@ -101,6 +111,12 @@ class CustomPlot(QDialog):
             self.ui.spinBox.setDisabled(True)
 
     def plot_std(self):
+        """
+        Standard deviation checkbox callback. Plot standard deviation of mean.
+
+        :return:
+        """
+
         if self.ui.checkBox_std.isChecked():
             mean = self.session.calculate_mean()[0]
             x = np.arange(mean.size)
@@ -117,6 +133,12 @@ class CustomPlot(QDialog):
             self.canvas.draw()
 
     def plot_amplitude(self):
+        """
+        Amplitude checkbox callback. Annotate amplitude and time of peak in graph
+
+        :return:
+        """
+
         if self.ui.checkBox_amp.isChecked():
             y = self.ax.lines[0].get_ydata()
             x = np.arange(len(y))
@@ -134,6 +156,12 @@ class CustomPlot(QDialog):
             self.canvas.draw()
 
     def show_points(self):
+        """
+        Points checkbox callback. Show data points in graph
+
+        :return:
+        """
+
         if self.ui.checkBox_points.isChecked():
             self.mean.set_marker('o')
             self.canvas.draw()
@@ -142,5 +170,11 @@ class CustomPlot(QDialog):
             self.canvas.draw()
 
     def generate_random_color(self):
+        """
+        Generate random color for graph
+
+        :return: RGB hex string
+        """
+
         r = lambda: random.randint(0, 255)
         return '#%02X%02X%02X' % (r(), r(), r())

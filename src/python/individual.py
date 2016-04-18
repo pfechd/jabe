@@ -1,7 +1,7 @@
 from session import Session
 from mask import Mask
 from stimulionset import StimuliOnset
-from plotWindow import CustomPlot
+from plotwindow import CustomPlot
 
 
 class Individual:
