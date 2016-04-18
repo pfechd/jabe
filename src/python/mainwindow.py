@@ -90,15 +90,30 @@ class MainWindow(QMainWindow):
 
     def add_session_pressed(self):
         if self.ui.tree_widget.selectedItems():
+            individual = None
+            # If we have an individual selected, use that. If we have a session selected, use its parent
             if isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
-                self.ui.tree_widget.selectedItems()[0].add_session()
-                self.ui.tree_widget.selectedItems()[0].setExpanded(True)
+                individual = self.ui.tree_widget.selectedItems()[0]
+            elif isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
+                individual = self.ui.tree_widget.selectedItems()[0].parent()
+
+            if individual:
+                individual.add_session()
+                individual.setExpanded(True)
 
     def add_individual_pressed(self):
         if self.ui.tree_widget.selectedItems():
+            group = None;
+            # If we have a group selected, use that, otherwise go up in the tree to the group we are in
             if isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
-                self.ui.tree_widget.selectedItems()[0].add_individual("test")
-                self.ui.tree_widget.selectedItems()[0].setExpanded(True)
+                group = self.ui.tree_widget.selectedItems()[0]
+            elif isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
+                group = self.ui.tree_widget.selectedItems()[0].parent()
+            elif isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
+                group = self.ui.tree_widget.selectedItems()[0].parent().parent()
+            if group:
+                group.add_individual("test")
+                group.setExpanded(True)
 
     def add_group_pressed(self):
         current_row = len(self.groups)
