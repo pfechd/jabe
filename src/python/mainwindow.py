@@ -124,7 +124,6 @@ class MainWindow(QMainWindow):
             individual = self.ui.tree_widget.selectedItems()[0].session
             for button in self.individual_buttons:
                 button.setEnabled(True)
-            print individual.ready_for_calculation()
             self.ui.pushButton.setEnabled(individual.ready_for_calculation())
         else:
             for button in self.individual_buttons:
