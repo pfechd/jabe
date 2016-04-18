@@ -36,6 +36,8 @@ class CustomPlot(QDialog):
 
         self.setWindowTitle('Plot - ' + session.name)
 
+        self.plot_mean()
+
         self.show()
 
     def tool_home(self):
