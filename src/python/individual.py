@@ -45,5 +45,8 @@ class Individual:
     def add_session(self, session):
         self.sessions.append(session)
 
+    def remove_session(self, session):
+        self.sessions.remove(session)
+
     def plot(self):
         pass
