@@ -21,13 +21,13 @@ class ExportWindow(QDialog):
         self.toolbar.save_figure()
 
     def export_mat(self):
-        filename = QFileDialog.getSaveFileName(None, "Save file as mat", "", ".mat")
+        filename = QFileDialog.getSaveFileName(self, "Save file as mat", "", ".mat")
         if filename:
             sio.savemat(filename[0] + filename[1], {'data': self.brain.calculate_mean()[0]})
         self.close()
 
     def export_txt(self):
-        filename = QFileDialog.getSaveFileName(None, "Save file as txt", "", ".txt")
+        filename = QFileDialog.getSaveFileName(self, "Save file as txt", "", ".txt")
         if filename:
             np.savetxt(filename[0] + filename[1], self.brain.calculate_mean()[0], "%.18f")
         self.close()

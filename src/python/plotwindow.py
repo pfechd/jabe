@@ -1,10 +1,12 @@
+import numpy as np
 import random
-from exportwindow import ExportWindow
-from PyQt5.QtWidgets import QDialog, QFileDialog
+
+import matplotlib.pyplot as plt
+from PyQt5.QtWidgets import QDialog
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-import matplotlib.pyplot as plt
-import numpy as np
+
+from exportwindow import ExportWindow
 from src.python.generated_ui.custom_plot import Ui_Dialog
 
 
@@ -24,6 +26,10 @@ class CustomPlot(QDialog):
         :return:
         """
         super(CustomPlot, self).__init__(parent)
+        self.amp = None
+        self.fwhm = None
+        self.mean = None
+        self.std = None
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
 
@@ -48,6 +54,7 @@ class CustomPlot(QDialog):
         self.ui.toolButton_zoom.clicked.connect(self.toolbar.zoom)
 
         self.setWindowTitle('Plot - ' + session.name)
+        self.export_window = None
 
         self.plot_mean()
 
@@ -75,8 +82,6 @@ class CustomPlot(QDialog):
                 r1, r2 = self.session.calculate_fwhm(x, y, smooth)
                 self.fwhm = self.ax.axvspan(r1, r2, facecolor='g', alpha=0.3)
                 self.canvas.draw()
-            else:
-                self.fwhm = None
         else:
             if self.fwhm is not None:
                 self.fwhm.remove()
@@ -101,7 +106,6 @@ class CustomPlot(QDialog):
             self.ui.spinBox.setEnabled(True)
         else:
             self.mean.remove()
-            self.mean = None
 
             self.canvas.draw()
 
@@ -147,8 +151,8 @@ class CustomPlot(QDialog):
                 'Time: %.2f\nAmp: %.2f' % (max_amp[0], max_amp[1]),
                 xy=(max_amp[0], max_amp[1]), xytext=(max_amp[0] + 12, max_amp[1] - 1),
                 ha='right', va='bottom',
-                bbox=dict(boxstyle = 'round,pad=0.5', fc = self.generate_random_color(), alpha = 0.5),
-                arrowprops=dict(arrowstyle='->', connectionstyle = 'arc3, rad=0')
+                bbox=dict(boxstyle='round,pad=0.5', fc=self.generate_random_color(), alpha=0.5),
+                arrowprops=dict(arrowstyle='->', connectionstyle='arc3, rad=0')
             )
             self.canvas.draw()
         else:
@@ -169,12 +173,15 @@ class CustomPlot(QDialog):
             self.mean.set_marker('')
             self.canvas.draw()
 
-    def generate_random_color(self):
+    @staticmethod
+    def generate_random_color():
         """
         Generate random color for graph
 
         :return: RGB hex string
         """
 
-        r = lambda: random.randint(0, 255)
+        def r():
+            return random.randint(0, 255)
+
         return '#%02X%02X%02X' % (r(), r(), r())

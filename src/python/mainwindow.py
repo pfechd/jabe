@@ -1,16 +1,17 @@
 import json
 import os
-from PyQt5.QtWidgets import QMainWindow, QFileDialog, QTreeWidgetItem
+
+from PyQt5.QtWidgets import QMainWindow, QFileDialog
+
 from generated_ui.mainwindow import Ui_MainWindow
-from spmpath import SPMPath
-from mask import Mask
-from stimulionset import StimuliOnset
-from individual import Individual
 from group import Group
+from mask import Mask
+from plotwindow import CustomPlot
+from spmpath import SPMPath
+from stimulionset import StimuliOnset
 from tree_items.grouptreeitem import GroupTreeItem
 from tree_items.individualtreeitem import IndividualTreeItem
 from tree_items.sessiontreeitem import SessionTreeItem
-from plotwindow import CustomPlot
 
 
 class MainWindow(QMainWindow):

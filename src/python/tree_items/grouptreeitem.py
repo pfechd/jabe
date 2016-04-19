@@ -9,7 +9,7 @@ class GroupTreeItem(QTreeWidgetItem):
 
         self.group = group
 
-    def add_individual(self,name):
+    def add_individual(self, name):
         individual = Individual()
         individual.name = name
         self.group.add_individual(individual)

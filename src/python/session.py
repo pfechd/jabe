@@ -16,6 +16,7 @@ class Session:
     The brain data is initially read from a NIfTI-file (.nii) and the original
     data is stored in the member data
     """
+
     def __init__(self, name=None, configuration=None):
         self.path = None
         self.brain_file = None
@@ -91,7 +92,6 @@ class Session:
 
     def separate_into_responses(self, visual_stimuli):
         number_of_stimuli = visual_stimuli.amount
-        shortest_interval = self.images  # The longest duration possible is if every image is part in one single stimuli
 
         shortest_interval = min([j - i for i, j in zip(visual_stimuli.data[:-1, 0], visual_stimuli.data[1:, 0])])
 
@@ -101,7 +101,7 @@ class Session:
         for i in range(number_of_stimuli - 1):
             start = visual_stimuli.data[i, 0]
             end = start + shortest_interval
-            self.response[i, 0:(end - start)] = self.masked_data[:, (start-1):(end-1)]
+            self.response[i, 0:(end - start)] = self.masked_data[:, (start - 1):(end - 1)]
 
     def normalize_local(self):
         """
@@ -131,7 +131,7 @@ class Session:
         for i in range(self.response.shape[1]):
             rm1 = np.nonzero(self.response[:, i])
             if rm1[0].any():
-                response_std[:, i] = np.std(self.response[rm1[0], i], ddof=1) # ddof=1 to work like MATLAB std()
+                response_std[:, i] = np.std(self.response[rm1[0], i], ddof=1)  # ddof=1 to work like MATLAB std()
 
         return response_std
 
@@ -143,13 +143,15 @@ class Session:
             response_sem.append(sem(self.response[:, i]))
         return response_sem
 
-    def plot_mean(self, fwhm = False):
-        """ Plot the mean response."""
+    def plot_mean(self, fwhm=False):
+        """ Plot the mean response.
+        :param fwhm: A bool telling if we should plot fwhm
+        """
         y = self.calculate_mean()[0]
         smoothing_factor = 20
         x = np.arange(y.size)
 
-        self.plot_amplitude(x, y, smoothing_factor)
+        self.plot_amplitude(x, y)
         if fwhm:
             r1, r2 = self.calculate_fwhm(x, y, smoothing_factor)
             plt.axvspan(r1, r2, facecolor='g', alpha=0.3)
@@ -171,7 +173,9 @@ class Session:
         plt.show()
 
     def sub_from_baseline(self, response):
-        """ Subtract baseline from a response """
+        """ Subtract baseline from a response
+        :param response: the response to subtract from
+        """
         sub_value = response[0]
 
         for i in range(self.images):
@@ -183,7 +187,8 @@ class Session:
         """ Returns the size of one voxel in the image. """
         return self.brain_file._header.get_zooms()
 
-    def calculate_fwhm(self, x, y, smoothing):
+    @staticmethod
+    def calculate_fwhm(x, y, smoothing):
         """
         Returns two positions showing the full width half maximum(fwhm) of a given array y.
 
@@ -196,25 +201,26 @@ class Session:
         0 gives no smoothing.
         :return: Two positions on the x axis.
         """
-        y[0] = y[-1] = 0     # Temporary code due to bugged y values
+        y[0] = y[-1] = 0  # Temporary code due to bugged y values
 
         assert 0 <= smoothing < len(y)
-        half_maximum = np.max(y)/2
+        half_maximum = np.max(y) / 2
         spline = UnivariateSpline(x, y - half_maximum, s=smoothing)
         roots = spline.roots()
         try:
-            assert len(roots) == 2   # Higher smoothing factor required
+            assert len(roots) == 2  # Higher smoothing factor required
         except AssertionError:
             print "Smoothed function contains ", len(roots), " roots, 2 required"
             return 0, 1
         r1, r2 = roots
         # DEBUG
-        #plt.plot(x, spline(x) + half_maximum)
+        # plt.plot(x, spline(x) + half_maximum)
         return r1, r2
 
-    def calculate_amplitude(self, x, y, smoothing):
+    @staticmethod
+    def calculate_amplitude(x, y, smoothing):
 
-        spline = UnivariateSpline(x, y, s=smoothing) # Remove spline if smoothing is unnecessary
+        spline = UnivariateSpline(x, y, s=smoothing)  # Remove spline if smoothing is unnecessary
         max_amp = np.argmax(spline(x))
         return max_amp, spline(x)[max_amp]
 
@@ -227,9 +233,8 @@ class Session:
         # Check if dimensions of 'Session' and 'Mask' match.
         if self.data.shape[0:3] != self.mask.data.shape:
             return 'Session image dimensions does not match Mask dimensions\n\nSession: ' \
-                   + str(self.brain.data.shape[0:3]) + '\nMask: ' + str(self.mask.data.shape)
+                   + str(self.data.shape[0:3]) + '\nMask: ' + str(self.mask.data.shape)
         else:
             self.apply_mask(self.mask)
             self.separate_into_responses(self.stimuli)
             self.normalize_local()
-
