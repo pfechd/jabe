@@ -1,3 +1,4 @@
+from PyQt5 import QtCore
 from PyQt5.QtWidgets import QFileDialog, QDialog
 from src.python.generated_ui.export_window import Ui_Export_Window
 import numpy as np
@@ -14,7 +15,10 @@ class ExportWindow(QDialog):
         self.ui.export_mat_button.clicked.connect(self.export_mat)
         self.ui.export_txt_button.clicked.connect(self.export_txt)
         self.ui.export_image_button.clicked.connect(self.export_image)
-        self.open()
+
+        self.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.Popup)
+        self.show()
+
 
     def export_image(self):
         self.close()
@@ -31,3 +35,4 @@ class ExportWindow(QDialog):
         if filename[0]:
             np.savetxt(filename[0] + filename[1], self.brain.calculate_mean()[0], "%.18f")
         self.close()
+
