@@ -5,8 +5,8 @@ import scipy.io as sio
 
 
 class ExportWindow(QDialog):
-    def __init__(self, brain, toolbar):
-        super(ExportWindow, self).__init__()
+    def __init__(self, parent, brain, toolbar):
+        super(ExportWindow, self).__init__(parent)
         self.ui = Ui_Export_Window()
         self.ui.setupUi(self)
         self.brain = brain
@@ -14,7 +14,7 @@ class ExportWindow(QDialog):
         self.ui.export_mat_button.clicked.connect(self.export_mat)
         self.ui.export_txt_button.clicked.connect(self.export_txt)
         self.ui.export_image_button.clicked.connect(self.export_image)
-        self.show()
+        self.open()
 
     def export_image(self):
         self.close()

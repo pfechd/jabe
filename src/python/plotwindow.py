@@ -65,7 +65,7 @@ class CustomPlot(QDialog):
         Export button callback. Creates a custom export window
         :return:
         """
-        self.export_window = ExportWindow(self.session, self.toolbar)
+        self.export_window = ExportWindow(self, self.session, self.toolbar)
 
     def apply_fwhm(self):
         """

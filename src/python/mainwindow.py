@@ -1,6 +1,7 @@
 import json
 import os
 
+from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtWidgets import QMainWindow, QFileDialog
 
 from generated_ui.mainwindow import Ui_MainWindow
@@ -12,6 +13,7 @@ from stimulionset import StimuliOnset
 from tree_items.grouptreeitem import GroupTreeItem
 from tree_items.individualtreeitem import IndividualTreeItem
 from tree_items.sessiontreeitem import SessionTreeItem
+from namedialog import NameDialog
 
 
 class MainWindow(QMainWindow):
@@ -34,8 +36,6 @@ class MainWindow(QMainWindow):
         self.ui.maskButton.clicked.connect(self.mask_button_pressed)
         self.ui.stimuliButton.clicked.connect(self.stimuli_button_pressed)
         self.ui.add_group_button.clicked.connect(self.add_group_pressed)
-        self.ui.add_individual_button.clicked.connect(self.add_individual_pressed)
-        self.ui.add_session_button.clicked.connect(self.add_session_pressed)
         self.ui.remove_button.clicked.connect(self.remove_pressed)
         self.ui.tree_widget.itemSelectionChanged.connect(self.update_gui)
         self.show()
@@ -43,6 +43,8 @@ class MainWindow(QMainWindow):
         self.individual_buttons = [self.ui.pushButton, self.ui.brainButton,
                                    self.ui.maskButton, self.ui.stimuliButton]
 
+
+        self.ui.tree_widget.setColumnWidth(0, 200)
         self.groups = []
         self.load_configuration()
         self.update_gui()
@@ -74,10 +76,12 @@ class MainWindow(QMainWindow):
             for group in self.groups:
                 group_tree_item = GroupTreeItem(group)
                 self.ui.tree_widget.addTopLevelItem(group_tree_item)
+                group_tree_item.create_buttons()
                 for individual in group.individuals:
                     individual_tree_item = IndividualTreeItem(individual)
 
                     group_tree_item.addChild(individual_tree_item)
+                    individual_tree_item.create_buttons()
 
                     for session in individual.sessions:
                         session_tree_item = SessionTreeItem(session)
@@ -90,39 +94,15 @@ class MainWindow(QMainWindow):
 
             self.update_gui()
 
-    def add_session_pressed(self):
-        if self.ui.tree_widget.selectedItems():
-            individual = None
-            # If we have an individual selected, use that. If we have a session selected, use its parent
-            if isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
-                individual = self.ui.tree_widget.selectedItems()[0]
-            elif isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
-                individual = self.ui.tree_widget.selectedItems()[0].parent()
-
-            if individual:
-                individual.add_session()
-                individual.setExpanded(True)
-
-    def add_individual_pressed(self):
-        if self.ui.tree_widget.selectedItems():
-            group = None
-            # If we have a group selected, use that, otherwise go up in the tree to the group we are in
-            if isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
-                group = self.ui.tree_widget.selectedItems()[0]
-            elif isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
-                group = self.ui.tree_widget.selectedItems()[0].parent()
-            elif isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
-                group = self.ui.tree_widget.selectedItems()[0].parent().parent()
-            if group:
-                group.add_individual("test")
-                group.setExpanded(True)
-
     def add_group_pressed(self):
         current_row = len(self.groups)
+        #nd = NameDialog(self, name='New group ' + str(current_row))
         name = 'New group ' + str(current_row)
         group = Group(name=name)
         self.groups.append(group)
-        self.ui.tree_widget.addTopLevelItem(GroupTreeItem(group))
+        group_item = GroupTreeItem(group)
+        self.ui.tree_widget.addTopLevelItem(group_item)
+        group_item.create_buttons()
 
     def remove_pressed(self):
         if self.ui.tree_widget.selectedItems():
