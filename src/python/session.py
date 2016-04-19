@@ -218,7 +218,7 @@ class Session:
         max_amp = np.argmax(spline(x))
         return max_amp, spline(x)[max_amp]
 
-    def plot_amplitude(self, x, y, smoothing):
+    def plot_amplitude(self, x, y):
         max_amp = self.calculate_amplitude(x, y, 0)
         plt.plot([x[0], x[-1]], [max_amp[1]] * 2, '--')
         plt.plot([max_amp[0]] * 2, [-100, 100], '--')

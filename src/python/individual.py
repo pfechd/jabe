@@ -5,7 +5,6 @@ from plotwindow import CustomPlot
 
 
 class Individual:
-
     def __init__(self, configuration=None):
         self.name = None
         self.sessions = []
@@ -32,7 +31,6 @@ class Individual:
 
             if 'name' in configuration:
                 self.name = configuration['name']
-
 
     def get_configuration(self):
         configuration = {

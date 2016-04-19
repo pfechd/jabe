@@ -4,7 +4,7 @@ from ..individual import Individual
 
 
 class GroupTreeItem(QTreeWidgetItem):
-    def __init__(self,group):
+    def __init__(self, group):
         super(GroupTreeItem, self).__init__([group.name])
 
         self.group = group

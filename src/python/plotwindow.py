@@ -1,5 +1,5 @@
 import random
-from export_window import ExportWindow
+from exportwindow import ExportWindow
 from PyQt5.QtWidgets import QDialog, QFileDialog
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
@@ -58,7 +58,7 @@ class CustomPlot(QDialog):
         Export button callback. Creates a custom export window
         :return:
         """
-        self.exportwindow = ExportWindow(self.session, self.toolbar)
+        self.export_window = ExportWindow(self.session, self.toolbar)
 
     def apply_fwhm(self):
         """

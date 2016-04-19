@@ -21,6 +21,7 @@ class MainWindow(QMainWindow):
     mostly consists of callback functions for the various user interface
     events.
     """
+
     def __init__(self):
         super(MainWindow, self).__init__()
 
@@ -84,7 +85,7 @@ class MainWindow(QMainWindow):
             self.update_gui()
 
             if 'current' in configuration:
-                print 'Please select the', configuration['current'] # TODO: Do something about this!
+                print 'Please select the', configuration['current']  # TODO: Do something about this!
 
             self.update_gui()
 
@@ -103,7 +104,7 @@ class MainWindow(QMainWindow):
 
     def add_individual_pressed(self):
         if self.ui.tree_widget.selectedItems():
-            group = None;
+            group = None
             # If we have a group selected, use that, otherwise go up in the tree to the group we are in
             if isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
                 group = self.ui.tree_widget.selectedItems()[0]
@@ -125,10 +126,10 @@ class MainWindow(QMainWindow):
     def remove_pressed(self):
         if self.ui.tree_widget.selectedItems():
             selected = self.ui.tree_widget.selectedItems()[0]
-            if isinstance(selected,IndividualTreeItem):
+            if isinstance(selected, IndividualTreeItem):
                 selected.parent().group.remove_individual(selected.individual)
                 selected.parent().removeChild(selected)
-            elif isinstance(selected,GroupTreeItem):
+            elif isinstance(selected, GroupTreeItem):
                 self.groups.remove(selected.group)
                 self.ui.tree_widget.takeTopLevelItem(self.ui.tree_widget.indexFromItem(selected).row())
             elif isinstance(selected, SessionTreeItem):
@@ -156,7 +157,6 @@ class MainWindow(QMainWindow):
             session = self.ui.tree_widget.selectedItems()[0].session
             session.calculate()
             CustomPlot(self, session)
-
 
     def brain_button_pressed(self):
         """ Callback function, run when the choose brain button is pressed."""

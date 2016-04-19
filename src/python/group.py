@@ -1,5 +1,6 @@
 from individual import Individual
 
+
 class Group:
     def __init__(self, name=None, configuration=None):
         self.individuals = []

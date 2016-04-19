@@ -17,14 +17,13 @@ class SPMPath(QtWidgets.QDialog):
         self.ui.submit.clicked.connect(self.submit_spm_path)
         self.show()
 
-    def submit_spm_path(self, e):
+    def submit_spm_path(self):
         """
         Check and save given SPM path.
 
         Reads a path from the user interface text window.
         Any '~' in given path will be replaced with a path to the user's home
         directory. A valid path will be added to the matlab engine and saved.
-        :param e: Event description
         """
         if self.check_spm():
             Message("SPM path already set").exec_()
