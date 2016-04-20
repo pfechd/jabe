@@ -40,6 +40,7 @@ class MainWindow(QMainWindow):
         self.ui.tree_widget.itemSelectionChanged.connect(self.update_gui)
         self.ui.editName.textChanged.connect(self.name_changed)
         self.ui.editName.returnPressed.connect(self.ui.editName.clearFocus)
+        self.ui.editName.hide()
         self.show()
 
         self.individual_buttons = [self.ui.pushButton, self.ui.brainButton,
@@ -119,6 +120,8 @@ class MainWindow(QMainWindow):
                 selected.parent().individual.remove_session(selected.session)
                 selected.parent().removeChild(selected)
             self.update_gui()
+            if len(self.ui.tree_widget.selectedItems()) == 0:
+                self.ui.editName.hide()
 
     def update_buttons(self):
         if self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
@@ -211,6 +214,7 @@ class MainWindow(QMainWindow):
                 else:
                     self.ui.stimuliLabel.setText('No stimuli chosen')
             self.ui.editName.setText(self.ui.tree_widget.selectedItems()[0].text(0))
+            self.ui.editName.show()
         else:
             for label in [self.ui.brainLabel, self.ui.maskLabel, self.ui.stimuliLabel]:
                 label.setText('')
