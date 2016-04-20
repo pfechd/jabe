@@ -23,7 +23,7 @@ class GroupTreeItem(QTreeWidgetItem):
         tree = self.treeWidget()
         b = QtWidgets.QPushButton()
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("plus-icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap("icons/plus-icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         b.setFixedSize(16, 16)
         b.setIcon(icon)
         b.setFlat(True)
