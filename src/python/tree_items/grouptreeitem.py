@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QTreeWidgetItem
 from PyQt5 import QtWidgets, QtGui
 from individualtreeitem import IndividualTreeItem
 from ..individual import Individual
+import src.python.generated_ui.icons_rc
 
 
 class GroupTreeItem(QTreeWidgetItem):
@@ -25,7 +26,7 @@ class GroupTreeItem(QTreeWidgetItem):
         tree = self.treeWidget()
         b = QtWidgets.QPushButton()
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("icons/plus-icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(":/icons/plus-icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         b.setFixedSize(16, 16)
         b.setIcon(icon)
         b.setFlat(True)
