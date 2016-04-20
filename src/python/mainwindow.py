@@ -38,6 +38,8 @@ class MainWindow(QMainWindow):
         self.ui.add_group_button.clicked.connect(self.add_group_pressed)
         self.ui.remove_button.clicked.connect(self.remove_pressed)
         self.ui.tree_widget.itemSelectionChanged.connect(self.update_gui)
+        self.ui.editName.textChanged.connect(self.name_changed)
+        self.ui.editName.returnPressed.connect(self.ui.editName.clearFocus)
         self.show()
 
         self.individual_buttons = [self.ui.pushButton, self.ui.brainButton,
@@ -190,26 +192,33 @@ class MainWindow(QMainWindow):
         self.ui.tree_widget.update()
 
     def update_text(self):
-        if self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
-            individual = self.ui.tree_widget.selectedItems()[0].session
+        if self.ui.tree_widget.selectedItems():
+            if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
+                individual = self.ui.tree_widget.selectedItems()[0].session
 
-            if individual.path:
-                self.ui.brainLabel.setText('EPI-images chosen: ' + individual.path)
-            else:
-                self.ui.brainLabel.setText('No EPI-images chosen')
+                if individual.path:
+                    self.ui.brainLabel.setText('EPI-images chosen: ' + individual.path)
+                else:
+                    self.ui.brainLabel.setText('No EPI-images chosen')
 
-            if individual.mask:
-                self.ui.maskLabel.setText('Mask picked: ' + individual.mask.path)
-            else:
-                self.ui.maskLabel.setText('No mask chosen')
+                if individual.mask:
+                    self.ui.maskLabel.setText('Mask picked: ' + individual.mask.path)
+                else:
+                    self.ui.maskLabel.setText('No mask chosen')
 
-            if individual.stimuli:
-                self.ui.stimuliLabel.setText('Stimuli picked: ' + individual.stimuli.path)
-            else:
-                self.ui.stimuliLabel.setText('No stimuli chosen')
+                if individual.stimuli:
+                    self.ui.stimuliLabel.setText('Stimuli picked: ' + individual.stimuli.path)
+                else:
+                    self.ui.stimuliLabel.setText('No stimuli chosen')
+            self.ui.editName.setText(self.ui.tree_widget.selectedItems()[0].text(0))
         else:
             for label in [self.ui.brainLabel, self.ui.maskLabel, self.ui.stimuliLabel]:
                 label.setText('')
+
+    def name_changed(self):
+        if self.ui.tree_widget.selectedItems():
+            text = self.ui.editName.text()
+            self.ui.tree_widget.selectedItems()[0].update_name(text)
 
     def configure_spm(self):
         """ Callback function, run when the spm menu item is pressed."""

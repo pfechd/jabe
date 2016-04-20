@@ -26,3 +26,7 @@ class IndividualTreeItem(QTreeWidgetItem):
         b.setFlat(True)
         b.clicked.connect(self.add_session)
         tree.setItemWidget(self, 1, b)
+
+    def update_name(self, text):
+        self.setText(0, text)
+        self.individual.name = text

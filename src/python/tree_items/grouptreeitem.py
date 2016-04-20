@@ -9,15 +9,17 @@ class GroupTreeItem(QTreeWidgetItem):
         super(GroupTreeItem, self).__init__([group.name])
 
         self.group = group
+        self.nr_of_individuals = 0
 
     def add_individual(self):
         individual = Individual()
-        individual.name = 'test'
+        individual.name = 'Individual ' + str(self.nr_of_individuals)
         self.group.add_individual(individual)
         individual_item = IndividualTreeItem(individual)
         self.addChild(individual_item)
         individual_item.create_buttons()
         self.setExpanded(True)
+        self.nr_of_individuals += 1
 
     def create_buttons(self):
         tree = self.treeWidget()
@@ -29,4 +31,8 @@ class GroupTreeItem(QTreeWidgetItem):
         b.setFlat(True)
         b.clicked.connect(self.add_individual)
         tree.setItemWidget(self, 1, b)
+
+    def update_name(self, text):
+        self.setText(0, text)
+        self.group.name = text
 
