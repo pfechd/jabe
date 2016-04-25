@@ -75,16 +75,10 @@ class TestSession(unittest.TestCase):
         self.assertEqual((diff < 1e-08).all(), True)
 
     def test_calculate_sem(self):
-        sigma = 10.0
-        n = 10000
-        tests = 1
-        draws = np.random.normal(4.0, sigma, (n, 1))
-        self.session.response = draws
-
+        data = np.array([[1], [2], [3]])
+        self.session.response = data
         response_sem = self.session.calculate_sem()
-        response_sem = map(lambda x: np.around(x, 2), response_sem)
-        expected_output = [np.around(sigma / np.sqrt(n), 2)] * tests
-        self.assertEqual(response_sem, expected_output)
+        self.assertEqual(response_sem, [1 / np.sqrt(3)])
 
     def test_calculate_fwhm(self):
         fn = lambda x: -x ** 2 + 20 * x
