@@ -103,7 +103,7 @@ class Session:
             end = start + shortest_interval
             self.response[i, 0:(end - start)] = self.masked_data[:, (start - 1):(end - 1)]
 
-    def normalize_local(self, type_="subtract", reference="local"):
+    def normalize(self, type_="subtract", reference="local"):
         """
         Subtract every value of the response with the local baseline.
 
@@ -225,7 +225,7 @@ class Session:
             return 0, 1
         r1, r2 = roots
         # DEBUG
-        plt.plot(x, spline(x) + half_maximum)
+        #plt.plot(x, spline(x) + half_maximum)
         return r1, r2
 
     @staticmethod
