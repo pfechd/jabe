@@ -57,9 +57,12 @@ class CustomPlot(QDialog):
         self.export_window = None
 
         self.plot_mean()
-
-        self.apply_fwhm() 
         
+        if parent.ui.fwhm_checkbox.isChecked():
+            self.ui.checkBox_fwhm.setChecked(True)
+
+        self.apply_fwhm()
+            
         self.show()
 
     def tool_export(self):
@@ -76,7 +79,7 @@ class CustomPlot(QDialog):
         :return:
         """
 
-        if self.ui.checkBox_fwhm.isChecked() or self.parent.ui.fwhm_checkbox.isChecked():
+        if self.ui.checkBox_fwhm.isChecked():
             if self.mean is not None:
                 y = self.ax.lines[0].get_ydata()
                 x = np.arange(len(y))
