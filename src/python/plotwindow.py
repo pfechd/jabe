@@ -96,8 +96,9 @@ class CustomPlot(QDialog):
         if self.ui.checkBox_mean.isChecked():
             self.ax.relim()
             mean = self.session.calculate_mean()
+            print mean
             for stimuli_type, stimuli_values in mean.iteritems():
-                self.mean, = self.ax.plot(stimuli_values, color=self.generate_random_color())
+                self.mean, = self.ax.plot(stimuli_values[0], color=self.generate_random_color())
 
             self.canvas.draw()
 

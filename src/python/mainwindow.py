@@ -129,6 +129,8 @@ class MainWindow(QMainWindow):
             for button in self.individual_buttons:
                 button.setEnabled(True)
             self.ui.pushButton.setEnabled(individual.ready_for_calculation())
+        elif self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
+            self.ui.pushButton.setEnabled(True)
         else:
             for button in self.individual_buttons:
                 button.setEnabled(False)
@@ -143,6 +145,12 @@ class MainWindow(QMainWindow):
             session = self.ui.tree_widget.selectedItems()[0].session
             session.calculate()
             CustomPlot(self, session)
+
+        if self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
+            individual = self.ui.tree_widget.selectedItems()[0].individual
+            individual.calculate()
+            CustomPlot(self, individual)
+
 
     def brain_button_pressed(self):
         """ Callback function, run when the choose brain button is pressed."""
