@@ -180,8 +180,8 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>270</width>
-                     <height>165</height>
+                     <width>16</width>
+                     <height>16</height>
                     </rect>
                    </property>
                   </widget>
@@ -506,8 +506,8 @@
                          <rect>
                           <x>0</x>
                           <y>0</y>
-                          <width>116</width>
-                          <height>81</height>
+                          <width>16</width>
+                          <height>16</height>
                          </rect>
                         </property>
                        </widget>
@@ -642,8 +642,8 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>301</width>
-                     <height>158</height>
+                     <width>266</width>
+                     <height>159</height>
                     </rect>
                    </property>
                   </widget>
@@ -974,8 +974,8 @@
                          <rect>
                           <x>0</x>
                           <y>0</y>
-                          <width>147</width>
-                          <height>81</height>
+                          <width>123</width>
+                          <height>100</height>
                          </rect>
                         </property>
                        </widget>
@@ -1123,13 +1123,6 @@
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_24">
                      <item>
-                      <widget class="QCheckBox" name="amplitude_checkbox">
-                       <property name="text">
-                        <string>Amplitude</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
                       <widget class="QCheckBox" name="sem_checkbox_2">
                        <property name="text">
                         <string>SEM</string>
@@ -1139,7 +1132,7 @@
                      <item>
                       <widget class="QCheckBox" name="peak_checkbox">
                        <property name="text">
-                        <string>Peak time</string>
+                        <string>Peak time and amplitude</string>
                        </property>
                       </widget>
                      </item>
@@ -1373,7 +1366,7 @@
      <x>0</x>
      <y>0</y>
      <width>1100</width>
-     <height>22</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
