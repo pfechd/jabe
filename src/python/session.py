@@ -23,7 +23,6 @@ class Session:
         self.data = None
         self.images = None
         self.masked_data = None
-        self.response = None
         self.responses = {}
         self.stimuli = None
         self.mask = None
@@ -96,14 +95,12 @@ class Session:
 
         shortest_interval = min([j - i for i, j in zip(visual_stimuli.data[:-1, 0], visual_stimuli.data[1:, 0])])
 
-        self.response = np.zeros((number_of_stimuli, shortest_interval))
         self.responses = {}
 
         # Ignore the images after the last time stamp
         for i in range(number_of_stimuli - 1):
             start = visual_stimuli.data[i, 0]
             end = start + shortest_interval
-            self.response[i, 0:(end - start)] = self.masked_data[:, (start - 1):(end - 1)]
             response = self.masked_data[:, (start - 1):(end - 1)]
             intensity = visual_stimuli.data[i, 1]
             if intensity in self.responses:
@@ -117,9 +114,10 @@ class Session:
 
         :return:
         """
-        number_of_stimuli = self.response.shape[0]
-        for i in range(number_of_stimuli):
-            self.response[i, :] = self.response[i, :] - self.response[i, 0]
+        for stimuli_type, values in self.responses.iteritems():
+            number_of_stimuli = values.shape[0]
+            for i in range(number_of_stimuli):
+                self.responses[stimuli_type][i, :] = self.responses[stimuli_type][i, :] - self.responses[stimuli_type][i, 0]
 
     def calculate_mean(self):
         """ Calculate the mean response """
