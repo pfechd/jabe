@@ -112,19 +112,16 @@ class Session:
         assert type_ == "subtract" or type_ == "divide"
         assert reference == "local" or reference == "global"
         number_of_stimuli = self.response.shape[0]
-        print self.response.shape
         for i in range(number_of_stimuli):
             if reference == "local":
                 ref = self.response[i, 0]
             else:
                 ref = np.mean(self.data[:, :, :, i])
-            print ref
             if type_ == "subtract":
                 self.response[i, :] = self.response[i, :] - ref
             else:
                 if ref:
                     self.response[i, :] = np.array([(j/ref - 1) * 100 for j in self.response[i, :]])
-                    #self.response[i, :] = (self.response[i, :]/(np.ones(self.response.shape[1]) * ref) - 1) * 100
 
     def calculate_mean(self):
         """ Calculate the mean response """
@@ -214,9 +211,7 @@ class Session:
         0 gives no smoothing.
         :return: Two positions on the x axis.
         """
-        y[0] = y[-1] = 0  # Temporary code due to bugged y values
 
-        assert 0 <= smoothing < len(y)
         half_maximum = np.max(y) / 2
         spline = UnivariateSpline(x, y - half_maximum, s=smoothing)
         roots = spline.roots()
