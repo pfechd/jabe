@@ -114,14 +114,17 @@ class Session:
         number_of_stimuli = self.response.shape[0]
         for i in range(number_of_stimuli):
             if reference == "local":
-                ref = self.response[i, 0]
+                ref = np.ones(self.response.shape[1]) * self.response[i, 0]
             else:
-                ref = np.mean(self.data[:, :, :, i])
+                start = self.stimuli.data[i, 0]
+                time_indexes = list(range(start, start + self.response.shape[1]))
+                ref = np.mean(self.data[:, :, :, time_indexes], (0, 1, 2))     # Mean of spatial dimensions
+
             if type_ == "subtract":
                 self.response[i, :] = self.response[i, :] - ref
             else:
-                if ref:
-                    self.response[i, :] = np.array([(j/ref - 1) * 100 for j in self.response[i, :]])
+                if ref.all():
+                    self.response[i, :] = (self.response[i, :] / ref - 1) * 100
 
     def calculate_mean(self):
         """ Calculate the mean response """
@@ -245,4 +248,4 @@ class Session:
         else:
             self.apply_mask(self.mask)
             self.separate_into_responses(self.stimuli)
-            self.normalize_local(type_="divide", reference="local")
+            self.normalize_local(type_="subtract", reference="global")
