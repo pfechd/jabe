@@ -97,17 +97,18 @@ class Session:
 
         self.response = np.zeros((number_of_stimuli, shortest_interval))
 
-        dict_of_stimuli = {}
+        self.dict_of_stimuli = {}
 
         # Ignore the images after the last time stamp
         for i in range(number_of_stimuli - 1):
             start = visual_stimuli.data[i, 0]
             end = start + shortest_interval
             self.response[i, 0:(end - start)] = self.masked_data[:, (start - 1):(end - 1)]
-            if(start in dict_of_stimuli):
-                dict_of_stimuli[visual_stimuli.data[i, 1]].append(self.response[i, 0:(end - start)])
+            if(visual_stimuli.data[i, 1] in self.dict_of_stimuli):
+                self.dict_of_stimuli[visual_stimuli.data[i, 1]].append(self.response[i, 0:(end - start)])
             else:
-                dict_of_stimuli[visual_stimuli.data[i, 1]] = [self.response[i, 0:(end - start)]]
+                self.dict_of_stimuli[visual_stimuli.data[i, 1]] = [self.response[i, 0:(end - start)]]
+
 
     def normalize_local(self):
         """
@@ -121,12 +122,13 @@ class Session:
 
     def calculate_mean(self):
         """ Calculate the mean response """
-        response_mean = np.zeros((1, self.response.shape[1]))
+        for stimuli_type, stimuli_data in self.dict_of_stimuli.iteritems():
+            response_mean = stimuli_data[0]
+            for i in range(1, len(stimuli_data)):
+                for j in range(len(stimuli_data[i])):
 
-        for i in range(self.response.shape[1]):
-            rm1 = np.nonzero(self.response[:, i])
-            if rm1[0].any():
-                response_mean[:, i] = np.mean(self.response[rm1[0], i])
+                    response_mean[j] += stimuli_data[i][j]
+
 
         return response_mean
 
