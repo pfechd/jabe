@@ -105,9 +105,10 @@ class Session:
 
     def normalize(self, type_="subtract", reference="local"):
         """
-        Subtract every value of the response with the local baseline.
+        Applies normalization depending on type and reference.
 
-        :return:
+        :param type: What kind of normalization is to be made; subtract: subtract to baseline ,divide: procentual change
+        :param reference: If normalization should be local or global over a group.
         """
         assert type_ == "subtract" or type_ == "divide"
         assert reference == "local" or reference == "global"
@@ -248,4 +249,4 @@ class Session:
         else:
             self.apply_mask(self.mask)
             self.separate_into_responses(self.stimuli)
-            self.normalize_local(type_="subtract", reference="global")
+            self.normalize(type_="subtract", reference="global")
