@@ -139,22 +139,35 @@ class Session:
 
     def calculate_std(self):
         """ Calculate the standard deviation of the response """
-        response_std = np.zeros((1, self.response.shape[1]))
+        responses_std = {}
 
-        for i in range(self.response.shape[1]):
-            rm1 = np.nonzero(self.response[:, i])
-            if rm1[0].any():
-                response_std[:, i] = np.std(self.response[rm1[0], i], ddof=1)  # ddof=1 to work like MATLAB std()
+        for stimuli_type, stimuli_data in self.responses.iteritems():
+            response_std = np.zeros(stimuli_data.shape[1])
 
-        return response_std
+            for i in range(stimuli_data.shape[1]):
+                rm1 = np.nonzero(stimuli_data[:, i])
+                if rm1[0].any():
+                    response_std[i] = np.std(stimuli_data[rm1[0], i], ddof=1)
+
+            responses_std[stimuli_type] = response_std
+
+        return responses_std
 
     def calculate_sem(self):
         """ Calculate the standard error of the mean (SEM) of the response """
-        response_sem = []
+        responses_sem = {}
 
-        for i in range(self.response.shape[1]):
-            response_sem.append(sem(self.response[:, i]))
-        return response_sem
+        for stimuli_type, stimuli_data in self.responses.iteritems():
+            response_sem = np.zeros(stimuli_data.shape[1])
+
+            for i in range(stimuli_data.shape[1]):
+                rm1 = np.nonzero(stimuli_data[:, i])
+                if rm1[0].any():
+                    response_sem[i] = sem(stimuli_data[rm1[0], i], ddof=1)
+
+            responses_sem[stimuli_type] = response_sem
+
+        return responses_sem
 
     def plot_mean(self, fwhm=False):
         """ Plot the mean response.
