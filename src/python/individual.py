@@ -11,6 +11,7 @@ class Individual:
         self.mask = None
         self.anatomic_image = None
         self.plot_settings = []
+        self.responses = {}
 
         if configuration:
             if 'sessions' in configuration:
@@ -60,13 +61,11 @@ class Individual:
 
             for i in range(stimuli_data.shape[1]):
                 rm1 = np.nonzero(stimuli_data[:, i])
-                print rm1
-                if rm1[0].any():
-                    print stimuli_data[rm1[0],i]
-                    response_mean[:,i] = np.mean(stimuli_data[rm1[0], i])
+                # TODO: Motivate this if-statement
+                if len(rm1[0]) > 0:
+                    response_mean[:, i] = np.mean(stimuli_data[rm1[0], i])
 
             mean_responses[stimuli_type] = response_mean
-            print response_mean
         return mean_responses
 
     def combine_session_responses(self):
