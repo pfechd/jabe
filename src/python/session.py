@@ -97,11 +97,17 @@ class Session:
 
         self.response = np.zeros((number_of_stimuli, shortest_interval))
 
+        dict_of_stimuli = {}
+
         # Ignore the images after the last time stamp
         for i in range(number_of_stimuli - 1):
             start = visual_stimuli.data[i, 0]
             end = start + shortest_interval
             self.response[i, 0:(end - start)] = self.masked_data[:, (start - 1):(end - 1)]
+            if(start in dict_of_stimuli):
+                dict_of_stimuli[visual_stimuli.data[i, 1]].append(self.response[i, 0:(end - start)])
+            else:
+                dict_of_stimuli[visual_stimuli.data[i, 1]] = [self.response[i, 0:(end - start)]]
 
     def normalize_local(self):
         """
