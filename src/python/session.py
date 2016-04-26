@@ -104,11 +104,12 @@ class Session:
             start = visual_stimuli.data[i, 0]
             end = start + shortest_interval
             self.response[i, 0:(end - start)] = self.masked_data[:, (start - 1):(end - 1)]
+            response = self.masked_data[:, (start - 1):(end - 1)]
             intensity = visual_stimuli.data[i, 1]
-            if intensity not in self.responses:
-                self.responses[intensity] = []
-
-            self.responses[intensity].append(self.response[i, 0:(end - start)])
+            if intensity in self.responses:
+                self.responses[intensity] = np.concatenate((self.responses[intensity], response))
+            else:
+                self.responses[intensity] = response
 
     def normalize_local(self):
         """
