@@ -22,6 +22,13 @@ class GroupTreeItem(QTreeWidgetItem):
         self.setExpanded(True)
         self.nr_of_individuals += 1
 
+    def remove_item(self):
+        tree = self.treeWidget()
+        tree.takeTopLevelItem(tree.indexFromItem(self).row())
+        tree.parent().parent().groups.remove(self.group)
+        if len(tree.selectedItems()) == 0:
+                tree.parent().parent().ui.stackedWidget.setCurrentIndex(1)
+
     def create_buttons(self):
         tree = self.treeWidget()
         b = QtWidgets.QPushButton()
@@ -31,7 +38,16 @@ class GroupTreeItem(QTreeWidgetItem):
         b.setIcon(icon)
         b.setFlat(True)
         b.clicked.connect(self.add_individual)
-        tree.setItemWidget(self, 1, b)
+        tree.setItemWidget(self, 2, b)
+
+        b2 = QtWidgets.QPushButton()
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/minus-icon"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        b2.setFixedSize(16, 16)
+        b2.setIcon(icon)
+        b2.setFlat(True)
+        b2.clicked.connect(self.remove_item)
+        tree.setItemWidget(self, 1, b2)
 
     def update_name(self, text):
         self.setText(0, text)

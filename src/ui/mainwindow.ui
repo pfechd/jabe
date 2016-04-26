@@ -25,6 +25,9 @@
         <property name="sizeAdjustPolicy">
          <enum>QAbstractScrollArea::AdjustIgnored</enum>
         </property>
+        <property name="autoScroll">
+         <bool>false</bool>
+        </property>
         <property name="dragEnabled">
          <bool>false</bool>
         </property>
@@ -50,7 +53,7 @@
          <bool>true</bool>
         </property>
         <property name="columnCount">
-         <number>2</number>
+         <number>3</number>
         </property>
         <attribute name="headerCascadingSectionResizes">
          <bool>true</bool>
@@ -63,6 +66,11 @@
         <column>
          <property name="text">
           <string/>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string notr="true">3</string>
          </property>
         </column>
        </widget>
@@ -172,7 +180,7 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>301</width>
+                     <width>270</width>
                      <height>165</height>
                     </rect>
                    </property>
@@ -498,7 +506,7 @@
                          <rect>
                           <x>0</x>
                           <y>0</y>
-                          <width>147</width>
+                          <width>116</width>
                           <height>81</height>
                          </rect>
                         </property>
@@ -1160,7 +1168,7 @@
                </property>
                <property name="maximumSize">
                 <size>
-                 <width>400</width>
+                 <width>300</width>
                  <height>16777215</height>
                 </size>
                </property>

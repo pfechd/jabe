@@ -14,8 +14,14 @@ class IndividualTreeItem(QTreeWidgetItem):
     def add_session(self):
         session = Session(name="Session " + str(len(self.individual.sessions)))
         self.individual.add_session(session)
-        self.addChild(SessionTreeItem(session))
+        sess_tree_item = SessionTreeItem(session)
+        self.addChild(sess_tree_item)
+        sess_tree_item.create_buttons()
         self.setExpanded(True)
+
+    def remove_item(self):
+        self.parent().group.remove_individual(self.individual)
+        self.parent().removeChild(self)
 
     def create_buttons(self):
         tree = self.treeWidget()
@@ -26,7 +32,16 @@ class IndividualTreeItem(QTreeWidgetItem):
         b.setIcon(icon)
         b.setFlat(True)
         b.clicked.connect(self.add_session)
-        tree.setItemWidget(self, 1, b)
+        tree.setItemWidget(self, 2, b)
+
+        b2 = QtWidgets.QPushButton()
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/minus-icon"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        b2.setFixedSize(16, 16)
+        b2.setIcon(icon)
+        b2.setFlat(True)
+        b2.clicked.connect(self.remove_item)
+        tree.setItemWidget(self, 1, b2)
 
     def update_name(self, text):
         self.setText(0, text)

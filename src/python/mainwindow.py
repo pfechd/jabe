@@ -30,13 +30,16 @@ class MainWindow(QMainWindow):
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.ui.tree_widget.setColumnWidth(1, 25)
+        self.ui.tree_widget.setColumnWidth(2, 25)
         #self.ui.actionSettings.triggered.connect(self.configure_spm)
         self.ui.extract_session_btn.clicked.connect(self.calculate_button_pressed)
         self.ui.add_session_epi_btn.clicked.connect(self.brain_button_pressed)
         self.ui.add_session_mask_btn.clicked.connect(self.mask_button_pressed)
         self.ui.add_session_stimuli_btn.clicked.connect(self.stimuli_button_pressed)
         self.ui.add_group_menu_btn.triggered.connect(self.add_group_pressed)
-        #self.ui.add_individual_btn.clicked.connect(self.add)
+        self.ui.add_individual_btn.clicked.connect(self.add_item_clicked)
+        self.ui.add_session_btn.clicked.connect(self.add_item_clicked)
         self.ui.remove_session_btn.clicked.connect(self.remove_pressed)
         self.ui.remove_group_btn.clicked.connect(self.remove_pressed)
         self.ui.remove_individual_btn.clicked.connect(self.remove_pressed)
@@ -96,6 +99,7 @@ class MainWindow(QMainWindow):
                     for session in individual.sessions:
                         session_tree_item = SessionTreeItem(session)
                         individual_tree_item.addChild(session_tree_item)
+                        session_tree_item.create_buttons()
 
             self.update_gui()
 
@@ -114,19 +118,17 @@ class MainWindow(QMainWindow):
         self.ui.tree_widget.addTopLevelItem(group_item)
         group_item.create_buttons()
 
+    def add_item_clicked(self):
+        if self.ui.tree_widget.selectedItems():
+            if isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
+                self.ui.tree_widget.selectedItems()[0].add_individual()
+            elif isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
+                self.ui.tree_widget.selectedItems()[0].add_session()
+
     def remove_pressed(self):
         if self.ui.tree_widget.selectedItems():
-            selected = self.ui.tree_widget.selectedItems()[0]
-            if isinstance(selected, IndividualTreeItem):
-                selected.parent().group.remove_individual(selected.individual)
-                selected.parent().removeChild(selected)
-            elif isinstance(selected, GroupTreeItem):
-                self.groups.remove(selected.group)
-                self.ui.tree_widget.takeTopLevelItem(self.ui.tree_widget.indexFromItem(selected).row())
-            elif isinstance(selected, SessionTreeItem):
-                selected.parent().individual.remove_session(selected.session)
-                selected.parent().removeChild(selected)
-            self.update_gui()
+            self.ui.tree_widget.selectedItems()[0].remove_item()
+
             if len(self.ui.tree_widget.selectedItems()) == 0:
                 self.ui.stackedWidget.setCurrentIndex(1)
 
