@@ -103,28 +103,26 @@ class Session:
             end = start + shortest_interval
             self.response[i, 0:(end - start)] = self.masked_data[:, (start - 1):(end - 1)]
 
-    def normalize_local(self, type_="subtract", reference="local"):
+    def normalize_local(self, procentage=False, global_=False):
         """
         Subtract every value of the response with the local baseline.
 
         :return:
         """
-        assert type_ == "subtract" or type_ == "divide"
-        assert reference == "local" or reference == "global"
         number_of_stimuli = self.response.shape[0]
         for i in range(number_of_stimuli):
-            if reference == "local":
-                ref = np.ones(self.response.shape[1]) * self.response[i, 0]
-            else:
+            if global_:
                 start = self.stimuli.data[i, 0]
                 time_indexes = list(range(start, start + self.response.shape[1]))
                 ref = np.mean(self.data[:, :, :, time_indexes], (0, 1, 2))     # Mean of spatial dimensions
-
-            if type_ == "subtract":
-                self.response[i, :] = self.response[i, :] - ref
             else:
+                ref = np.ones(self.response.shape[1]) * self.response[i, 0]
+
+            if procentage:
                 if ref.all():
                     self.response[i, :] = (self.response[i, :] / ref - 1) * 100
+            else:
+                self.response[i, :] = self.response[i, :] - ref
 
     def calculate_mean(self):
         """ Calculate the mean response """
@@ -248,4 +246,4 @@ class Session:
         else:
             self.apply_mask(self.mask)
             self.separate_into_responses(self.stimuli)
-            self.normalize_local(type_="subtract", reference="global")
+            self.normalize_local(procentage=False, global_=True)
