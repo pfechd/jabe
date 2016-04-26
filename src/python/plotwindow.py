@@ -61,6 +61,9 @@ class CustomPlot(QDialog):
         if parent.ui.fwhm_checkbox.isChecked():
             self.ui.checkBox_fwhm.setChecked(True)
 
+        #if parent.ui.sem_checkbock.isChecked():
+            #self.ui.check_sem.setChecked(True)
+
         self.apply_fwhm()
             
         self.show()

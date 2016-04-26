@@ -16,7 +16,7 @@ class ExportWindow(QDialog):
         self.ui.export_txt_button.clicked.connect(self.export_txt)
         self.ui.export_image_button.clicked.connect(self.export_image)
 
-        self.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.Popup)
+        #self.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.Popup)
         self.show()
 
 
