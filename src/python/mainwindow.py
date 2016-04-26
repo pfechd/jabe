@@ -30,21 +30,28 @@ class MainWindow(QMainWindow):
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.ui.actionSettings.triggered.connect(self.configure_spm)
-        self.ui.pushButton.clicked.connect(self.calculate_button_pressed)
-        self.ui.brainButton.clicked.connect(self.brain_button_pressed)
-        self.ui.maskButton.clicked.connect(self.mask_button_pressed)
-        self.ui.stimuliButton.clicked.connect(self.stimuli_button_pressed)
-        self.ui.add_group_button.clicked.connect(self.add_group_pressed)
-        self.ui.remove_button.clicked.connect(self.remove_pressed)
+        #self.ui.actionSettings.triggered.connect(self.configure_spm)
+        self.ui.extract_session_btn.clicked.connect(self.calculate_button_pressed)
+        self.ui.add_session_epi_btn.clicked.connect(self.brain_button_pressed)
+        self.ui.add_session_mask_btn.clicked.connect(self.mask_button_pressed)
+        self.ui.add_session_stimuli_btn.clicked.connect(self.stimuli_button_pressed)
+        self.ui.add_group_menu_btn.triggered.connect(self.add_group_pressed)
+        #self.ui.add_individual_btn.clicked.connect(self.add)
+        self.ui.remove_session_btn.clicked.connect(self.remove_pressed)
+        self.ui.remove_group_btn.clicked.connect(self.remove_pressed)
+        self.ui.remove_individual_btn.clicked.connect(self.remove_pressed)
         self.ui.tree_widget.itemSelectionChanged.connect(self.update_gui)
-        self.ui.editName.textChanged.connect(self.name_changed)
-        self.ui.editName.returnPressed.connect(self.ui.editName.clearFocus)
-        self.ui.editName.hide()
+        self.ui.session_name.textChanged.connect(self.name_changed)
+        self.ui.group_name.textChanged.connect(self.name_changed)
+        self.ui.individual_name.textChanged.connect(self.name_changed)
+        self.ui.session_name.returnPressed.connect(self.ui.session_name.clearFocus)
+        self.ui.group_name.returnPressed.connect(self.ui.group_name.clearFocus)
+        self.ui.individual_name.returnPressed.connect(self.ui.individual_name.clearFocus)
+        self.ui.stackedWidget.setCurrentIndex(1)
         self.show()
 
-        self.individual_buttons = [self.ui.pushButton, self.ui.brainButton,
-                                   self.ui.maskButton, self.ui.stimuliButton]
+        self.individual_buttons = [self.ui.extract_session_btn, self.ui.add_session_epi_btn,
+                                   self.ui.add_session_mask_btn, self.ui.add_session_stimuli_btn]
 
 
         self.ui.tree_widget.setColumnWidth(0, 200)
@@ -121,14 +128,14 @@ class MainWindow(QMainWindow):
                 selected.parent().removeChild(selected)
             self.update_gui()
             if len(self.ui.tree_widget.selectedItems()) == 0:
-                self.ui.editName.hide()
+                self.ui.stackedWidget.setCurrentIndex(1)
 
     def update_buttons(self):
         if self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
             individual = self.ui.tree_widget.selectedItems()[0].session
             for button in self.individual_buttons:
                 button.setEnabled(True)
-            self.ui.pushButton.setEnabled(individual.ready_for_calculation())
+            self.ui.extract_session_btn.setEnabled(individual.ready_for_calculation())
         else:
             for button in self.individual_buttons:
                 button.setEnabled(False)
@@ -192,7 +199,21 @@ class MainWindow(QMainWindow):
     def update_gui(self):
         self.update_buttons()
         self.update_text()
+        self.update_stackedwidget()
         self.ui.tree_widget.update()
+
+    def update_stackedwidget(self):
+        if self.ui.tree_widget.selectedItems():
+            if isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
+                self.ui.stackedWidget.setCurrentIndex(2)
+                self.ui.individual_name.setText(self.ui.tree_widget.selectedItems()[0].text(0))
+            elif isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
+                self.ui.stackedWidget.setCurrentIndex(3)
+                self.ui.session_name.setText(self.ui.tree_widget.selectedItems()[0].text(0))
+            else:
+                self.ui.stackedWidget.setCurrentIndex(0)
+                self.ui.group_name.setText(self.ui.tree_widget.selectedItems()[0].text(0))
+
 
     def update_text(self):
         if self.ui.tree_widget.selectedItems():
@@ -200,28 +221,34 @@ class MainWindow(QMainWindow):
                 individual = self.ui.tree_widget.selectedItems()[0].session
 
                 if individual.path:
-                    self.ui.brainLabel.setText('EPI-images chosen: ' + individual.path)
+                    self.ui.session_epi_label.setText('EPI-images chosen: ' + individual.path.split('/')[-1])
                 else:
-                    self.ui.brainLabel.setText('No EPI-images chosen')
+                    self.ui.session_epi_label.setText('No EPI-images chosen')
 
                 if individual.mask:
-                    self.ui.maskLabel.setText('Mask picked: ' + individual.mask.path)
+                    self.ui.session_mask_label.setText('Mask picked: ' + individual.mask.path.split('/')[-1])
                 else:
-                    self.ui.maskLabel.setText('No mask chosen')
+                    self.ui.session_mask_label.setText('No mask chosen')
 
                 if individual.stimuli:
-                    self.ui.stimuliLabel.setText('Stimuli picked: ' + individual.stimuli.path)
+                    self.ui.session_stimuli_label.setText('Stimuli picked: ' + individual.stimuli.path.split('/')[-1])
                 else:
-                    self.ui.stimuliLabel.setText('No stimuli chosen')
-            self.ui.editName.setText(self.ui.tree_widget.selectedItems()[0].text(0))
-            self.ui.editName.show()
+                    self.ui.session_stimuli_label.setText('No stimuli chosen')
+            #self.ui.editName.setText(self.ui.tree_widget.selectedItems()[0].text(0))
+            #self.ui.editName.show()
         else:
-            for label in [self.ui.brainLabel, self.ui.maskLabel, self.ui.stimuliLabel]:
+            for label in [self.ui.session_epi_label, self.ui.session_mask_label, self.ui.session_stimuli_label]:
                 label.setText('')
 
     def name_changed(self):
         if self.ui.tree_widget.selectedItems():
-            text = self.ui.editName.text()
+            if isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
+                text = self.ui.individual_name.text()
+            elif isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
+                text = self.ui.session_name.text()
+            else:
+                text = self.ui.group_name.text()
+
             self.ui.tree_widget.selectedItems()[0].update_name(text)
 
     def configure_spm(self):
