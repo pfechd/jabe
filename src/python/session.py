@@ -112,16 +112,19 @@ class Session:
         assert type_ == "subtract" or type_ == "divide"
         assert reference == "local" or reference == "global"
         number_of_stimuli = self.response.shape[0]
-        print self.response
+        print self.response.shape
         for i in range(number_of_stimuli):
             if reference == "local":
                 ref = self.response[i, 0]
             else:
                 ref = np.mean(self.data[:, :, :, i])
+            print ref
             if type_ == "subtract":
                 self.response[i, :] = self.response[i, :] - ref
             else:
-                self.response[i, :] = np.divide(self.response[i, :], ref)
+                if ref:
+                    self.response[i, :] = np.array([(j/ref - 1) * 100 for j in self.response[i, :]])
+                    #self.response[i, :] = (self.response[i, :]/(np.ones(self.response.shape[1]) * ref) - 1) * 100
 
     def calculate_mean(self):
         """ Calculate the mean response """
@@ -224,7 +227,7 @@ class Session:
             return 0, 1
         r1, r2 = roots
         # DEBUG
-        # plt.plot(x, spline(x) + half_maximum)
+        plt.plot(x, spline(x) + half_maximum)
         return r1, r2
 
     @staticmethod
