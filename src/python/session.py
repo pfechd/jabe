@@ -208,12 +208,11 @@ class Session:
 
         :param x: Time axis
         :param y: Value axis, for which fwhm is calculated
-        :param smoothing: Smoothing factor for y. Must be less then the length of y and 0 or larger.
-        0 gives no smoothing.
+        :param smoothing: float. Smoothing factor for y. 0 gives no smoothing.
         :return: Two positions on the x axis.
         """
 
-        half_maximum = np.max(y) / 2
+        half_maximum = (np.max(y) + np.min(y)) / 2
         spline = UnivariateSpline(x, y - half_maximum, s=smoothing)
         roots = spline.roots()
         try:
