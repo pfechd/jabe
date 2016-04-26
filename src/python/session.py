@@ -123,15 +123,19 @@ class Session:
 
     def calculate_mean(self):
         """ Calculate the mean response """
-        for stimuli_type, stimuli_data in self.dict_of_stimuli.iteritems():
-            response_mean = stimuli_data[0]
-            for i in range(1, len(stimuli_data)):
-                for j in range(len(stimuli_data[i])):
+        mean_responses = {}
 
-                    response_mean[j] += stimuli_data[i][j]
+        for stimuli_type, stimuli_data in self.responses.iteritems():
+            response_mean = np.zeros(stimuli_data.shape[1])
 
+            for i in range(stimuli_data.shape[1]):
+                rm1 = np.nonzero(stimuli_data[:, i])
+                if rm1[0].any():
+                    response_mean[i] = np.mean(stimuli_data[rm1[0], i])
 
-        return response_mean
+            mean_responses[stimuli_type] = response_mean
+
+        return mean_responses
 
     def calculate_std(self):
         """ Calculate the standard deviation of the response """
