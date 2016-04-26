@@ -24,6 +24,7 @@ class Session:
         self.images = None
         self.masked_data = None
         self.response = None
+        self.responses = {}
         self.stimuli = None
         self.mask = None
 
@@ -96,19 +97,18 @@ class Session:
         shortest_interval = min([j - i for i, j in zip(visual_stimuli.data[:-1, 0], visual_stimuli.data[1:, 0])])
 
         self.response = np.zeros((number_of_stimuli, shortest_interval))
-
-        self.dict_of_stimuli = {}
+        self.responses = {}
 
         # Ignore the images after the last time stamp
         for i in range(number_of_stimuli - 1):
             start = visual_stimuli.data[i, 0]
             end = start + shortest_interval
             self.response[i, 0:(end - start)] = self.masked_data[:, (start - 1):(end - 1)]
-            if(visual_stimuli.data[i, 1] in self.dict_of_stimuli):
-                self.dict_of_stimuli[visual_stimuli.data[i, 1]].append(self.response[i, 0:(end - start)])
-            else:
-                self.dict_of_stimuli[visual_stimuli.data[i, 1]] = [self.response[i, 0:(end - start)]]
+            intensity = visual_stimuli.data[i, 1]
+            if intensity not in self.responses:
+                self.responses[intensity] = []
 
+            self.responses[intensity].append(self.response[i, 0:(end - start)])
 
     def normalize_local(self):
         """
