@@ -2,10 +2,12 @@ from mask import Mask
 from session import Session
 from stimulionset import StimuliOnset
 import numpy as np
+from data import Data
 
 
-class Individual:
+class Individual(Data):
     def __init__(self, configuration=None):
+        super(Data, self).__init__()
         self.name = None
         self.sessions = []
         self.mask = None
@@ -88,10 +90,4 @@ class Individual:
                     self.responses[intensity] = np.concatenate((self.responses[intensity], data))
                 else:
                     self.responses[intensity] = data
-
-    def prepare_for_calculation(self):
-        for i in range(len(self.sessions)):
-            if not self.sessions[i].ready_for_calculation():
-                continue
-            self.sessions[i].prepare_for_calculation()
 
