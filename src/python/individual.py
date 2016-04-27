@@ -71,14 +71,19 @@ class Individual:
     def combine_session_responses(self):
         self.responses = {}
         for i in range(len(self.sessions)):
+            # If the session doesn't have the files loaded, skip it.
+            if not self.sessions[i].ready_for_calculation():
+                continue
             session_response = self.sessions[i].calculate_mean()
             for intensity, data in session_response.iteritems():
                 if intensity in self.responses:
-                    self.responses[intensity] = np.concatenate((self.responses[intensity], data), axis=0)
+                    self.responses[intensity] = np.concatenate((self.responses[intensity], data))
                 else:
                     self.responses[intensity] = data
 
     def calculate(self):
         for i in range(len(self.sessions)):
+            if not self.sessions[i].ready_for_calculation():
+                continue
             self.sessions[i].calculate()
 
