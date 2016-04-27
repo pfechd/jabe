@@ -23,12 +23,11 @@ class GroupTreeItem(QTreeWidgetItem):
         self.nr_of_individuals += 1
 
     def remove_item(self):
-        # TODO: Clean up parent().parent()
         tree = self.treeWidget()
         tree.takeTopLevelItem(tree.indexFromItem(self).row())
         tree.parent().parent().groups.remove(self.group)
         if len(tree.selectedItems()) == 0:
-                tree.parent().parent().ui.stackedWidget.setCurrentIndex(1)
+                tree.window().ui.stackedWidget.setCurrentIndex(1)
 
     def create_buttons(self):
         tree = self.treeWidget()
@@ -78,19 +77,11 @@ class GroupTreeItem(QTreeWidgetItem):
             top_tree_items.append(tree_item)
         return top_tree_items
 
-    def add_individuals_boxes(self):
+    def add_individuals_boxes(self, layout):
         for individual in self.group.individuals:
             box = QtWidgets.QCheckBox(individual.name)
             box.setChecked(True)
-            self.treeWidget().window().ui.individuals_plot.addWidget(box)
-
-    def clear_individuals_boxes(self, layout):
-        while layout.count():
-            child = layout.takeAt(0)
-            if child.widget() is not None:
-                child.widget().deleteLater()
-            elif child.layout() is not None:
-                self.clear_sessions_boxes(child.layout())
+            layout.addWidget(box)
 
     def update_name(self, text):
         self.setText(0, text)
