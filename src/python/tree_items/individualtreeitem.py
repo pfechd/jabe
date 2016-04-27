@@ -25,6 +25,10 @@ class IndividualTreeItem(QTreeWidgetItem):
         self.parent().removeChild(self)
 
     def create_buttons(self):
+        """
+        Create/add plus and minus buttons to item
+        """
+
         tree = self.treeWidget()
         b = QtWidgets.QPushButton()
         icon = QtGui.QIcon()
@@ -45,6 +49,11 @@ class IndividualTreeItem(QTreeWidgetItem):
         tree.setItemWidget(self, 1, b2)
 
     def get_overview_tree(self):
+        """
+        Get overview tree of session-children
+
+        :return: List of QTreeWidgetItems
+        """
         top_tree_items = []
         for session in self.individual.sessions:
             tree_item = QTreeWidgetItem([session.name])
@@ -68,21 +77,15 @@ class IndividualTreeItem(QTreeWidgetItem):
 
         return top_tree_items
 
-    def add_sessions_boxes(self):
+    def add_sessions_boxes(self, layout):
+        """
+        Add checkboxes for sessions to layout
+
+        :param layout: QLayout
+        """
         for session in self.individual.sessions:
             box = QtWidgets.QCheckBox(session.name)
-            self.treeWidget().window().ui.sessions_plot.addWidget(box)
-
-    def clear_sessions_boxes(self, layout):
-        while layout.count():
-            child = layout.takeAt(0)
-            if child.widget() is not None:
-                child.widget().deleteLater()
-            elif child.layout() is not None:
-                self.clear_sessions_boxes(child.layout())
-
-    def remove_sessions_to_plot(self):
-        pass
+            layout.addWidget(box)
 
     def update_name(self, text):
         self.setText(0, text)
