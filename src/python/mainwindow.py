@@ -119,7 +119,6 @@ class MainWindow(QMainWindow):
         group_item.create_buttons()
 
     def exit_button_pressed(self):
-        self.save_configuration()
         self.close()
 
     def add_item_clicked(self):
