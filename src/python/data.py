@@ -83,4 +83,3 @@ class Data(object):
             number_of_stimuli = values.shape[0]
             for i in range(number_of_stimuli):
                 self.responses[stimuli_type][i, :] = self.responses[stimuli_type][i, :] - self.responses[stimuli_type][i, 0]
-

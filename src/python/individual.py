@@ -8,14 +8,6 @@ from data import Data
 class Individual(Data):
     def __init__(self, configuration=None):
         super(Individual, self).__init__()
-        self.name = None
-        self.sessions = []
-        self.mask = None
-        self.brain = None
-        self.stimuli = None
-        self.anatomic_image = None
-        self.plot_settings = []
-        self.responses = {}
 
         if configuration:
             self.load_configuration(configuration)

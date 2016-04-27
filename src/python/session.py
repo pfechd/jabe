@@ -1,6 +1,5 @@
 # -*- encoding: utf-8 -*-
 
-import matplotlib.pyplot as plt
 import numpy as np
 import nibabel as nib
 from scipy.interpolate import UnivariateSpline
@@ -20,14 +19,6 @@ class Session(Data):
 
     def __init__(self, name=None, configuration=None):
         super(Session, self).__init__()
-        self.path = None
-        self.brain_file = None
-        self.sequence = None
-        self.images = None
-        self.masked_data = None
-        self.responses = {}
-        self.stimuli = None
-        self.mask = None
 
         if name:
             self.name = name
@@ -77,17 +68,6 @@ class Session(Data):
 
     def load_mask(self, mask):
         self.mask = mask
-
-    def normalize_local(self):
-        """
-        Subtract every value of the response with the local baseline.
-
-        :return:
-        """
-        for stimuli_type, values in self.responses.iteritems():
-            number_of_stimuli = values.shape[0]
-            for i in range(number_of_stimuli):
-                self.responses[stimuli_type][i, :] = self.responses[stimuli_type][i, :] - self.responses[stimuli_type][i, 0]
 
     def calculate_mean(self):
         """ Calculate the mean response """
@@ -188,9 +168,4 @@ class Session(Data):
         spline = UnivariateSpline(x, y, s=smoothing)  # Remove spline if smoothing is unnecessary
         max_amp = np.argmax(spline(x))
         return max_amp, spline(x)[max_amp]
-
-    def plot_amplitude(self, x, y):
-        max_amp = self.calculate_amplitude(x, y, 0)
-        plt.plot([x[0], x[-1]], [max_amp[1]] * 2, '--')
-        plt.plot([max_amp[0]] * 2, [-100, 100], '--')
 
