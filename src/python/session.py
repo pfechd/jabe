@@ -137,35 +137,6 @@ class Session(Data):
 
         return responses_sem
 
-    def plot_mean(self, fwhm=False):
-        """ Plot the mean response.
-        :param fwhm: A bool telling if we should plot fwhm
-        """
-        y = self.calculate_mean()[0]
-        smoothing_factor = 20
-        x = np.arange(y.size)
-
-        self.plot_amplitude(x, y)
-        if fwhm:
-            r1, r2 = self.calculate_fwhm(x, y, smoothing_factor)
-            plt.axvspan(r1, r2, facecolor='g', alpha=0.3)
-        plt.plot(self.calculate_sem())
-        plt.plot(y)
-        plt.title('Average response (mean)')
-        plt.axis([0, 45, -2, 19])
-        plt.show()
-
-    def plot_std(self):
-        """ Plot the standard error of the response."""
-        y = self.calculate_mean()[0]
-        x = np.arange(y.size)
-
-        plt.plot(self.calculate_sem())
-        plt.errorbar(x, y, yerr=self.calculate_std()[0])
-        plt.title('Average response (std)')
-        plt.axis([0, 45, -20, 30])
-        plt.show()
-
     def sub_from_baseline(self, response):
         """ Subtract baseline from a response
         :param response: the response to subtract from
