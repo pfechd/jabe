@@ -248,4 +248,4 @@ class Session:
         else:
             self.apply_mask(self.mask)
             self.separate_into_responses(self.stimuli)
-            self.normalize_local(percentage=False, global_=True)
+            self.normalize(percentage=False, global_=True)
