@@ -93,7 +93,7 @@
     <item>
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>3</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="group_page">
        <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -171,20 +171,18 @@
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_29">
                 <item>
-                 <widget class="QScrollArea" name="scrollArea_3">
-                  <property name="widgetResizable">
-                   <bool>true</bool>
+                 <widget class="QTreeWidget" name="individual_overview_tree">
+                  <property name="autoScroll">
+                   <bool>false</bool>
                   </property>
-                  <widget class="QWidget" name="scrollAreaWidgetContents_3">
-                   <property name="geometry">
-                    <rect>
-                     <x>0</x>
-                     <y>0</y>
-                     <width>16</width>
-                     <height>16</height>
-                    </rect>
+                  <attribute name="headerVisible">
+                   <bool>false</bool>
+                  </attribute>
+                  <column>
+                   <property name="text">
+                    <string notr="true">1</string>
                    </property>
-                  </widget>
+                  </column>
                  </widget>
                 </item>
                </layout>
@@ -348,93 +346,9 @@
                <property name="title">
                 <string>Plot</string>
                </property>
-               <layout class="QVBoxLayout" name="verticalLayout_14">
+               <layout class="QHBoxLayout" name="horizontalLayout_5">
                 <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_17">
-                  <item>
-                   <widget class="QGroupBox" name="groupBox_10">
-                    <property name="title">
-                     <string>Normalized on:</string>
-                    </property>
-                    <property name="flat">
-                     <bool>true</bool>
-                    </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_15">
-                     <item>
-                      <widget class="QRadioButton" name="radioButton_6">
-                       <property name="enabled">
-                        <bool>false</bool>
-                       </property>
-                       <property name="text">
-                        <string>Local</string>
-                       </property>
-                       <property name="checked">
-                        <bool>true</bool>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QRadioButton" name="radioButton_7">
-                       <property name="enabled">
-                        <bool>false</bool>
-                       </property>
-                       <property name="text">
-                        <string>Global</string>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QGroupBox" name="groupBox_11">
-                    <property name="title">
-                     <string>Normalize:</string>
-                    </property>
-                    <property name="flat">
-                     <bool>true</bool>
-                    </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_16">
-                     <item>
-                      <widget class="QRadioButton" name="radioButton_8">
-                       <property name="enabled">
-                        <bool>false</bool>
-                       </property>
-                       <property name="text">
-                        <string>Subtract baseline</string>
-                       </property>
-                       <property name="checked">
-                        <bool>true</bool>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QRadioButton" name="radioButton_9">
-                       <property name="enabled">
-                        <bool>false</bool>
-                       </property>
-                       <property name="text">
-                        <string>Percent</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QRadioButton" name="radioButton_10">
-                       <property name="enabled">
-                        <bool>false</bool>
-                       </property>
-                       <property name="text">
-                        <string>None</string>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_18">
+                 <layout class="QVBoxLayout" name="verticalLayout_4">
                   <item>
                    <widget class="QGroupBox" name="groupBox_12">
                     <property name="title">
@@ -488,35 +402,139 @@
                    </widget>
                   </item>
                   <item>
-                   <widget class="QGroupBox" name="groupBox_13">
+                   <widget class="QGroupBox" name="groupBox_11">
                     <property name="title">
-                     <string>Individuals</string>
+                     <string>Normalize:</string>
                     </property>
                     <property name="flat">
                      <bool>true</bool>
                     </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_18">
+                    <layout class="QVBoxLayout" name="verticalLayout_16">
                      <item>
-                      <widget class="QScrollArea" name="scrollArea_2">
-                       <property name="widgetResizable">
+                      <widget class="QRadioButton" name="radioButton_8">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                       <property name="text">
+                        <string>Subtract baseline</string>
+                       </property>
+                       <property name="checked">
                         <bool>true</bool>
                        </property>
-                       <widget class="QWidget" name="scrollAreaWidgetContents_2">
-                        <property name="geometry">
-                         <rect>
-                          <x>0</x>
-                          <y>0</y>
-                          <width>16</width>
-                          <height>16</height>
-                         </rect>
-                        </property>
-                       </widget>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QRadioButton" name="radioButton_9">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                       <property name="text">
+                        <string>Percent</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QRadioButton" name="radioButton_10">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                       <property name="text">
+                        <string>None</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QGroupBox" name="groupBox_10">
+                    <property name="title">
+                     <string>Normalized on:</string>
+                    </property>
+                    <property name="flat">
+                     <bool>true</bool>
+                    </property>
+                    <layout class="QVBoxLayout" name="verticalLayout_15">
+                     <item>
+                      <widget class="QRadioButton" name="radioButton_6">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                       <property name="text">
+                        <string>Local</string>
+                       </property>
+                       <property name="checked">
+                        <bool>true</bool>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QRadioButton" name="radioButton_7">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                       <property name="text">
+                        <string>Global</string>
+                       </property>
                       </widget>
                      </item>
                     </layout>
                    </widget>
                   </item>
                  </layout>
+                </item>
+                <item>
+                 <widget class="QGroupBox" name="groupBox_13">
+                  <property name="title">
+                   <string>Individuals</string>
+                  </property>
+                  <property name="flat">
+                   <bool>true</bool>
+                  </property>
+                  <layout class="QVBoxLayout" name="verticalLayout_18">
+                   <item>
+                    <widget class="QScrollArea" name="scrollArea_2">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>150</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                     <property name="widgetResizable">
+                      <bool>true</bool>
+                     </property>
+                     <widget class="QWidget" name="scrollAreaWidgetContents_2">
+                      <property name="geometry">
+                       <rect>
+                        <x>0</x>
+                        <y>0</y>
+                        <width>148</width>
+                        <height>244</height>
+                       </rect>
+                      </property>
+                      <layout class="QHBoxLayout" name="horizontalLayout_4">
+                       <item>
+                        <layout class="QVBoxLayout" name="individuals_plot">
+                         <property name="spacing">
+                          <number>-1</number>
+                         </property>
+                         <property name="topMargin">
+                          <number>0</number>
+                         </property>
+                        </layout>
+                       </item>
+                      </layout>
+                     </widget>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
                 </item>
                </layout>
               </widget>
@@ -633,20 +651,18 @@
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_46">
                 <item>
-                 <widget class="QScrollArea" name="scrollArea_8">
-                  <property name="widgetResizable">
-                   <bool>true</bool>
+                 <widget class="QTreeWidget" name="sessions_overview_tree">
+                  <property name="autoScroll">
+                   <bool>false</bool>
                   </property>
-                  <widget class="QWidget" name="scrollAreaWidgetContents_8">
-                   <property name="geometry">
-                    <rect>
-                     <x>0</x>
-                     <y>0</y>
-                     <width>266</width>
-                     <height>159</height>
-                    </rect>
+                  <attribute name="headerVisible">
+                   <bool>false</bool>
+                  </attribute>
+                  <column>
+                   <property name="text">
+                    <string notr="true">1</string>
                    </property>
-                  </widget>
+                  </column>
                  </widget>
                 </item>
                </layout>
@@ -816,93 +832,9 @@
                <property name="title">
                 <string>Plot</string>
                </property>
-               <layout class="QVBoxLayout" name="verticalLayout_48">
+               <layout class="QHBoxLayout" name="horizontalLayout_6">
                 <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_35">
-                  <item>
-                   <widget class="QGroupBox" name="groupBox_42">
-                    <property name="title">
-                     <string>Normalized on:</string>
-                    </property>
-                    <property name="flat">
-                     <bool>true</bool>
-                    </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_49">
-                     <item>
-                      <widget class="QRadioButton" name="radioButton_26">
-                       <property name="enabled">
-                        <bool>false</bool>
-                       </property>
-                       <property name="text">
-                        <string>Local</string>
-                       </property>
-                       <property name="checked">
-                        <bool>true</bool>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QRadioButton" name="radioButton_27">
-                       <property name="enabled">
-                        <bool>false</bool>
-                       </property>
-                       <property name="text">
-                        <string>Global</string>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QGroupBox" name="groupBox_43">
-                    <property name="title">
-                     <string>Normalize:</string>
-                    </property>
-                    <property name="flat">
-                     <bool>true</bool>
-                    </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_50">
-                     <item>
-                      <widget class="QRadioButton" name="radioButton_28">
-                       <property name="enabled">
-                        <bool>false</bool>
-                       </property>
-                       <property name="text">
-                        <string>Subtract baseline</string>
-                       </property>
-                       <property name="checked">
-                        <bool>true</bool>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QRadioButton" name="radioButton_29">
-                       <property name="enabled">
-                        <bool>false</bool>
-                       </property>
-                       <property name="text">
-                        <string>Percent</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QRadioButton" name="radioButton_30">
-                       <property name="enabled">
-                        <bool>false</bool>
-                       </property>
-                       <property name="text">
-                        <string>None</string>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_36">
+                 <layout class="QVBoxLayout" name="verticalLayout_5">
                   <item>
                    <widget class="QGroupBox" name="groupBox_44">
                     <property name="title">
@@ -956,35 +888,132 @@
                    </widget>
                   </item>
                   <item>
-                   <widget class="QGroupBox" name="groupBox_45">
+                   <widget class="QGroupBox" name="groupBox_43">
                     <property name="title">
-                     <string>Sessions</string>
+                     <string>Normalize:</string>
                     </property>
                     <property name="flat">
                      <bool>true</bool>
                     </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_52">
+                    <layout class="QVBoxLayout" name="verticalLayout_50">
                      <item>
-                      <widget class="QScrollArea" name="scrollArea_9">
-                       <property name="widgetResizable">
+                      <widget class="QRadioButton" name="radioButton_28">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                       <property name="text">
+                        <string>Subtract baseline</string>
+                       </property>
+                       <property name="checked">
                         <bool>true</bool>
                        </property>
-                       <widget class="QWidget" name="scrollAreaWidgetContents_9">
-                        <property name="geometry">
-                         <rect>
-                          <x>0</x>
-                          <y>0</y>
-                          <width>123</width>
-                          <height>100</height>
-                         </rect>
-                        </property>
-                       </widget>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QRadioButton" name="radioButton_29">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                       <property name="text">
+                        <string>Percent</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QRadioButton" name="radioButton_30">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                       <property name="text">
+                        <string>None</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QGroupBox" name="groupBox_42">
+                    <property name="title">
+                     <string>Normalized on:</string>
+                    </property>
+                    <property name="flat">
+                     <bool>true</bool>
+                    </property>
+                    <layout class="QVBoxLayout" name="verticalLayout_49">
+                     <item>
+                      <widget class="QRadioButton" name="radioButton_26">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                       <property name="text">
+                        <string>Local</string>
+                       </property>
+                       <property name="checked">
+                        <bool>true</bool>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QRadioButton" name="radioButton_27">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                       <property name="text">
+                        <string>Global</string>
+                       </property>
                       </widget>
                      </item>
                     </layout>
                    </widget>
                   </item>
                  </layout>
+                </item>
+                <item>
+                 <widget class="QGroupBox" name="groupBox_45">
+                  <property name="title">
+                   <string>Sessions</string>
+                  </property>
+                  <property name="flat">
+                   <bool>true</bool>
+                  </property>
+                  <layout class="QVBoxLayout" name="verticalLayout_52">
+                   <item>
+                    <widget class="QScrollArea" name="scrollArea_9">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>150</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                     <property name="widgetResizable">
+                      <bool>true</bool>
+                     </property>
+                     <widget class="QWidget" name="scrollAreaWidgetContents_9">
+                      <property name="geometry">
+                       <rect>
+                        <x>0</x>
+                        <y>0</y>
+                        <width>148</width>
+                        <height>244</height>
+                       </rect>
+                      </property>
+                      <layout class="QHBoxLayout" name="horizontalLayout_2">
+                       <item>
+                        <layout class="QVBoxLayout" name="sessions_plot"/>
+                       </item>
+                      </layout>
+                     </widget>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
                 </item>
                </layout>
               </widget>
@@ -1366,7 +1395,7 @@
      <x>0</x>
      <y>0</y>
      <width>1100</width>
-     <height>20</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

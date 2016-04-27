@@ -2,7 +2,7 @@ import json
 import os
 
 from PyQt5 import QtWidgets, QtGui
-from PyQt5.QtWidgets import QMainWindow, QFileDialog
+from PyQt5.QtWidgets import QMainWindow, QFileDialog, QSpacerItem, QSizePolicy
 
 from generated_ui.mainwindow import Ui_MainWindow
 from group import Group
@@ -209,12 +209,22 @@ class MainWindow(QMainWindow):
             if isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
                 self.ui.stackedWidget.setCurrentIndex(2)
                 self.ui.individual_name.setText(self.ui.tree_widget.selectedItems()[0].text(0))
+                self.ui.sessions_overview_tree.clear()
+                self.ui.sessions_overview_tree.addTopLevelItems(self.ui.tree_widget.selectedItems()[0].get_overview_tree())
+                self.ui.tree_widget.selectedItems()[0].clear_sessions_boxes(self.ui.sessions_plot)
+                self.ui.tree_widget.selectedItems()[0].add_sessions_boxes()
+                self.ui.sessions_plot.insertSpacerItem(-1, QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding))
             elif isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
                 self.ui.stackedWidget.setCurrentIndex(3)
                 self.ui.session_name.setText(self.ui.tree_widget.selectedItems()[0].text(0))
             else:
                 self.ui.stackedWidget.setCurrentIndex(0)
                 self.ui.group_name.setText(self.ui.tree_widget.selectedItems()[0].text(0))
+                self.ui.individual_overview_tree.clear()
+                self.ui.individual_overview_tree.addTopLevelItems(self.ui.tree_widget.selectedItems()[0].get_overview_tree())
+                self.ui.tree_widget.selectedItems()[0].clear_individuals_boxes(self.ui.individuals_plot)
+                self.ui.tree_widget.selectedItems()[0].add_individuals_boxes()
+                self.ui.individuals_plot.insertSpacerItem(-1, QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
 
     def update_text(self):
@@ -236,8 +246,6 @@ class MainWindow(QMainWindow):
                     self.ui.session_stimuli_label.setText('Stimuli picked: ' + individual.stimuli.path.split('/')[-1])
                 else:
                     self.ui.session_stimuli_label.setText('No stimuli chosen')
-            #self.ui.editName.setText(self.ui.tree_widget.selectedItems()[0].text(0))
-            #self.ui.editName.show()
         else:
             for label in [self.ui.session_epi_label, self.ui.session_mask_label, self.ui.session_stimuli_label]:
                 label.setText('')

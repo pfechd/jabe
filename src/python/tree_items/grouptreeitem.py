@@ -23,6 +23,7 @@ class GroupTreeItem(QTreeWidgetItem):
         self.nr_of_individuals += 1
 
     def remove_item(self):
+        # TODO: Clean up parent().parent()
         tree = self.treeWidget()
         tree.takeTopLevelItem(tree.indexFromItem(self).row())
         tree.parent().parent().groups.remove(self.group)
@@ -48,6 +49,48 @@ class GroupTreeItem(QTreeWidgetItem):
         b2.setFlat(True)
         b2.clicked.connect(self.remove_item)
         tree.setItemWidget(self, 1, b2)
+
+    def get_overview_tree(self):
+        top_tree_items = []
+        for individual in self.group.individuals:
+            tree_item = QTreeWidgetItem([individual.name])
+            for session in individual.sessions:
+                sess_item = QTreeWidgetItem([session.name])
+                tree_item.addChild(sess_item)
+
+                if session.path:
+                    epi_path_item = QTreeWidgetItem(['EPI: ' + session.path.split('/')[-1]])
+                else:
+                    epi_path_item = QTreeWidgetItem(['EPI: None'])
+
+                if session.mask:
+                    mask_path_item = QTreeWidgetItem(['Mask: ' + session.mask.path.split('/')[-1]])
+                else:
+                    mask_path_item = QTreeWidgetItem(['Mask: None'])
+
+                if session.stimuli:
+                    stim_path_item = QTreeWidgetItem(['Stimuli: ' + session.stimuli.path.split('/')[-1]])
+                else:
+                    stim_path_item = QTreeWidgetItem(['Stimuli: None'])
+
+                sess_item.addChildren([epi_path_item, mask_path_item, stim_path_item])
+
+            top_tree_items.append(tree_item)
+        return top_tree_items
+
+    def add_individuals_boxes(self):
+        for individual in self.group.individuals:
+            box = QtWidgets.QCheckBox(individual.name)
+            box.setChecked(True)
+            self.treeWidget().window().ui.individuals_plot.addWidget(box)
+
+    def clear_individuals_boxes(self, layout):
+        while layout.count():
+            child = layout.takeAt(0)
+            if child.widget() is not None:
+                child.widget().deleteLater()
+            elif child.layout() is not None:
+                self.clear_sessions_boxes(child.layout())
 
     def update_name(self, text):
         self.setText(0, text)
