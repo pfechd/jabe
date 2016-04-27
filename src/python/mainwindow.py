@@ -32,7 +32,6 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
         self.ui.tree_widget.setColumnWidth(1, 25)
         self.ui.tree_widget.setColumnWidth(2, 25)
-        #self.ui.actionSettings.triggered.connect(self.configure_spm)
         self.ui.extract_session_btn.clicked.connect(self.calculate_button_pressed)
         self.ui.add_session_epi_btn.clicked.connect(self.brain_button_pressed)
         self.ui.add_session_mask_btn.clicked.connect(self.mask_button_pressed)
@@ -66,9 +65,20 @@ class MainWindow(QMainWindow):
         self.save_configuration()
 
     def save_configuration(self):
+        selected = self.ui.tree_widget.selectedItems()[0]
+        current = []
+
+        if selected.parent():
+            parent_selected = selected.parent()
+            if parent_selected.parent():
+                top = parent_selected.parent()
+                current.append(self.ui.tree_widget.indexFromItem(top).row())
+            current.append(self.ui.tree_widget.indexFromItem(parent_selected).row())
+        current.append(self.ui.tree_widget.indexFromItem(selected).row())
+
         configuration = {
             'groups': [group.get_configuration() for group in self.groups],
-            'current': 0
+            'current': current
         }
 
         with open('configuration.json', 'w') as f:
@@ -104,13 +114,24 @@ class MainWindow(QMainWindow):
             self.update_gui()
 
             if 'current' in configuration:
-                print 'Please select the', configuration['current']  # TODO: Do something about this!
+                current = configuration['current']
+                if len(current) >= 1:
+                    top_item = self.ui.tree_widget.topLevelItem(current[0])
+                    top_item.setSelected(True)
+                    if len(current) >= 2:
+                        top_item.setExpanded(True)
+                        mid_item = top_item.child(current[1])
+                        mid_item.setSelected(True)
+                        top_item.setSelected(False)
+                        if len(current) == 3:
+                            mid_item.setExpanded(True)
+                            mid_item.child(current[2]).setSelected(True)
+                            mid_item.setSelected(False)
 
             self.update_gui()
 
     def add_group_pressed(self):
         current_row = len(self.groups)
-        #nd = NameDialog(self, name='New group ' + str(current_row))
         name = 'New group ' + str(current_row)
         group = Group(name=name)
         self.groups.append(group)
@@ -214,23 +235,31 @@ class MainWindow(QMainWindow):
             if isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
                 self.ui.stackedWidget.setCurrentIndex(2)
                 self.ui.individual_name.setText(self.ui.tree_widget.selectedItems()[0].text(0))
+
+                # Add overview tree in individual panel
                 self.ui.sessions_overview_tree.clear()
                 self.ui.sessions_overview_tree.addTopLevelItems(self.ui.tree_widget.selectedItems()[0].get_overview_tree())
-                self.ui.tree_widget.selectedItems()[0].clear_sessions_boxes(self.ui.sessions_plot)
-                self.ui.tree_widget.selectedItems()[0].add_sessions_boxes()
+
+                # Add checkboxes for individuals in individual panel
+                self.clear_layout(self.ui.sessions_plot)
+                self.ui.tree_widget.selectedItems()[0].add_sessions_boxes(self.ui.sessions_plot)
                 self.ui.sessions_plot.insertSpacerItem(-1, QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding))
+
             elif isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
                 self.ui.stackedWidget.setCurrentIndex(3)
                 self.ui.session_name.setText(self.ui.tree_widget.selectedItems()[0].text(0))
             else:
                 self.ui.stackedWidget.setCurrentIndex(0)
                 self.ui.group_name.setText(self.ui.tree_widget.selectedItems()[0].text(0))
+
+                # Add overview tree in group panel
                 self.ui.individual_overview_tree.clear()
                 self.ui.individual_overview_tree.addTopLevelItems(self.ui.tree_widget.selectedItems()[0].get_overview_tree())
-                self.ui.tree_widget.selectedItems()[0].clear_individuals_boxes(self.ui.individuals_plot)
-                self.ui.tree_widget.selectedItems()[0].add_individuals_boxes()
-                self.ui.individuals_plot.insertSpacerItem(-1, QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
+                # Add checkboxes for individuals in group panel
+                self.clear_layout(self.ui.individuals_plot)
+                self.ui.tree_widget.selectedItems()[0].add_individuals_boxes(self.ui.individuals_plot)
+                self.ui.individuals_plot.insertSpacerItem(-1, QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
     def update_text(self):
         if self.ui.tree_widget.selectedItems():
@@ -265,6 +294,14 @@ class MainWindow(QMainWindow):
                 text = self.ui.group_name.text()
 
             self.ui.tree_widget.selectedItems()[0].update_name(text)
+
+    def clear_layout(self, layout):
+        while layout.count():
+            child = layout.takeAt(0)
+            if child.widget() is not None:
+                child.widget().deleteLater()
+            elif child.layout() is not None:
+                self.clear_layout(child.layout())
 
     def configure_spm(self):
         """ Callback function, run when the spm menu item is pressed."""
