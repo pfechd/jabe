@@ -28,7 +28,7 @@ class CustomPlot(QDialog):
         super(CustomPlot, self).__init__(parent)
         self.amp = None
         self.fwhm = None
-        self.mean = None
+        self.mean = []
         self.std = None
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
@@ -97,13 +97,20 @@ class CustomPlot(QDialog):
         if self.ui.checkBox_mean.isChecked():
             self.ax.relim()
             if self.mean:
-                self.mean.remove()
-                self.mean = None
+                for axis in self.mean:
+                    axis.remove()
+                self.mean = []
             self.ui.checkBox_points.setChecked(False)
             self.ui.checkBox_fwhm.setChecked(False)
             self.ui.checkBox_amp.setChecked(False)
             mean = self.session.calculate_mean()
-            self.mean, = self.ax.plot(mean[int(self.ui.stimuliBox.currentText())], color=self.generate_random_color())
+            if self.ui.stimuliBox.currentText() == "All":
+                for stimuli_type,stimuli_data in mean.iteritems():
+                    axis, = self.ax.plot(stimuli_data, color=self.generate_random_color())
+                    self.mean.append(axis)
+            else:
+                axis, = self.ax.plot(mean[int(self.ui.stimuliBox.currentText())], color=self.generate_random_color())
+                self.mean.append(axis)
 
             self.canvas.draw()
 
@@ -112,8 +119,9 @@ class CustomPlot(QDialog):
             self.ui.checkBox_points.setEnabled(True)
             self.ui.spinBox.setEnabled(True)
         else:
-            self.mean.remove()
-            self.mean = None
+            for axis in self.mean:
+                axis.remove()
+            self.mean = []
             self.canvas.draw()
 
             self.ui.checkBox_amp.setDisabled(True)
@@ -172,13 +180,14 @@ class CustomPlot(QDialog):
 
         :return:
         """
-
-        if self.ui.checkBox_points.isChecked():
-            self.mean.set_marker('o')
-            self.canvas.draw()
-        else:
-            if self.mean:
-                self.mean.set_marker('')
+        if self.mean:
+            if self.ui.checkBox_points.isChecked():
+                for axis in self.mean:
+                    axis.set_marker('o')
+                self.canvas.draw()
+            else:
+                for axis in self.mean:
+                    axis.set_marker('')
                 self.canvas.draw()
 
     @staticmethod
@@ -195,6 +204,7 @@ class CustomPlot(QDialog):
         return '#%02X%02X%02X' % (r(), r(), r())
 
     def add_stimuli_types(self):
+        self.ui.stimuliBox.addItem("All")
         data = self.session.calculate_mean()
         for stimuli_type in data:
             self.ui.stimuliBox.addItem(str(stimuli_type))
