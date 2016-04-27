@@ -103,12 +103,14 @@ class Session:
             end = start + shortest_interval
             self.response[i, 0:(end - start)] = self.masked_data[:, (start - 1):(end - 1)]
 
-    def normalize(self, procentage=False, global_=False):
+    def normalize(self, percentage=False, global_=False):
         """
-        Applies normalization depending on type and reference.
+        Applies normalization on the response data depending on type and reference point.
 
-        :param type: What kind of normalization is to be made; subtract: subtract to baseline ,divide: procentual change
-        :param reference: If normalization should be local or global over a group.
+        :param percentage: Whether percentual change from reference value should be shown.
+        If false, data will be normalized by subtraction of the reference value.
+        :param global_: Whether reference value should be the global mean.
+        If false, reference value will be the start value of each sequence.
         """
         number_of_stimuli = self.response.shape[0]
         for i in range(number_of_stimuli):
@@ -119,7 +121,7 @@ class Session:
             else:
                 ref = np.ones(self.response.shape[1]) * self.response[i, 0]
 
-            if procentage:
+            if percentage:
                 if ref.all():
                     self.response[i, :] = (self.response[i, :] / ref - 1) * 100
             else:
@@ -246,4 +248,4 @@ class Session:
         else:
             self.apply_mask(self.mask)
             self.separate_into_responses(self.stimuli)
-            self.normalize_local(procentage=False, global_=True)
+            self.normalize_local(percentage=False, global_=True)
