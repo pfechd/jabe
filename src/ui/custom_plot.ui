@@ -197,6 +197,9 @@
           </property>
          </widget>
         </item>
+        <item>
+         <widget class="QComboBox" name="stimuliBox"/>
+        </item>
        </layout>
       </widget>
      </item>

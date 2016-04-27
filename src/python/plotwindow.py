@@ -42,11 +42,12 @@ class CustomPlot(QDialog):
 
         self.ui.mplvl.addWidget(self.canvas)
 
-        self.ui.checkBox_fwhm.clicked.connect(self.apply_fwhm)
-        self.ui.checkBox_std.clicked.connect(self.plot_std)
-        self.ui.checkBox_mean.clicked.connect(self.plot_mean)
-        self.ui.checkBox_amp.clicked.connect(self.plot_amplitude)
-        self.ui.checkBox_points.clicked.connect(self.show_points)
+        self.ui.checkBox_fwhm.toggled.connect(self.apply_fwhm)
+        self.ui.checkBox_std.toggled.connect(self.plot_std)
+        self.ui.checkBox_mean.toggled.connect(self.plot_mean)
+        self.ui.checkBox_amp.toggled.connect(self.plot_amplitude)
+        self.ui.checkBox_points.toggled.connect(self.show_points)
+        self.ui.stimuliBox.currentIndexChanged.connect(self.plot_mean)
 
         self.ui.toolButton_home.clicked.connect(self.toolbar.home)
         self.ui.toolButton_export.clicked.connect(self.tool_export)
@@ -55,7 +56,7 @@ class CustomPlot(QDialog):
 
         self.setWindowTitle('Plot - ' + session.name)
         self.export_window = None
-
+        self.add_stimuli_types()
         self.plot_mean()
 
         self.show()
@@ -95,9 +96,14 @@ class CustomPlot(QDialog):
         """
         if self.ui.checkBox_mean.isChecked():
             self.ax.relim()
+            if self.mean:
+                self.mean.remove()
+                self.mean = None
+            self.ui.checkBox_points.setChecked(False)
+            self.ui.checkBox_fwhm.setChecked(False)
+            self.ui.checkBox_amp.setChecked(False)
             mean = self.session.calculate_mean()
-            for stimuli_type, stimuli_values in mean.iteritems():
-                self.mean, = self.ax.plot(stimuli_values, color=self.generate_random_color())
+            self.mean, = self.ax.plot(mean[int(self.ui.stimuliBox.currentText())], color=self.generate_random_color())
 
             self.canvas.draw()
 
@@ -107,7 +113,7 @@ class CustomPlot(QDialog):
             self.ui.spinBox.setEnabled(True)
         else:
             self.mean.remove()
-
+            self.mean = None
             self.canvas.draw()
 
             self.ui.checkBox_amp.setDisabled(True)
@@ -123,10 +129,10 @@ class CustomPlot(QDialog):
         """
 
         if self.ui.checkBox_std.isChecked():
-            mean = self.session.calculate_mean()[0]
+            mean = self.session.calculate_mean()[int(self.ui.stimuliBox.currentText())]
             x = np.arange(mean.size)
             self.ax.relim()
-            self.std = self.ax.errorbar(x, mean, yerr=self.session.calculate_std()[0])
+            self.std = self.ax.errorbar(x, mean, yerr=self.session.calculate_std()[int(self.ui.stimuliBox.currentText())])
             self.canvas.draw()
         else:
             self.std[0].remove()
@@ -171,8 +177,9 @@ class CustomPlot(QDialog):
             self.mean.set_marker('o')
             self.canvas.draw()
         else:
-            self.mean.set_marker('')
-            self.canvas.draw()
+            if self.mean:
+                self.mean.set_marker('')
+                self.canvas.draw()
 
     @staticmethod
     def generate_random_color():
@@ -186,3 +193,8 @@ class CustomPlot(QDialog):
             return random.randint(0, 255)
 
         return '#%02X%02X%02X' % (r(), r(), r())
+
+    def add_stimuli_types(self):
+        data = self.session.calculate_mean()
+        for stimuli_type in data:
+            self.ui.stimuliBox.addItem(str(stimuli_type))
