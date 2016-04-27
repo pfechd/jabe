@@ -103,15 +103,29 @@ class Session:
             end = start + shortest_interval
             self.response[i, 0:(end - start)] = self.masked_data[:, (start - 1):(end - 1)]
 
-    def normalize_local(self):
+    def normalize(self, percentage=False, global_=False):
         """
-        Subtract every value of the response with the local baseline.
+        Applies normalization on the response data depending on type and reference point.
 
-        :return:
+        :param percentage: Whether percentual change from reference value should be shown.
+        If false, data will be normalized by subtraction of the reference value.
+        :param global_: Whether reference value should be the global mean.
+        If false, reference value will be the start value of each sequence.
         """
         number_of_stimuli = self.response.shape[0]
         for i in range(number_of_stimuli):
-            self.response[i, :] = self.response[i, :] - self.response[i, 0]
+            if global_:
+                start = self.stimuli.data[i, 0]
+                time_indexes = list(range(start, start + self.response.shape[1]))
+                ref = np.mean(self.data[:, :, :, time_indexes], (0, 1, 2))     # Mean of spatial dimensions
+            else:
+                ref = np.ones(self.response.shape[1]) * self.response[i, 0]
+
+            if percentage:
+                if ref.all():
+                    self.response[i, :] = (self.response[i, :] / ref - 1) * 100
+            else:
+                self.response[i, :] = self.response[i, :] - ref
 
     def calculate_mean(self):
         """ Calculate the mean response """
@@ -197,14 +211,11 @@ class Session:
 
         :param x: Time axis
         :param y: Value axis, for which fwhm is calculated
-        :param smoothing: Smoothing factor for y. Must be less then the length of y and 0 or larger.
-        0 gives no smoothing.
+        :param smoothing: float. Smoothing factor for y. 0 gives no smoothing.
         :return: Two positions on the x axis.
         """
-        y[0] = y[-1] = 0  # Temporary code due to bugged y values
 
-        assert 0 <= smoothing < len(y)
-        half_maximum = np.max(y) / 2
+        half_maximum = (np.max(y) + np.min(y)) / 2
         spline = UnivariateSpline(x, y - half_maximum, s=smoothing)
         roots = spline.roots()
         try:
@@ -214,7 +225,7 @@ class Session:
             return 0, 1
         r1, r2 = roots
         # DEBUG
-        # plt.plot(x, spline(x) + half_maximum)
+        #plt.plot(x, spline(x) + half_maximum)
         return r1, r2
 
     @staticmethod
@@ -237,4 +248,4 @@ class Session:
         else:
             self.apply_mask(self.mask)
             self.separate_into_responses(self.stimuli)
-            self.normalize_local()
+            self.normalize(percentage=False, global_=True)
