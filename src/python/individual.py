@@ -83,7 +83,7 @@ class Individual:
 
     def prepare_for_calculation(self, percentage, global_):
         for i in range(len(self.sessions)):
-            if not self.sessions[i].ready_for_calculation(percentage, global_):
+            if not self.sessions[i].ready_for_calculation():
                 continue
             self.sessions[i].prepare_for_calculation(percentage, global_)
 

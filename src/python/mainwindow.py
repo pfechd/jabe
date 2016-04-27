@@ -34,6 +34,8 @@ class MainWindow(QMainWindow):
         self.ui.tree_widget.setColumnWidth(2, 25)
         #self.ui.actionSettings.triggered.connect(self.configure_spm)
         self.ui.extract_session_btn.clicked.connect(self.calculate_button_pressed)
+        self.ui.extract_btn_individual.clicked.connect(self.calculate_button_pressed)
+        self.ui.extract_btn_group.clicked.connect(self.calculate_button_pressed)
         self.ui.add_session_epi_btn.clicked.connect(self.brain_button_pressed)
         self.ui.add_session_mask_btn.clicked.connect(self.mask_button_pressed)
         self.ui.add_session_stimuli_btn.clicked.connect(self.stimuli_button_pressed)
@@ -146,7 +148,8 @@ class MainWindow(QMainWindow):
                      isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem)):
             for button in self.individual_buttons:
                 button.setEnabled(False)
-            self.ui.extract_session_btn.setEnabled(True)
+            self.ui.extract_btn_group.setEnabled(True)
+            self.ui.extract_btn_individual.setEnabled(True)
         else:
             for button in self.individual_buttons:
                 button.setEnabled(False)
