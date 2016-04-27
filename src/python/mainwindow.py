@@ -141,6 +141,12 @@ class MainWindow(QMainWindow):
             for button in self.individual_buttons:
                 button.setEnabled(True)
             self.ui.extract_session_btn.setEnabled(individual.ready_for_calculation())
+        elif self.ui.tree_widget.selectedItems() and \
+                (isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem) or
+                     isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem)):
+            for button in self.individual_buttons:
+                button.setEnabled(False)
+            self.ui.extract_session_btn.setEnabled(True)
         else:
             for button in self.individual_buttons:
                 button.setEnabled(False)
@@ -153,10 +159,25 @@ class MainWindow(QMainWindow):
 
         if self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
             session = self.ui.tree_widget.selectedItems()[0].session
-            session.calculate(
+            session.prepare_for_calculation(
                 self.ui.percent_btn.isChecked(),
                 self.ui.global_normalization_btn.isChecked())
             CustomPlot(self, session)
+
+        if self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
+            individual = self.ui.tree_widget.selectedItems()[0].individual
+            individual.prepare_for_calculation(
+                self.ui.percent_btn.isChecked(),
+                self.ui.global_normalization_btn.isChecked())
+            CustomPlot(self, individual)
+
+        if self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
+            group = self.ui.tree_widget.selectedItems()[0].group
+            group.prepare_for_calculation(
+                self.ui.percent_btn.isChecked(),
+                self.ui.global_normalization_btn.isChecked())
+            CustomPlot(self, group)
+
 
     def brain_button_pressed(self):
         """ Callback function, run when the choose brain button is pressed."""

@@ -23,7 +23,7 @@ class Session:
         self.data = None
         self.images = None
         self.masked_data = None
-        self.response = None
+        self.responses = {}
         self.stimuli = None
         self.mask = None
 
@@ -90,72 +90,85 @@ class Session:
             visual_brain_time = np.nonzero(visual_brain)
             self.masked_data[:, i] = np.mean(visual_brain[visual_brain_time])
 
-    def separate_into_responses(self, visual_stimuli):
+    def separate_into_responses(self, visual_stimuli, percentage, global_):
         number_of_stimuli = visual_stimuli.amount
 
         shortest_interval = min([j - i for i, j in zip(visual_stimuli.data[:-1, 0], visual_stimuli.data[1:, 0])])
 
-        self.response = np.zeros((number_of_stimuli, shortest_interval))
+        self.responses = {}
 
         # Ignore the images after the last time stamp
         for i in range(number_of_stimuli - 1):
             start = visual_stimuli.data[i, 0]
             end = start + shortest_interval
-            self.response[i, 0:(end - start)] = self.masked_data[:, (start - 1):(end - 1)]
-
-    def normalize(self, percentage=False, global_=False):
-        """
-        Applies normalization on the response data depending on type and reference point.
-
-        :param percentage: Whether percentual change from reference value should be shown.
-        If false, data will be normalized by subtraction of the reference value.
-        :param global_: Whether reference value should be the global mean.
-        If false, reference value will be the start value of each sequence.
-        """
-        number_of_stimuli = self.response.shape[0]
-        for i in range(number_of_stimuli):
-            if global_:
-                start = self.stimuli.data[i, 0]
-                time_indexes = list(range(start, start + self.response.shape[1]))
-                ref = np.mean(self.data[:, :, :, time_indexes], (0, 1, 2))     # Mean of spatial dimensions
+            response = self.masked_data[:, (start - 1):(end - 1)]
+            response = self.normalize_sequence(start, end, response, percentage, global_)
+            intensity = visual_stimuli.data[i, 1]
+            if intensity in self.responses:
+                self.responses[intensity] = np.concatenate((self.responses[intensity], response))
             else:
-                ref = np.ones(self.response.shape[1]) * self.response[i, 0]
+                self.responses[intensity] = response
 
-            if percentage:
-                if ref.all():
-                    self.response[i, :] = (self.response[i, :] / ref - 1) * 100
-            else:
-                self.response[i, :] = self.response[i, :] - ref
+    def normalize_sequence(self, start, end, response, percentage, global_):
+        if global_:
+            time_indexes = list(range(start, end))
+            ref = np.mean(self.data[:, :, :, time_indexes], (0, 1, 2))     # Mean of spatial dimensions
+        else:
+            ref = np.ones((end - start) * self.response[0])
+
+        if percentage:
+            if ref.all():
+                return (response / ref - 1) * 100
+        else:
+            return response - ref
 
     def calculate_mean(self):
         """ Calculate the mean response """
-        response_mean = np.zeros((1, self.response.shape[1]))
+        mean_responses = {}
 
-        for i in range(self.response.shape[1]):
-            rm1 = np.nonzero(self.response[:, i])
-            if rm1[0].any():
-                response_mean[:, i] = np.mean(self.response[rm1[0], i])
+        for stimuli_type, stimuli_data in self.responses.iteritems():
+            response_mean = np.zeros((1, stimuli_data.shape[1]))
 
-        return response_mean
+            for i in range(stimuli_data.shape[1]):
+                rm1 = np.nonzero(stimuli_data[:, i])
+                if rm1[0].any():
+                    response_mean[:, i] = np.mean(stimuli_data[rm1[0], i])
+
+            mean_responses[stimuli_type] = response_mean
+
+        return mean_responses
 
     def calculate_std(self):
         """ Calculate the standard deviation of the response """
-        response_std = np.zeros((1, self.response.shape[1]))
+        responses_std = {}
 
-        for i in range(self.response.shape[1]):
-            rm1 = np.nonzero(self.response[:, i])
-            if rm1[0].any():
-                response_std[:, i] = np.std(self.response[rm1[0], i], ddof=1)  # ddof=1 to work like MATLAB std()
+        for stimuli_type, stimuli_data in self.responses.iteritems():
+            response_std = np.zeros((1, stimuli_data.shape[1]))
 
-        return response_std
+            for i in range(stimuli_data.shape[1]):
+                rm1 = np.nonzero(stimuli_data[:, i])
+                if rm1[0].any():
+                    response_std[:, i] = np.std(stimuli_data[rm1[0], i], ddof=1)
+
+            responses_std[stimuli_type] = response_std
+
+        return responses_std
 
     def calculate_sem(self):
         """ Calculate the standard error of the mean (SEM) of the response """
-        response_sem = []
+        responses_sem = {}
 
-        for i in range(self.response.shape[1]):
-            response_sem.append(sem(self.response[:, i]))
-        return response_sem
+        for stimuli_type, stimuli_data in self.responses.iteritems():
+            response_sem = np.zeros(stimuli_data.shape[1])
+
+            for i in range(stimuli_data.shape[1]):
+                rm1 = np.nonzero(stimuli_data[:, i])
+                if rm1[0].any():
+                    response_sem[i] = sem(stimuli_data[rm1[0], i], ddof=1)
+
+            responses_sem[stimuli_type] = response_sem
+
+        return responses_sem
 
     def plot_mean(self, fwhm=False):
         """ Plot the mean response.
@@ -240,12 +253,12 @@ class Session:
         plt.plot([x[0], x[-1]], [max_amp[1]] * 2, '--')
         plt.plot([max_amp[0]] * 2, [-100, 100], '--')
 
-    def calculate(self, percentage, global_):
+    def prepare_for_calculation(self, percentage, global_):
         # Check if dimensions of 'Session' and 'Mask' match.
         if self.data.shape[0:3] != self.mask.data.shape:
             return 'Session image dimensions does not match Mask dimensions\n\nSession: ' \
                    + str(self.data.shape[0:3]) + '\nMask: ' + str(self.mask.data.shape)
         else:
             self.apply_mask(self.mask)
-            self.separate_into_responses(self.stimuli)
-            self.normalize(percentage, global_)
+            self.separate_into_responses(self.stimuli, percentage, global_)
+            #self.normalize(percentage, global_)
