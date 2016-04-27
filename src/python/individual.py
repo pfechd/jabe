@@ -7,12 +7,12 @@ from data import Data
 
 class Individual(Data):
     def __init__(self, configuration=None):
-        super(Data, self).__init__()
+        super(Individual, self).__init__()
         self.name = None
         self.sessions = []
         self.mask = None
         self.brain = None
-        self.stimuli_onset = None
+        self.stimuli = None
         self.anatomic_image = None
         self.plot_settings = []
         self.responses = {}
@@ -38,7 +38,7 @@ class Individual(Data):
             path = configuration['stimuli_onset']['path']
             tr = configuration['stimuli_onset']['tr']
 
-            self.stimuli_onset = StimuliOnset(path, tr)
+            self.stimuli = StimuliOnset(path, tr)
 
         if 'name' in configuration:
             self.name = configuration['name']

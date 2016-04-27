@@ -11,6 +11,8 @@ class Data(object):
         self.stimuli = None
         self.anatomic_image = None
 
+        self.children = []
+
         self.plot_settings = {}
 
         # Result of calculations are kept here
