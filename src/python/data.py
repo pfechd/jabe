@@ -85,20 +85,6 @@ class Data(object):
             visual_brain_time = np.nonzero(visual_brain)
             self.masked_data[:, i] = np.mean(visual_brain[visual_brain_time])
 
-    def apply_mask(self, mask):
-        """
-        Apply the given mask to the brain and save the data for further
-        calculations in the member masked_data.
-
-        :param mask: Mask object which should be applied
-        """
-        self.masked_data = np.zeros((1, self.images))
-
-        for i in range(self.images):
-            visual_brain = mask.data * self.sequence[:, :, :, i]
-            visual_brain_time = np.nonzero(visual_brain)
-            self.masked_data[:, i] = np.mean(visual_brain[visual_brain_time])
-
     def normalize_sequence(self, start, end, response, percentage, global_):
         """
         Applies normalization on the response data depending on type and reference point.
