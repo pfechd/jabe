@@ -32,10 +32,12 @@ class CustomPlot(QDialog):
         self.std = None
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
+        self.scroll = 0
 
         self.session = session
         self.fig = plt.figure()
-        self.ax = self.fig.add_subplot(111)
+        self.ax = self.fig.add_subplot(121)
+        self.img = self.fig.add_subplot(122)
         self.canvas = FigureCanvas(self.fig)
         self.toolbar = NavigationToolbar(self.canvas, self, coordinates=True)
         self.toolbar.hide()
@@ -57,6 +59,7 @@ class CustomPlot(QDialog):
         self.export_window = None
 
         self.plot_mean()
+        self.show_brain()
 
         if parent.ui.peak_checkbox.isChecked():
             self.ui.checkBox_amp.setChecked(True)
@@ -213,3 +216,17 @@ class CustomPlot(QDialog):
             return random.randint(0, 255)
 
         return '#%02X%02X%02X' % (r(), r(), r())
+
+    def show_brain(self):
+        self.img.imshow(self.session.data[:,:,5,self.scroll])
+        self.fig.canvas.mpl_connect('scroll_event', self.change_scroll)
+
+    def change_scroll(self, event):
+        if event.button == "up" and self.scroll < 8:
+            self.scroll+=1
+        elif event.button == "down" and self.scroll > 1:
+            self.scroll-=1
+        self.img.clear()
+        self.img.imshow(self.session.data[:,:,5,self.scroll])
+        self.canvas.draw()
+
