@@ -114,7 +114,8 @@ class Session:
             time_indexes = list(range(start, end))
             ref = np.mean(self.data[:, :, :, time_indexes], (0, 1, 2))     # Mean of spatial dimensions
         else:
-            ref = np.ones((end - start) * self.response[0])
+            print response
+            ref = np.ones(end - start) * response[0][0]
 
         if percentage:
             if ref.all():
@@ -261,4 +262,3 @@ class Session:
         else:
             self.apply_mask(self.mask)
             self.separate_into_responses(self.stimuli, percentage, global_)
-            #self.normalize(percentage, global_)
