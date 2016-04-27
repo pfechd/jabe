@@ -24,7 +24,6 @@ class CustomPlot(QDialog):
 
         :param parent: Parent window object
         :param session: Session object to plot data from
-        :return:
         """
         super(CustomPlot, self).__init__(parent)
         self.amp = None
@@ -77,15 +76,12 @@ class CustomPlot(QDialog):
     def tool_export(self):
         """
         Export button callback. Creates a custom export window
-        :return:
         """
         self.export_window = ExportWindow(self, self.session, self.toolbar)
 
     def apply_fwhm(self):
         """
         FWHM checkbox callback. Plot FWHM for current graph. Disabled if no graph plotted
-
-        :return:
         """
 
         if self.ui.checkBox_fwhm.isChecked():
@@ -104,8 +100,6 @@ class CustomPlot(QDialog):
     def plot_mean(self):
         """
         Mean checkbox callback. Plot mean from session object
-
-        :return:
         """
         if self.ui.checkBox_mean.isChecked():
             self.ax.relim()
@@ -146,8 +140,6 @@ class CustomPlot(QDialog):
     def plot_std(self):
         """
         Standard deviation checkbox callback. Plot standard deviation of mean.
-
-        :return:
         """
 
         if self.ui.checkBox_std.isChecked() and self.ui.stimuliBox.currentText() != "All" and isinstance(self.session, Session):
@@ -187,8 +179,6 @@ class CustomPlot(QDialog):
     def plot_amplitude(self):
         """
         Amplitude checkbox callback. Annotate amplitude and time of peak in graph
-
-        :return:
         """
 
         if self.ui.checkBox_amp.isChecked():
@@ -210,8 +200,6 @@ class CustomPlot(QDialog):
     def show_points(self):
         """
         Points checkbox callback. Show data points in graph
-
-        :return:
         """
         if self.mean:
             if self.ui.checkBox_points.isChecked():
@@ -237,6 +225,9 @@ class CustomPlot(QDialog):
         return '#%02X%02X%02X' % (r(), r(), r())
 
     def add_stimuli_types(self):
+        """
+        Add all stimuli types that exists in the data to a combobox
+        """
         self.ui.stimuliBox.addItem("All")
         data = self.session.calculate_mean()
         for stimuli_type in data:
