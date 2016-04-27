@@ -8,9 +8,11 @@ class Data(object):
     def __init__(self):
         self.name = None
 
+        # The path to the file containing brain information
         self.path = None
         self.brain_file = None
         self.sequence = None
+        self.images = None
         self.mask = None
         self.stimuli = None
         self.anatomic_image = None
