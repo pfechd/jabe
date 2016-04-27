@@ -9,7 +9,7 @@ class SessionTreeItem(QTreeWidgetItem):
         self.session = session
 
     def remove_item(self):
-        self.parent().individual.remove_session(self.session)
+        self.parent().individual.remove_child(self.session)
         self.treeWidget().window().update_gui()
         self.parent().removeChild(self)
 

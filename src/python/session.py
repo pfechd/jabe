@@ -56,18 +56,6 @@ class Session(Data):
 
         return configuration
 
-    def load_data(self, path):
-        self.path = path
-        self.brain_file = nib.load(path)
-        self.sequence = self.brain_file.get_data()
-        self.images = self.sequence.shape[3]
-
-    def load_stimuli(self, path, tr):
-        self.stimuli = StimuliOnset(path, tr)
-
-    def load_mask(self, mask):
-        self.mask = mask
-
     def calculate_mean(self):
         """ Calculate the mean response """
         mean_responses = {}

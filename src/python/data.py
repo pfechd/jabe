@@ -1,11 +1,14 @@
 import numpy as np
 from scipy.interpolate import UnivariateSpline
+import nibabel as nib
+from src.python.stimulionset import StimuliOnset
 
 
 class Data(object):
     def __init__(self):
         self.name = None
 
+        self.path = None
         self.brain_file = None
         self.sequence = None
         self.mask = None
@@ -153,4 +156,16 @@ class Data(object):
         spline = UnivariateSpline(x, y, s=smoothing)  # Remove spline if smoothing is unnecessary
         max_amp = np.argmax(spline(x))
         return max_amp, spline(x)[max_amp]
+
+    def load_data(self, path):
+        self.path = path
+        self.brain_file = nib.load(path)
+        self.sequence = self.brain_file.get_data()
+        self.images = self.sequence.shape[3]
+
+    def load_stimuli(self, path, tr):
+        self.stimuli = StimuliOnset(path, tr)
+
+    def load_mask(self, mask):
+        self.mask = mask
 
