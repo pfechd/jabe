@@ -1,15 +1,15 @@
 # -*- encoding: utf-8 -*-
 
-import matplotlib.pyplot as plt
 import numpy as np
 import nibabel as nib
 from scipy.interpolate import UnivariateSpline
 from scipy.stats import sem
 from mask import Mask
 from stimulionset import StimuliOnset
+from data import Data
 
 
-class Session:
+class Session(Data):
     """
     Class used for representing and doing calculations with brain data
 
@@ -18,31 +18,27 @@ class Session:
     """
 
     def __init__(self, name=None, configuration=None):
-        self.path = None
-        self.brain_file = None
-        self.data = None
-        self.images = None
-        self.masked_data = None
-        self.responses = {}
-        self.stimuli = None
-        self.mask = None
+        super(Session, self).__init__()
 
         if name:
             self.name = name
         elif configuration:
-            self.name = configuration['name']
-
-            if 'path' in configuration:
-                self.load_data(configuration['path'])
-
-            if 'mask' in configuration:
-                self.mask = Mask(configuration['mask']['path'])
-
-            if 'stimuli' in configuration:
-                self.stimuli = StimuliOnset(configuration['stimuli']['path'],
-                                            configuration['stimuli']['tr'])
+            self.load_configuration(configuration)
         else:
             raise NotImplementedError('Error not implemented')
+
+    def load_configuration(self, configuration):
+        self.name = configuration['name']
+
+        if 'path' in configuration:
+            self.load_data(configuration['path'])
+
+        if 'mask' in configuration:
+            self.mask = Mask(configuration['mask']['path'])
+
+        if 'stimuli' in configuration:
+            self.stimuli = StimuliOnset(configuration['stimuli']['path'],
+                                        configuration['stimuli']['tr'])
 
     def get_configuration(self):
         configuration = {}
@@ -64,74 +60,14 @@ class Session:
     def load_data(self, path):
         self.path = path
         self.brain_file = nib.load(path)
-        self.data = self.brain_file.get_data()
-        self.images = self.data.shape[3]
+        self.sequence = self.brain_file.get_data()
+        self.images = self.sequence.shape[3]
 
     def load_stimuli(self, path, tr):
         self.stimuli = StimuliOnset(path, tr)
 
     def load_mask(self, mask):
         self.mask = mask
-
-    def ready_for_calculation(self):
-        return all([self.brain_file, self.stimuli, self.mask])
-
-    def apply_mask(self, mask):
-        """
-        Apply the given mask to the brain and save the data for further
-        calculations in the member masked_data.
-
-        :param mask: Mask object which should be applied
-        """
-        self.masked_data = np.zeros((1, self.images))
-
-        for i in range(self.images):
-            visual_brain = mask.data * self.data[:, :, :, i]
-            visual_brain_time = np.nonzero(visual_brain)
-            self.masked_data[:, i] = np.mean(visual_brain[visual_brain_time])
-
-    def separate_into_responses(self, visual_stimuli, percentage, global_):
-        number_of_stimuli = visual_stimuli.amount
-
-        shortest_interval = min([j - i for i, j in zip(visual_stimuli.data[:-1, 0], visual_stimuli.data[1:, 0])])
-
-        self.responses = {}
-
-        # Ignore the images after the last time stamp
-        for i in range(number_of_stimuli - 1):
-            start = visual_stimuli.data[i, 0]
-            end = start + shortest_interval
-            response = self.masked_data[:, (start - 1):(end - 1)]
-            response = self.normalize_sequence(start, end, response, percentage, global_)
-            intensity = visual_stimuli.data[i, 1]
-            if intensity in self.responses:
-                self.responses[intensity] = np.concatenate((self.responses[intensity], response))
-            else:
-                self.responses[intensity] = response
-
-    def normalize_sequence(self, start, end, response, percentage, global_):
-        """
-        Applies normalization on the response data depending on type and reference point.
-
-        :param start: the response sequence' start index in data.
-        :param end: the response sequence' last index in data.
-        :param response: the data sequence to be normalized
-        :param percentage: Whether percentual change from reference value should be shown.
-        If false, the response will be normalized by subtraction of the reference value.
-        :param global_: Whether reference value should be the global mean.
-        If false, reference value will be the start value of the response
-        """
-        if global_:
-            time_indexes = list(range(start, end))
-            ref = np.mean(self.data[:, :, :, time_indexes], (0, 1, 2))     # Mean of spatial dimensions
-        else:
-            ref = np.ones(end - start) * response[0][0]
-
-        if percentage:
-            if ref.all():
-                return (response / ref - 1) * 100
-        else:
-            return response - ref
 
     def calculate_mean(self):
         """ Calculate the mean response """
@@ -180,35 +116,6 @@ class Session:
             responses_sem[stimuli_type] = response_sem
 
         return responses_sem
-
-    def plot_mean(self, fwhm=False):
-        """ Plot the mean response.
-        :param fwhm: A bool telling if we should plot fwhm
-        """
-        y = self.calculate_mean()[0]
-        smoothing_factor = 20
-        x = np.arange(y.size)
-
-        self.plot_amplitude(x, y)
-        if fwhm:
-            r1, r2 = self.calculate_fwhm(x, y, smoothing_factor)
-            plt.axvspan(r1, r2, facecolor='g', alpha=0.3)
-        plt.plot(self.calculate_sem())
-        plt.plot(y)
-        plt.title('Average response (mean)')
-        plt.axis([0, 45, -2, 19])
-        plt.show()
-
-    def plot_std(self):
-        """ Plot the standard error of the response."""
-        y = self.calculate_mean()[0]
-        x = np.arange(y.size)
-
-        plt.plot(self.calculate_sem())
-        plt.errorbar(x, y, yerr=self.calculate_std()[0])
-        plt.title('Average response (std)')
-        plt.axis([0, 45, -20, 30])
-        plt.show()
 
     def sub_from_baseline(self, response):
         """ Subtract baseline from a response
@@ -259,16 +166,4 @@ class Session:
         max_amp = np.argmax(spline(x))
         return max_amp, spline(x)[max_amp]
 
-    def plot_amplitude(self, x, y):
-        max_amp = self.calculate_amplitude(x, y, 0)
-        plt.plot([x[0], x[-1]], [max_amp[1]] * 2, '--')
-        plt.plot([max_amp[0]] * 2, [-100, 100], '--')
 
-    def prepare_for_calculation(self, percentage, global_):
-        # Check if dimensions of 'Session' and 'Mask' match.
-        if self.data.shape[0:3] != self.mask.data.shape:
-            return 'Session image dimensions does not match Mask dimensions\n\nSession: ' \
-                   + str(self.data.shape[0:3]) + '\nMask: ' + str(self.mask.data.shape)
-        else:
-            self.apply_mask(self.mask)
-            self.separate_into_responses(self.stimuli, percentage, global_)

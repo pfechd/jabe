@@ -13,7 +13,7 @@ class IndividualTreeItem(QTreeWidgetItem):
 
     def add_session(self):
         session = Session(name="Session " + str(len(self.individual.sessions)))
-        self.individual.add_session(session)
+        self.individual.add_child(session)
         sess_tree_item = SessionTreeItem(session)
         self.addChild(sess_tree_item)
         sess_tree_item.create_buttons()
@@ -56,7 +56,7 @@ class IndividualTreeItem(QTreeWidgetItem):
         :return: List of QTreeWidgetItems
         """
         top_tree_items = []
-        for session in self.individual.sessions:
+        for session in self.individual.children:
             tree_item = QTreeWidgetItem([session.name])
             if session.path:
                 epi_path_item = QTreeWidgetItem(['EPI: ' + session.path.split('/')[-1]])
@@ -84,7 +84,7 @@ class IndividualTreeItem(QTreeWidgetItem):
 
         :param layout: QLayout
         """
-        for session in self.individual.sessions:
+        for session in self.individual.children:
             box = QtWidgets.QCheckBox(session.name)
             layout.addWidget(box)
 

@@ -52,9 +52,9 @@ class GroupTreeItem(QTreeWidgetItem):
 
     def get_overview_tree(self):
         top_tree_items = []
-        for individual in self.group.individuals:
+        for individual in self.group.children:
             tree_item = QTreeWidgetItem([individual.name])
-            for session in individual.sessions:
+            for session in individual.children:
                 sess_item = QTreeWidgetItem([session.name])
                 tree_item.addChild(sess_item)
 
@@ -79,7 +79,7 @@ class GroupTreeItem(QTreeWidgetItem):
         return top_tree_items
 
     def add_individuals_boxes(self, layout):
-        for individual in self.group.individuals:
+        for individual in self.group.children:
             box = QtWidgets.QCheckBox(individual.name)
             box.setChecked(True)
             layout.addWidget(box)

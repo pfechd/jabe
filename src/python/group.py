@@ -1,10 +1,11 @@
 from individual import Individual
+from data import Data
 import numpy as np
 
 
-class Group:
+class Group(Data):
     def __init__(self, name=None, configuration=None):
-        self.individuals = []
+        super(Group, self).__init__()
         self.mask = None
         self.stimuli_onset = None
         self.normalization = None
@@ -14,7 +15,7 @@ class Group:
         if configuration:
             if 'individuals' in configuration:
                 for individual_settings in configuration['individuals']:
-                    self.individuals.append(Individual(individual_settings))
+                    self.children.append(Individual(individual_settings))
             if 'name' in configuration:
                 self.name = configuration['name']
         elif name:
@@ -23,10 +24,10 @@ class Group:
             raise NotImplementedError("Error message not implemented")
 
     def add_individual(self, individual):
-        self.individuals.append(individual)
+        self.children.append(individual)
 
     def remove_individual(self, individual):
-        self.individuals.remove(individual)
+        self.children.remove(individual)
 
     def calculate(self):
         pass
@@ -37,7 +38,7 @@ class Group:
     def get_configuration(self):
         return {
             'name': self.name,
-            'individuals': [individual.get_configuration() for individual in self.individuals]
+            'individuals': [individual.get_configuration() for individual in self.children]
         }
 
     def calculate_mean(self):
@@ -60,17 +61,12 @@ class Group:
 
     def combine_individual_responses(self):
         self.responses = {}
-        for i in range(len(self.individuals)):
-            individual_response = self.individuals[i].calculate_mean()
+        for i in range(len(self.children)):
+            individual_response = self.children[i].calculate_mean()
             for intensity, data in individual_response.iteritems():
                 if intensity in self.responses:
                     self.responses[intensity] = np.concatenate((self.responses[intensity], data), axis=0)
                 else:
                     self.responses[intensity] = data
-
-    def prepare_for_calculation(self, percentage, global_):
-        for i in range(len(self.individuals)):
-            self.individuals[i].prepare_for_calculation(percentage, global_)
-
 
 

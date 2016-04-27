@@ -2,58 +2,56 @@ from mask import Mask
 from session import Session
 from stimulionset import StimuliOnset
 import numpy as np
+from data import Data
 
 
-class Individual:
+class Individual(Data):
     def __init__(self, configuration=None):
-        self.name = None
-        self.sessions = []
-        self.mask = None
-        self.anatomic_image = None
-        self.plot_settings = []
-        self.responses = {}
+        super(Individual, self).__init__()
 
         if configuration:
-            if 'sessions' in configuration:
-                for session_configuration in configuration['sessions']:
-                    self.sessions.append(Session(configuration=session_configuration))
+            self.load_configuration(configuration)
 
-            if 'brain' in configuration:
-                self.brain = Session(configuration['brain']['path'])
+    def load_configuration(self, configuration):
+        if 'name' in configuration:
+            self.name = configuration['name']
 
-            if 'mask' in configuration:
-                self.mask = Mask(configuration['mask']['path'])
+        if 'sessions' in configuration:
+            for session_configuration in configuration['sessions']:
+                self.children.append(Session(configuration=session_configuration))
 
-            if 'stimuli_onset' in configuration:
-                path = configuration['stimuli_onset']['path']
-                tr = configuration['stimuli_onset']['tr']
+        if 'brain' in configuration:
+            self.brain = Session(configuration['brain']['path'])
 
-                self.stimuli_onset = StimuliOnset(path, tr)
+        if 'mask' in configuration:
+            self.mask = Mask(configuration['mask']['path'])
 
-            if 'name' in configuration:
-                self.name = configuration['name']
+        if 'stimuli_onset' in configuration:
+            path = configuration['stimuli_onset']['path']
+            tr = configuration['stimuli_onset']['tr']
+
+            self.stimuli = StimuliOnset(path, tr)
+
+        if 'name' in configuration:
+            self.name = configuration['name']
 
     def get_configuration(self):
         configuration = {
             'name': self.name,
-            'sessions': [session.get_configuration() for session in self.sessions]
+            'sessions': [session.get_configuration() for session in self.children]
         }
 
         return configuration
 
-    def add_session(self, session):
-        self.sessions.append(session)
+    def add_child(self, child):
+        self.children.append(child)
 
-    def remove_session(self, session):
-        self.sessions.remove(session)
-
-    def plot(self):
-        pass
+    def remove_child(self, child):
+        self.children.remove(child)
 
     def calculate_mean(self):
         """ Calculate the mean response """
         self.combine_session_responses()
-
         mean_responses = {}
 
         for stimuli_type, stimuli_data in self.responses.iteritems():
@@ -70,20 +68,14 @@ class Individual:
 
     def combine_session_responses(self):
         self.responses = {}
-        for i in range(len(self.sessions)):
-            # If the session doesn't have the files loaded, skip it.
-            if not self.sessions[i].ready_for_calculation():
+        for child in self.children:
+            # If the child doesn't have the files loaded, skip it.
+            if not child.ready_for_calculation():
                 continue
-            session_response = self.sessions[i].calculate_mean()
+            session_response = child.calculate_mean()
             for intensity, data in session_response.iteritems():
                 if intensity in self.responses:
                     self.responses[intensity] = np.concatenate((self.responses[intensity], data))
                 else:
                     self.responses[intensity] = data
-
-    def prepare_for_calculation(self, percentage, global_):
-        for i in range(len(self.sessions)):
-            if not self.sessions[i].ready_for_calculation():
-                continue
-            self.sessions[i].prepare_for_calculation(percentage, global_)
 
