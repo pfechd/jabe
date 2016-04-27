@@ -13,7 +13,7 @@ class IndividualTreeItem(QTreeWidgetItem):
 
     def add_session(self):
         session = Session(name="Session " + str(len(self.individual.sessions)))
-        self.individual.add_session(session)
+        self.individual.add_child(session)
         self.addChild(SessionTreeItem(session))
         self.setExpanded(True)
 

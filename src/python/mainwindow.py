@@ -117,7 +117,7 @@ class MainWindow(QMainWindow):
                 self.groups.remove(selected.group)
                 self.ui.tree_widget.takeTopLevelItem(self.ui.tree_widget.indexFromItem(selected).row())
             elif isinstance(selected, SessionTreeItem):
-                selected.parent().individual.remove_session(selected.session)
+                selected.parent().individual.remove_child(selected.session)
                 selected.parent().removeChild(selected)
             self.update_gui()
             if len(self.ui.tree_widget.selectedItems()) == 0:

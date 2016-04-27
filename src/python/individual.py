@@ -51,14 +51,11 @@ class Individual(Data):
 
         return configuration
 
-    def add_session(self, session):
-        self.children.append(session)
+    def add_child(self, child):
+        self.children.append(child)
 
-    def remove_session(self, session):
-        self.children.remove(session)
-
-    def plot(self):
-        pass
+    def remove_child(self, child):
+        self.children.remove(child)
 
     def calculate_mean(self):
         """ Calculate the mean response """
@@ -79,12 +76,11 @@ class Individual(Data):
 
     def combine_session_responses(self):
         self.responses = {}
-        for session in self.children:
-            # If the session doesn't have the files loaded, skip it.
-            if not session.ready_for_calculation():
+        for child in self.children:
+            # If the child doesn't have the files loaded, skip it.
+            if not child.ready_for_calculation():
                 continue
-            session_response = session.calculate_mean()
-            print session_response
+            session_response = child.calculate_mean()
             for intensity, data in session_response.iteritems():
                 if intensity in self.responses:
                     self.responses[intensity] = np.concatenate((self.responses[intensity], data))

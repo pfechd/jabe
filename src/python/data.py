@@ -35,10 +35,10 @@ class Data(object):
             self.normalize_local()
         elif self.children:
             # Load children
-            for session in self.children:
-                if not session.ready_for_calculation():
+            for child in self.children:
+                if not child.ready_for_calculation():
                     continue
-                session.prepare_for_calculation(mask, stimuli)
+                child.prepare_for_calculation(mask, stimuli)
 
     def separate_into_responses(self, mask, stimuli):
         number_of_stimuli = stimuli.amount
