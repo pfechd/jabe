@@ -7,9 +7,10 @@ from scipy.interpolate import UnivariateSpline
 from scipy.stats import sem
 from mask import Mask
 from stimulionset import StimuliOnset
+from data import Data
 
 
-class Session:
+class Session(Data):
     """
     Class used for representing and doing calculations with brain data
 
@@ -18,9 +19,10 @@ class Session:
     """
 
     def __init__(self, name=None, configuration=None):
+        super(Session, self).__init__()
         self.path = None
         self.brain_file = None
-        self.data = None
+        self.sequence = None
         self.images = None
         self.masked_data = None
         self.responses = {}
@@ -30,19 +32,22 @@ class Session:
         if name:
             self.name = name
         elif configuration:
-            self.name = configuration['name']
-
-            if 'path' in configuration:
-                self.load_data(configuration['path'])
-
-            if 'mask' in configuration:
-                self.mask = Mask(configuration['mask']['path'])
-
-            if 'stimuli' in configuration:
-                self.stimuli = StimuliOnset(configuration['stimuli']['path'],
-                                            configuration['stimuli']['tr'])
+            self.load_configuration(configuration)
         else:
             raise NotImplementedError('Error not implemented')
+
+    def load_configuration(self, configuration):
+        self.name = configuration['name']
+
+        if 'path' in configuration:
+            self.load_data(configuration['path'])
+
+        if 'mask' in configuration:
+            self.mask = Mask(configuration['mask']['path'])
+
+        if 'stimuli' in configuration:
+            self.stimuli = StimuliOnset(configuration['stimuli']['path'],
+                                        configuration['stimuli']['tr'])
 
     def get_configuration(self):
         configuration = {}
@@ -64,49 +69,14 @@ class Session:
     def load_data(self, path):
         self.path = path
         self.brain_file = nib.load(path)
-        self.data = self.brain_file.get_data()
-        self.images = self.data.shape[3]
+        self.sequence = self.brain_file.get_data()
+        self.images = self.sequence.shape[3]
 
     def load_stimuli(self, path, tr):
         self.stimuli = StimuliOnset(path, tr)
 
     def load_mask(self, mask):
         self.mask = mask
-
-    def ready_for_calculation(self):
-        return all([self.brain_file, self.stimuli, self.mask])
-
-    def apply_mask(self, mask):
-        """
-        Apply the given mask to the brain and save the data for further
-        calculations in the member masked_data.
-
-        :param mask: Mask object which should be applied
-        """
-        self.masked_data = np.zeros((1, self.images))
-
-        for i in range(self.images):
-            visual_brain = mask.data * self.data[:, :, :, i]
-            visual_brain_time = np.nonzero(visual_brain)
-            self.masked_data[:, i] = np.mean(visual_brain[visual_brain_time])
-
-    def separate_into_responses(self, visual_stimuli):
-        number_of_stimuli = visual_stimuli.amount
-
-        shortest_interval = min([j - i for i, j in zip(visual_stimuli.data[:-1, 0], visual_stimuli.data[1:, 0])])
-
-        self.responses = {}
-
-        # Ignore the images after the last time stamp
-        for i in range(number_of_stimuli - 1):
-            start = visual_stimuli.data[i, 0]
-            end = start + shortest_interval
-            response = self.masked_data[:, (start - 1):(end - 1)]
-            intensity = visual_stimuli.data[i, 1]
-            if intensity in self.responses:
-                self.responses[intensity] = np.concatenate((self.responses[intensity], response))
-            else:
-                self.responses[intensity] = response
 
     def normalize_local(self):
         """
@@ -253,12 +223,3 @@ class Session:
         plt.plot([x[0], x[-1]], [max_amp[1]] * 2, '--')
         plt.plot([max_amp[0]] * 2, [-100, 100], '--')
 
-    def prepare_for_calculation(self):
-        # Check if dimensions of 'Session' and 'Mask' match.
-        if self.data.shape[0:3] != self.mask.data.shape:
-            return 'Session image dimensions does not match Mask dimensions\n\nSession: ' \
-                   + str(self.data.shape[0:3]) + '\nMask: ' + str(self.mask.data.shape)
-        else:
-            self.apply_mask(self.mask)
-            self.separate_into_responses(self.stimuli)
-            self.normalize_local()

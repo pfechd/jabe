@@ -9,29 +9,37 @@ class Individual:
         self.name = None
         self.sessions = []
         self.mask = None
+        self.brain = None
+        self.stimuli_onset = None
         self.anatomic_image = None
         self.plot_settings = []
         self.responses = {}
 
         if configuration:
-            if 'sessions' in configuration:
-                for session_configuration in configuration['sessions']:
-                    self.sessions.append(Session(configuration=session_configuration))
+            self.load_configuration(configuration)
 
-            if 'brain' in configuration:
-                self.brain = Session(configuration['brain']['path'])
+    def load_configuration(self, configuration):
+        if 'name' in configuration:
+            self.name = configuration['name']
 
-            if 'mask' in configuration:
-                self.mask = Mask(configuration['mask']['path'])
+        if 'sessions' in configuration:
+            for session_configuration in configuration['sessions']:
+                self.sessions.append(Session(configuration=session_configuration))
 
-            if 'stimuli_onset' in configuration:
-                path = configuration['stimuli_onset']['path']
-                tr = configuration['stimuli_onset']['tr']
+        if 'brain' in configuration:
+            self.brain = Session(configuration['brain']['path'])
 
-                self.stimuli_onset = StimuliOnset(path, tr)
+        if 'mask' in configuration:
+            self.mask = Mask(configuration['mask']['path'])
 
-            if 'name' in configuration:
-                self.name = configuration['name']
+        if 'stimuli_onset' in configuration:
+            path = configuration['stimuli_onset']['path']
+            tr = configuration['stimuli_onset']['tr']
+
+            self.stimuli_onset = StimuliOnset(path, tr)
+
+        if 'name' in configuration:
+            self.name = configuration['name']
 
     def get_configuration(self):
         configuration = {
