@@ -106,10 +106,10 @@ class CustomPlot(QDialog):
             mean = self.session.calculate_mean()
             if self.ui.stimuliBox.currentText() == "All":
                 for stimuli_type,stimuli_data in mean.iteritems():
-                    axis, = self.ax.plot(stimuli_data, color=self.generate_random_color())
+                    axis, = self.ax.plot(stimuli_data[0], color=self.generate_random_color())
                     self.mean.append(axis)
             else:
-                axis, = self.ax.plot(mean[int(self.ui.stimuliBox.currentText())], color=self.generate_random_color())
+                axis, = self.ax.plot(mean[int(self.ui.stimuliBox.currentText())][0], color=self.generate_random_color())
                 self.mean.append(axis)
 
             self.canvas.draw()
