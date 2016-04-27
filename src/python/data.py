@@ -155,3 +155,9 @@ class Data(object):
     def load_mask(self, mask):
         self.mask = mask
 
+    def add_child(self, child):
+        self.children.append(child)
+
+    def remove_child(self, child):
+        self.children.remove(child)
+

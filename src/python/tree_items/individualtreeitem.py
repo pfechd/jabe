@@ -21,7 +21,7 @@ class IndividualTreeItem(QTreeWidgetItem):
         self.treeWidget().window().update_gui()
 
     def remove_item(self):
-        self.parent().group.remove_individual(self.individual)
+        self.parent().group.remove_child(self.individual)
         self.treeWidget().window().update_gui()
         self.parent().removeChild(self)
 

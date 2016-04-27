@@ -23,12 +23,6 @@ class Group(Data):
         else:
             raise NotImplementedError("Error message not implemented")
 
-    def add_individual(self, individual):
-        self.children.append(individual)
-
-    def remove_individual(self, individual):
-        self.children.remove(individual)
-
     def calculate(self):
         pass
 

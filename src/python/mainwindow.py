@@ -151,7 +151,7 @@ class MainWindow(QMainWindow):
     def add_item_clicked(self):
         if self.ui.tree_widget.selectedItems():
             if isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
-                self.ui.tree_widget.selectedItems()[0].add_individual()
+                self.ui.tree_widget.selectedItems()[0].add_child()
             elif isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
                 self.ui.tree_widget.selectedItems()[0].add_session()
 

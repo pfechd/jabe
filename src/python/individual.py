@@ -43,12 +43,6 @@ class Individual(Data):
 
         return configuration
 
-    def add_child(self, child):
-        self.children.append(child)
-
-    def remove_child(self, child):
-        self.children.remove(child)
-
     def calculate_mean(self):
         """ Calculate the mean response """
         self.combine_session_responses()
