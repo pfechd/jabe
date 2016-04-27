@@ -6,11 +6,6 @@ import numpy as np
 class Group(Data):
     def __init__(self, name=None, configuration=None):
         super(Group, self).__init__()
-        self.mask = None
-        self.stimuli_onset = None
-        self.normalization = None
-        self.normalize_on = None
-        self.plot_settings = []
 
         if configuration:
             if 'individuals' in configuration:
@@ -22,12 +17,6 @@ class Group(Data):
             self.name = name
         else:
             raise NotImplementedError("Error message not implemented")
-
-    def calculate(self):
-        pass
-
-    def plot(self):
-        pass
 
     def get_configuration(self):
         return {

@@ -20,9 +20,6 @@ class Individual(Data):
             for session_configuration in configuration['sessions']:
                 self.children.append(Session(configuration=session_configuration))
 
-        if 'brain' in configuration:
-            self.brain = Session(configuration['brain']['path'])
-
         if 'mask' in configuration:
             self.mask = Mask(configuration['mask']['path'])
 
