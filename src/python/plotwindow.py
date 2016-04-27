@@ -8,6 +8,7 @@ from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as Navigatio
 
 from exportwindow import ExportWindow
 from src.python.generated_ui.custom_plot import Ui_Dialog
+from session import Session
 
 
 class CustomPlot(QDialog):
@@ -103,6 +104,7 @@ class CustomPlot(QDialog):
             self.ui.checkBox_points.setChecked(False)
             self.ui.checkBox_fwhm.setChecked(False)
             self.ui.checkBox_amp.setChecked(False)
+            self.ui.checkBox_std.setChecked(False)
             mean = self.session.calculate_mean()
             if self.ui.stimuliBox.currentText() == "All":
                 for stimuli_type,stimuli_data in mean.iteritems():
@@ -136,18 +138,21 @@ class CustomPlot(QDialog):
         :return:
         """
 
-        if self.ui.checkBox_std.isChecked():
-            mean = self.session.calculate_mean()[int(self.ui.stimuliBox.currentText())]
+        if self.ui.checkBox_std.isChecked() and self.ui.stimuliBox.currentText() != "All" and isinstance(self.session, Session):
+            mean = self.session.calculate_mean()[int(self.ui.stimuliBox.currentText())][0]
             x = np.arange(mean.size)
             self.ax.relim()
-            self.std = self.ax.errorbar(x, mean, yerr=self.session.calculate_std()[int(self.ui.stimuliBox.currentText())])
+            std = self.session.calculate_std()
+            self.std =self.ax.errorbar(x, mean, yerr=std[int(self.ui.stimuliBox.currentText())][0])
+            #self.std = self.ax.errorbar(x, mean, yerr=self.session.calculate_sem()[int(self.ui.stimuliBox.currentText())])
             self.canvas.draw()
         else:
-            self.std[0].remove()
-            for line in self.std[1]:
-                line.remove()
-            for line in self.std[2]:
-                line.remove()
+            if self.std:
+                self.std[0].remove()
+                for line in self.std[1]:
+                    line.remove()
+                for line in self.std[2]:
+                    line.remove()
 
             self.canvas.draw()
 
