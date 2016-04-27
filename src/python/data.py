@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.interpolate import UnivariateSpline
 
 
 class Data(object):
@@ -39,7 +40,7 @@ class Data(object):
         if self.brain_file:
             # Calculate the responses with the masks and stimuli
             self.apply_mask(mask)
-            self.separate_into_responses(stimuli, percentage, mask)
+            self.separate_into_responses(stimuli, percentage, global_)
         elif self.children:
             # Load children
             for child in self.children:
@@ -118,3 +119,38 @@ class Data(object):
                 return (response / ref - 1) * 100
         else:
             return response - ref
+
+    @staticmethod
+    def calculate_fwhm(x, y, smoothing):
+        """
+        Returns two positions showing the full width half maximum(fwhm) of a given array y.
+
+        Calculates two positions r1 and r2 on the x axis where y'[r1] and y'[r2]
+        are equal to half of the maximum value of y where y' is a smoothed version of y.
+
+        :param x: Time axis
+        :param y: Value axis, for which fwhm is calculated
+        :param smoothing: float. Smoothing factor for y. 0 gives no smoothing.
+        :return: Two positions on the x axis.
+        """
+
+        half_maximum = (np.max(y) + np.min(y)) / 2
+        spline = UnivariateSpline(x, y - half_maximum, s=smoothing)
+        roots = spline.roots()
+        try:
+            assert len(roots) == 2  # Higher smoothing factor required
+        except AssertionError:
+            print "Smoothed function contains ", len(roots), " roots, 2 required"
+            return 0, 1
+        r1, r2 = roots
+        # DEBUG
+        #plt.plot(x, spline(x) + half_maximum)
+        return r1, r2
+
+    @staticmethod
+    def calculate_amplitude(x, y, smoothing):
+
+        spline = UnivariateSpline(x, y, s=smoothing)  # Remove spline if smoothing is unnecessary
+        max_amp = np.argmax(spline(x))
+        return max_amp, spline(x)[max_amp]
+
