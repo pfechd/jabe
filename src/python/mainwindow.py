@@ -145,17 +145,17 @@ class MainWindow(QMainWindow):
 
         if self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
             session = self.ui.tree_widget.selectedItems()[0].session
-            session.calculate()
+            session.prepare_for_calculation()
             CustomPlot(self, session)
 
         if self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
             individual = self.ui.tree_widget.selectedItems()[0].individual
-            individual.calculate()
+            individual.prepare_for_calculation()
             CustomPlot(self, individual)
 
         if self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
             group = self.ui.tree_widget.selectedItems()[0].group
-            group.calculate()
+            group.prepare_for_calculation()
             CustomPlot(self, group)
 
 

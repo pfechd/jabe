@@ -242,7 +242,7 @@ class Session:
         plt.plot([x[0], x[-1]], [max_amp[1]] * 2, '--')
         plt.plot([max_amp[0]] * 2, [-100, 100], '--')
 
-    def calculate(self):
+    def prepare_for_calculation(self):
         # Check if dimensions of 'Session' and 'Mask' match.
         if self.data.shape[0:3] != self.mask.data.shape:
             return 'Session image dimensions does not match Mask dimensions\n\nSession: ' \

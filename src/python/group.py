@@ -68,9 +68,9 @@ class Group:
                 else:
                     self.responses[intensity] = data
 
-    def calculate(self):
+    def prepare_for_calculation(self):
         for i in range(len(self.individuals)):
-            self.individuals[i].calculate()
+            self.individuals[i].prepare_for_calculation()
 
 
 

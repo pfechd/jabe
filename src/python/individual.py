@@ -81,9 +81,9 @@ class Individual:
                 else:
                     self.responses[intensity] = data
 
-    def calculate(self):
+    def prepare_for_calculation(self):
         for i in range(len(self.sessions)):
             if not self.sessions[i].ready_for_calculation():
                 continue
-            self.sessions[i].calculate()
+            self.sessions[i].prepare_for_calculation()
 
