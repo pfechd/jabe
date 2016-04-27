@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1100</width>
-    <height>653</height>
+    <height>689</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -501,15 +501,15 @@
                        <rect>
                         <x>0</x>
                         <y>0</y>
-                        <width>148</width>
-                        <height>244</height>
+                        <width>134</width>
+                        <height>20</height>
                        </rect>
                       </property>
                       <layout class="QHBoxLayout" name="horizontalLayout_4">
                        <item>
                         <layout class="QVBoxLayout" name="individuals_plot">
                          <property name="spacing">
-                          <number>-1</number>
+                          <number>6</number>
                          </property>
                          <property name="topMargin">
                           <number>0</number>
@@ -988,7 +988,7 @@
                         <x>0</x>
                         <y>0</y>
                         <width>148</width>
-                        <height>244</height>
+                        <height>321</height>
                        </rect>
                       </property>
                       <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -1382,7 +1382,7 @@
      <x>0</x>
      <y>0</y>
      <width>1100</width>
-     <height>22</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -1390,6 +1390,8 @@
      <string>File</string>
     </property>
     <addaction name="add_group_menu_btn"/>
+    <addaction name="separator"/>
+    <addaction name="exit_menu_btn"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
@@ -1397,6 +1399,11 @@
   <action name="add_group_menu_btn">
    <property name="text">
     <string>Add group</string>
+   </property>
+  </action>
+  <action name="exit_menu_btn">
+   <property name="text">
+    <string>Exit</string>
    </property>
   </action>
  </widget>

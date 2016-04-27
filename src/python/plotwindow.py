@@ -66,9 +66,8 @@ class CustomPlot(QDialog):
             self.ui.checkBox_fwhm.setChecked(True)
             self.apply_fwhm()
 
-
-        #if parent.ui.sem_checkbock.isChecked():
-            #self.ui.check_sem.setChecked(True)
+       # if parent.ui.sem_checkbox_2.isChecked():
+         #   self.ui.sem_checkbox_2.setChecked(True)
 
 
         self.show()
@@ -148,6 +147,16 @@ class CustomPlot(QDialog):
                 line.remove()
 
             self.canvas.draw()
+
+
+   # def plot_sem(self):
+        """
+            Standard error of mean checkbox callback. Plot standard error of mean.
+
+            :return:
+            """
+    #    if self.ui.sem_checkbox_2.isChecked():
+
 
     def plot_amplitude(self):
         """

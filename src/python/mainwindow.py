@@ -56,7 +56,6 @@ class MainWindow(QMainWindow):
         self.individual_buttons = [self.ui.extract_session_btn, self.ui.add_session_epi_btn,
                                    self.ui.add_session_mask_btn, self.ui.add_session_stimuli_btn]
 
-
         self.ui.tree_widget.setColumnWidth(0, 200)
         self.groups = []
         self.load_configuration()
