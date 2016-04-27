@@ -240,7 +240,7 @@ class Session:
         plt.plot([x[0], x[-1]], [max_amp[1]] * 2, '--')
         plt.plot([max_amp[0]] * 2, [-100, 100], '--')
 
-    def calculate(self):
+    def calculate(self, percentage, global_):
         # Check if dimensions of 'Session' and 'Mask' match.
         if self.data.shape[0:3] != self.mask.data.shape:
             return 'Session image dimensions does not match Mask dimensions\n\nSession: ' \
@@ -248,4 +248,4 @@ class Session:
         else:
             self.apply_mask(self.mask)
             self.separate_into_responses(self.stimuli)
-            self.normalize(percentage=False, global_=True)
+            self.normalize(percentage, global_)

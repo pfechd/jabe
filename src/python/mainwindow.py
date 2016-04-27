@@ -153,7 +153,9 @@ class MainWindow(QMainWindow):
 
         if self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
             session = self.ui.tree_widget.selectedItems()[0].session
-            session.calculate()
+            session.calculate(
+                self.ui.percent_btn.isChecked(),
+                self.ui.global_normalization_btn.isChecked())
             CustomPlot(self, session)
 
     def brain_button_pressed(self):

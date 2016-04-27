@@ -80,7 +80,7 @@
     <item>
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>2</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="group_page">
        <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -501,8 +501,8 @@
                        <rect>
                         <x>0</x>
                         <y>0</y>
-                        <width>134</width>
-                        <height>20</height>
+                        <width>148</width>
+                        <height>28</height>
                        </rect>
                       </property>
                       <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -988,7 +988,7 @@
                         <x>0</x>
                         <y>0</y>
                         <width>148</width>
-                        <height>321</height>
+                        <height>273</height>
                        </rect>
                       </property>
                       <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -1083,10 +1083,13 @@
                      <item>
                       <widget class="QRadioButton" name="global_normalization_btn">
                        <property name="enabled">
-                        <bool>false</bool>
+                        <bool>true</bool>
                        </property>
                        <property name="text">
                         <string>Global</string>
+                       </property>
+                       <property name="checkable">
+                        <bool>true</bool>
                        </property>
                       </widget>
                      </item>
@@ -1115,7 +1118,7 @@
                      <item>
                       <widget class="QRadioButton" name="percent_btn">
                        <property name="enabled">
-                        <bool>false</bool>
+                        <bool>true</bool>
                        </property>
                        <property name="text">
                         <string>Percent</string>
@@ -1382,7 +1385,7 @@
      <x>0</x>
      <y>0</y>
      <width>1100</width>
-     <height>20</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
