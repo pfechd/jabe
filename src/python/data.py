@@ -19,8 +19,16 @@ class Data(object):
         self.masked_data = None
         self.responses = {}
 
-    def ready_for_calculation(self):
-        return all([self.brain_file, self.stimuli, self.mask])
+    def ready_for_calculation(self, stimuli=None, mask=None):
+        if not stimuli:
+            stimuli = self.stimuli
+        if not mask:
+            mask = self.mask
+
+        if self.children:
+            return any([child.ready_for_calculation(stimuli, mask) for child in self.children])
+        else:
+            return all([self.brain_file, stimuli, mask])
 
     def prepare_for_calculation(self, mask=None, stimuli=None):
         if not mask:
