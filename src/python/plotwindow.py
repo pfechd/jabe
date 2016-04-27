@@ -8,6 +8,7 @@ from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as Navigatio
 
 from exportwindow import ExportWindow
 from src.python.generated_ui.custom_plot import Ui_Dialog
+from session import Session
 
 
 class CustomPlot(QDialog):
@@ -59,7 +60,8 @@ class CustomPlot(QDialog):
         self.export_window = None
 
         self.plot_mean()
-        self.show_brain()
+        if isinstance(self.session,Session):
+            self.show_brain()
 
         if parent.ui.peak_checkbox.isChecked():
             self.ui.checkBox_amp.setChecked(True)
@@ -218,15 +220,15 @@ class CustomPlot(QDialog):
         return '#%02X%02X%02X' % (r(), r(), r())
 
     def show_brain(self):
-        self.img.imshow(self.session.data[:,:,5,self.scroll])
+        self.img.imshow(self.session.data[:,:,self.scroll,0])
         self.fig.canvas.mpl_connect('scroll_event', self.change_scroll)
 
     def change_scroll(self, event):
-        if event.button == "up" and self.scroll < 8:
+        if event.button == "up" and self.scroll < self.session.data.shape[2]-1:
             self.scroll+=1
         elif event.button == "down" and self.scroll > 1:
             self.scroll-=1
         self.img.clear()
-        self.img.imshow(self.session.data[:,:,5,self.scroll])
+        self.img.imshow(self.session.data[:,:,self.scroll,0])
         self.canvas.draw()
 
