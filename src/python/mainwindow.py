@@ -188,22 +188,22 @@ class MainWindow(QMainWindow):
         if self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
             session = self.ui.tree_widget.selectedItems()[0].session
             session.prepare_for_calculation(
-                self.ui.percent_btn.isChecked(),
-                self.ui.global_normalization_btn.isChecked())
+                self.ui.percent_session_btn.isChecked(),
+                self.ui.global_normalization_session_btn.isChecked())
             CustomPlot(self, session)
 
         if self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
             individual = self.ui.tree_widget.selectedItems()[0].individual
             individual.prepare_for_calculation(
-                self.ui.percent_btn.isChecked(),
-                self.ui.global_normalization_btn.isChecked())
+                self.ui.percent_individual_btn.isChecked(),
+                self.ui.global_normalization_ind_btn.isChecked())
             CustomPlot(self, individual)
 
         if self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
             group = self.ui.tree_widget.selectedItems()[0].group
             group.prepare_for_calculation(
-                self.ui.percent_btn.isChecked(),
-                self.ui.global_normalization_btn.isChecked())
+                self.ui.percent_group_btn.isChecked(),
+                self.ui.global_normalization_group_btn.isChecked())
             CustomPlot(self, group)
 
 
