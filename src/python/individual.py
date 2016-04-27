@@ -26,7 +26,7 @@ class Individual(Data):
 
         if 'sessions' in configuration:
             for session_configuration in configuration['sessions']:
-                self.sessions.append(Session(configuration=session_configuration))
+                self.children.append(Session(configuration=session_configuration))
 
         if 'brain' in configuration:
             self.brain = Session(configuration['brain']['path'])
@@ -46,16 +46,16 @@ class Individual(Data):
     def get_configuration(self):
         configuration = {
             'name': self.name,
-            'sessions': [session.get_configuration() for session in self.sessions]
+            'sessions': [session.get_configuration() for session in self.children]
         }
 
         return configuration
 
     def add_session(self, session):
-        self.sessions.append(session)
+        self.children.append(session)
 
     def remove_session(self, session):
-        self.sessions.remove(session)
+        self.children.remove(session)
 
     def plot(self):
         pass
@@ -63,7 +63,6 @@ class Individual(Data):
     def calculate_mean(self):
         """ Calculate the mean response """
         self.combine_session_responses()
-
         mean_responses = {}
 
         for stimuli_type, stimuli_data in self.responses.iteritems():
@@ -80,11 +79,12 @@ class Individual(Data):
 
     def combine_session_responses(self):
         self.responses = {}
-        for i in range(len(self.sessions)):
+        for session in self.children:
             # If the session doesn't have the files loaded, skip it.
-            if not self.sessions[i].ready_for_calculation():
+            if not session.ready_for_calculation():
                 continue
-            session_response = self.sessions[i].calculate_mean()
+            session_response = session.calculate_mean()
+            print session_response
             for intensity, data in session_response.iteritems():
                 if intensity in self.responses:
                     self.responses[intensity] = np.concatenate((self.responses[intensity], data))

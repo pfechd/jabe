@@ -35,7 +35,7 @@ class Data(object):
             self.normalize_local()
         elif self.children:
             # Load children
-            for session in self.sessions:
+            for session in self.children:
                 if not session.ready_for_calculation():
                     continue
                 session.prepare_for_calculation(mask, stimuli)
