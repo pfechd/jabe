@@ -65,16 +65,19 @@ class MainWindow(QMainWindow):
         self.save_configuration()
 
     def save_configuration(self):
-        selected = self.ui.tree_widget.selectedItems()[0]
-        current = []
+        if self.ui.tree_widget.selectedItems():
+            selected = self.ui.tree_widget.selectedItems()[0]
+            current = []
 
-        if selected.parent():
-            parent_selected = selected.parent()
-            if parent_selected.parent():
-                top = parent_selected.parent()
-                current.append(self.ui.tree_widget.indexFromItem(top).row())
-            current.append(self.ui.tree_widget.indexFromItem(parent_selected).row())
-        current.append(self.ui.tree_widget.indexFromItem(selected).row())
+            if selected.parent():
+                parent_selected = selected.parent()
+                if parent_selected.parent():
+                    top = parent_selected.parent()
+                    current.append(self.ui.tree_widget.indexFromItem(top).row())
+                current.append(self.ui.tree_widget.indexFromItem(parent_selected).row())
+            current.append(self.ui.tree_widget.indexFromItem(selected).row())
+        else:
+            current = []
 
         configuration = {
             'groups': [group.get_configuration() for group in self.groups],
@@ -115,18 +118,19 @@ class MainWindow(QMainWindow):
 
             if 'current' in configuration:
                 current = configuration['current']
-                if len(current) >= 1:
-                    top_item = self.ui.tree_widget.topLevelItem(current[0])
-                    top_item.setSelected(True)
-                    if len(current) >= 2:
-                        top_item.setExpanded(True)
-                        mid_item = top_item.child(current[1])
-                        mid_item.setSelected(True)
-                        top_item.setSelected(False)
-                        if len(current) == 3:
-                            mid_item.setExpanded(True)
-                            mid_item.child(current[2]).setSelected(True)
-                            mid_item.setSelected(False)
+                if isinstance(current, list):  # Compatibility with old config files
+                    if len(current) >= 1:
+                        top_item = self.ui.tree_widget.topLevelItem(current[0])
+                        top_item.setSelected(True)
+                        if len(current) >= 2:
+                            top_item.setExpanded(True)
+                            mid_item = top_item.child(current[1])
+                            mid_item.setSelected(True)
+                            top_item.setSelected(False)
+                            if len(current) == 3:
+                                mid_item.setExpanded(True)
+                                mid_item.child(current[2]).setSelected(True)
+                                mid_item.setSelected(False)
 
             self.update_gui()
 
