@@ -110,6 +110,17 @@ class Session:
                 self.responses[intensity] = response
 
     def normalize_sequence(self, start, end, response, percentage, global_):
+        """
+        Applies normalization on the response data depending on type and reference point.
+
+        :param start: the response sequence' start index in data.
+        :param end: the response sequence' last index in data.
+        :param response: the data sequence to be normalized
+        :param percentage: Whether percentual change from reference value should be shown.
+        If false, the response will be normalized by subtraction of the reference value.
+        :param global_: Whether reference value should be the global mean.
+        If false, reference value will be the start value of the response
+        """
         if global_:
             time_indexes = list(range(start, end))
             ref = np.mean(self.data[:, :, :, time_indexes], (0, 1, 2))     # Mean of spatial dimensions
