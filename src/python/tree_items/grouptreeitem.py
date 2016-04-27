@@ -21,6 +21,7 @@ class GroupTreeItem(QTreeWidgetItem):
         individual_item.create_buttons()
         self.setExpanded(True)
         self.nr_of_individuals += 1
+        self.treeWidget().window().update_gui()
 
     def remove_item(self):
         tree = self.treeWidget()
