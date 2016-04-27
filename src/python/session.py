@@ -114,7 +114,6 @@ class Session:
             time_indexes = list(range(start, end))
             ref = np.mean(self.data[:, :, :, time_indexes], (0, 1, 2))     # Mean of spatial dimensions
         else:
-            print response
             ref = np.ones(end - start) * response[0][0]
 
         if percentage:
