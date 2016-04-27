@@ -38,6 +38,7 @@ class MainWindow(QMainWindow):
         self.ui.add_session_mask_btn.clicked.connect(self.mask_button_pressed)
         self.ui.add_session_stimuli_btn.clicked.connect(self.stimuli_button_pressed)
         self.ui.add_group_menu_btn.triggered.connect(self.add_group_pressed)
+        self.ui.exit_menu_btn.triggered.connect(self.exit_button_pressed)
         self.ui.add_individual_btn.clicked.connect(self.add_item_clicked)
         self.ui.add_session_btn.clicked.connect(self.add_item_clicked)
         self.ui.remove_session_btn.clicked.connect(self.remove_pressed)
@@ -116,6 +117,10 @@ class MainWindow(QMainWindow):
         group_item = GroupTreeItem(group)
         self.ui.tree_widget.addTopLevelItem(group_item)
         group_item.create_buttons()
+
+    def exit_button_pressed(self):
+        self.save_configuration()
+        self.close()
 
     def add_item_clicked(self):
         if self.ui.tree_widget.selectedItems():
