@@ -45,7 +45,7 @@ class Individual(Data):
 
     def calculate_mean(self):
         """ Calculate the mean response """
-        self.combine_session_responses()
+        self.combine_children_responses()
         mean_responses = {}
 
         for stimuli_type, stimuli_data in self.responses.iteritems():
@@ -59,17 +59,4 @@ class Individual(Data):
 
             mean_responses[stimuli_type] = response_mean
         return mean_responses
-
-    def combine_session_responses(self):
-        self.responses = {}
-        for child in self.children:
-            # If the child doesn't have the files loaded, skip it.
-            if not child.ready_for_calculation():
-                continue
-            session_response = child.calculate_mean()
-            for intensity, data in session_response.iteritems():
-                if intensity in self.responses:
-                    self.responses[intensity] = np.concatenate((self.responses[intensity], data))
-                else:
-                    self.responses[intensity] = data
 

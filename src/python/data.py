@@ -163,3 +163,16 @@ class Data(object):
     def remove_child(self, child):
         self.children.remove(child)
 
+    def combine_children_responses(self):
+        self.responses = {}
+        for child in self.children:
+            # If the child doesn't have the files loaded, skip it.
+            if not child.ready_for_calculation():
+                continue
+            session_response = child.calculate_mean()
+            for intensity, data in session_response.iteritems():
+                if intensity in self.responses:
+                    self.responses[intensity] = np.concatenate((self.responses[intensity], data))
+                else:
+                    self.responses[intensity] = data
+

@@ -37,7 +37,7 @@ class Group(Data):
 
     def calculate_mean(self):
         """ Calculate the mean response """
-        self.combine_individual_responses()
+        self.combine_children_responses()
 
         mean_responses = {}
 
@@ -52,15 +52,5 @@ class Group(Data):
 
             mean_responses[stimuli_type] = response_mean
         return mean_responses
-
-    def combine_individual_responses(self):
-        self.responses = {}
-        for i in range(len(self.children)):
-            individual_response = self.children[i].calculate_mean()
-            for intensity, data in individual_response.iteritems():
-                if intensity in self.responses:
-                    self.responses[intensity] = np.concatenate((self.responses[intensity], data), axis=0)
-                else:
-                    self.responses[intensity] = data
 
 
