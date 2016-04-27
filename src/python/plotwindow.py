@@ -56,18 +56,20 @@ class CustomPlot(QDialog):
         self.setWindowTitle('Plot - ' + session.name)
         self.export_window = None
 
+        self.plot_mean()
+
         if parent.ui.peak_checkbox.isChecked():
             self.ui.checkBox_amp.setChecked(True)
-        
+            self.plot_amplitude()
+
         if parent.ui.fwhm_checkbox.isChecked():
             self.ui.checkBox_fwhm.setChecked(True)
+            self.apply_fwhm()
+
 
         #if parent.ui.sem_checkbock.isChecked():
             #self.ui.check_sem.setChecked(True)
 
-        self.plot_mean()
-        self.apply_fwhm()
-        self.plot_amplitude()    
 
         self.show()
 
