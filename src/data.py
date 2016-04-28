@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.interpolate import UnivariateSpline
 import nibabel as nib
-from src.python.stimulionset import StimuliOnset
+from src.stimulionset import StimuliOnset
 
 
 class Data(object):

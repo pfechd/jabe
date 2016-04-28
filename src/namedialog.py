@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QDialog
 
-from src.generated_ui import Ui_namedialog
+from src.generated_ui.namedialog import Ui_namedialog
 
 
 class NameDialog(QDialog):

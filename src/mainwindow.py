@@ -8,7 +8,6 @@ from generated_ui.mainwindow import Ui_MainWindow
 from group import Group
 from mask import Mask
 from plotwindow import CustomPlot
-from spmpath import SPMPath
 from stimulionset import StimuliOnset
 from tree_items.grouptreeitem import GroupTreeItem
 from tree_items.individualtreeitem import IndividualTreeItem
