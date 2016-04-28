@@ -2,26 +2,29 @@ from PyQt5.QtWidgets import QTreeWidgetItem
 from PyQt5 import QtWidgets, QtGui
 from sessiontreeitem import SessionTreeItem
 from ..session import Session
+from ..group import Group
 import src.generated_ui.icons_rc
 
 
-class IndividualTreeItem(QTreeWidgetItem):
-    def __init__(self, individual):
-        super(IndividualTreeItem, self).__init__([individual.name])
+class IndividualTreeItem(QTreeWidgetItem, Group):
+    def __init__(self, configuration=None):
+        super(IndividualTreeItem, self).__init__(configuration=configuration)
+        self.setText(0, self.name)
 
-        self.individual = individual
-
-    def add_session(self):
-        session = Session(name="Session " + str(len(self.individual.sessions) + 1))
-        self.individual.add_session(session)
-        sess_tree_item = SessionTreeItem(session)
-        self.addChild(sess_tree_item)
-        sess_tree_item.create_buttons()
+    def add_session(self, session):
+        super(IndividualTreeItem, self).add_session(session)
+        self.addChild(session)
+        session.create_buttons()
         self.setExpanded(True)
         self.treeWidget().window().update_gui()
 
+    def add_new_session(self):
+        print "Add new session pressed"
+        session = SessionTreeItem(name="Session " + str(len(self.sessions) + 1))
+        self.add_session(session)
+
     def remove_item(self):
-        self.parent().group.remove_child(self.individual)
+        self.parent().remove_child(self)
         self.treeWidget().window().update_gui()
         self.parent().removeChild(self)
 
@@ -37,7 +40,7 @@ class IndividualTreeItem(QTreeWidgetItem):
         b.setFixedSize(16, 16)
         b.setIcon(icon)
         b.setFlat(True)
-        b.clicked.connect(self.add_session)
+        b.clicked.connect(self.add_new_session)
         tree.setItemWidget(self, 2, b)
 
         b2 = QtWidgets.QPushButton()
@@ -56,7 +59,7 @@ class IndividualTreeItem(QTreeWidgetItem):
         :return: List of QTreeWidgetItems
         """
         top_tree_items = []
-        for session in self.individual.children:
+        for session in self.children:
             tree_item = QTreeWidgetItem([session.name])
             if session.path:
                 epi_path_item = QTreeWidgetItem(['EPI: ' + session.path.split('/')[-1]])
@@ -84,10 +87,10 @@ class IndividualTreeItem(QTreeWidgetItem):
 
         :param layout: QLayout
         """
-        for session in self.individual.children:
+        for session in self.children:
             box = QtWidgets.QCheckBox(session.name)
             layout.addWidget(box)
 
     def update_name(self, text):
         self.setText(0, text)
-        self.individual.name = text
+        self.name = text

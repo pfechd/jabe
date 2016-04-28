@@ -19,12 +19,10 @@ class Session(Data):
     def __init__(self, name=None, configuration=None):
         super(Session, self).__init__()
 
-        if name:
-            self.name = name
-        elif configuration:
+        if configuration:
             self.load_configuration(configuration)
-        else:
-            raise NotImplementedError('Error not implemented')
+        elif name:
+            self.name = name
 
     def load_configuration(self, configuration):
         self.name = configuration['name']
