@@ -61,11 +61,9 @@ class CustomPlot(QDialog):
 
         if parent.ui.peak_checkbox.isChecked():
             self.ui.checkBox_amp.setChecked(True)
-            self.plot_amplitude()
 
         if parent.ui.fwhm_checkbox.isChecked():
             self.ui.checkBox_fwhm.setChecked(True)
-            self.apply_fwhm()
 
         #if parent.ui.sem_checkbox_2.isChecked():
          #   self.ui.sem_checkbox_2.setChecked(True)
