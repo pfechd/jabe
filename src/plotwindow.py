@@ -49,7 +49,7 @@ class CustomPlot(QDialog):
         self.ui.checkBox_mean.toggled.connect(self.plot_mean)
         self.ui.checkBox_smooth.toggled.connect(self.plot_smooth)
         self.ui.checkBox_amp.toggled.connect(self.plot_amplitude)
-        self.ui.checkBox_points.toggled.connect(self.show_points)
+        #self.ui.checkBox_points.toggled.connect(self.show_points)
         self.ui.stimuliBox.currentIndexChanged.connect(self.replot)
 
         self.ui.spinBox.valueChanged.connect(self.replot)
@@ -145,7 +145,7 @@ class CustomPlot(QDialog):
         """
         if self.ui.checkBox_mean.isChecked():
             self.ax.relim()
-            self.ui.checkBox_points.setChecked(False)
+            #self.ui.checkBox_points.setChecked(False)
             self.ui.checkBox_fwhm.setChecked(False)
             self.ui.checkBox_amp.setChecked(False)
             self.ui.checkBox_sem.setChecked(False)
