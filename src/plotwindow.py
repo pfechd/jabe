@@ -73,7 +73,6 @@ class CustomPlot(QDialog):
         #if parent.ui.sem_checkbox_2.isChecked():
          #   self.ui.sem_checkbox_2.setChecked(True)
 
-
         self.show()
 
     def tool_export(self):
@@ -192,9 +191,9 @@ class CustomPlot(QDialog):
 
     def plot_amplitude(self):
         """
-        Amplitude checkbox callback. Annotate amplitude in graph
+        Amplitude checkbox callback. Annotate amplitude in graph with a horizontal line
         """
-
+        
         if self.ui.checkBox_amp.isChecked():
             y = self.ax.lines[0].get_ydata()
             x = np.arange(len(y))
@@ -205,9 +204,9 @@ class CustomPlot(QDialog):
             self.amp.remove()
             self.canvas.draw()
 
-    def show_peak(self):
+    def plot_peak(self):
         """
-        Peak checkbox callback. Annotate time of peak in graph
+        Peak checkbox callback. Annotate time of peak in graph with a vertical line
         """
         
         if self.ui.checkBox_peak.isChecked():
