@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from PyQt5.QtWidgets import QDialog
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+from scipy.interpolate import UnivariateSpline
 
 from exportwindow import ExportWindow
 from src.generated_ui.custom_plot import Ui_Dialog
@@ -29,6 +30,7 @@ class CustomPlot(QDialog):
         self.amp = None
         self.fwhm = None
         self.mean = []
+        self.smooth = []
         self.sem = None
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
@@ -45,9 +47,12 @@ class CustomPlot(QDialog):
         self.ui.checkBox_fwhm.toggled.connect(self.apply_fwhm)
         self.ui.checkBox_sem.toggled.connect(self.plot_sem)
         self.ui.checkBox_mean.toggled.connect(self.plot_mean)
+        self.ui.checkBox_smooth.toggled.connect(self.plot_smooth)
         self.ui.checkBox_amp.toggled.connect(self.plot_amplitude)
         self.ui.checkBox_points.toggled.connect(self.show_points)
-        self.ui.stimuliBox.currentIndexChanged.connect(self.plot_mean)
+        self.ui.stimuliBox.currentIndexChanged.connect(self.replot)
+
+        self.ui.spinBox.valueChanged.connect(self.replot)
 
         self.ui.toolButton_home.clicked.connect(self.toolbar.home)
         self.ui.toolButton_export.clicked.connect(self.tool_export)
@@ -95,16 +100,52 @@ class CustomPlot(QDialog):
                 self.fwhm.remove()
             self.canvas.draw()
 
+    def replot(self):
+        if self.mean:
+            for axis in self.mean:
+                axis.remove()
+            self.mean = []
+        self.plot_mean()
+        if self.smooth:
+            for axis in self.smooth:
+                axis.remove()
+            self.smooth = []
+        self.plot_smooth()
+
+    def plot_smooth(self):
+        """
+        Smooth checkbox callback. Plot smooth from session object
+        """
+        if self.ui.checkBox_smooth.isChecked():
+            self.ax.relim()
+            before_smooth = self.session.calculate_mean()
+
+            if self.ui.stimuliBox.currentText() == "All":
+                for stimuli_type,stimuli_data in before_smooth.iteritems():
+                    x = np.arange(stimuli_data.shape[0])
+                    curr = UnivariateSpline(x, stimuli_data, s=self.ui.spinBox.value())
+                    axis, = self.ax.plot(curr(x), color=self.generate_random_color())
+                    self.smooth.append(axis)
+            else:
+                x = np.arange(before_smooth[int(self.ui.stimuliBox.currentText())].shape[0])
+                curr = UnivariateSpline(x, before_smooth[int(self.ui.stimuliBox.currentText())], s=self.ui.spinBox.value())
+                axis, = self.ax.plot(curr(x), color=self.generate_random_color())
+                self.smooth.append(axis)
+
+            self.canvas.draw()
+        else:
+            for axis in self.smooth:
+                axis.remove()
+            self.smooth = []
+            self.canvas.draw()
+
+
     def plot_mean(self):
         """
         Mean checkbox callback. Plot mean from session object
         """
         if self.ui.checkBox_mean.isChecked():
             self.ax.relim()
-            if self.mean:
-                for axis in self.mean:
-                    axis.remove()
-                self.mean = []
             self.ui.checkBox_points.setChecked(False)
             self.ui.checkBox_fwhm.setChecked(False)
             self.ui.checkBox_amp.setChecked(False)
@@ -120,20 +161,11 @@ class CustomPlot(QDialog):
 
             self.canvas.draw()
 
-            self.ui.checkBox_fwhm.setEnabled(True)
-            self.ui.checkBox_amp.setEnabled(True)
-            self.ui.checkBox_points.setEnabled(True)
-            self.ui.spinBox.setEnabled(True)
         else:
             for axis in self.mean:
                 axis.remove()
             self.mean = []
             self.canvas.draw()
-
-            self.ui.checkBox_amp.setDisabled(True)
-            self.ui.checkBox_fwhm.setDisabled(True)
-            self.ui.checkBox_points.setDisabled(True)
-            self.ui.spinBox.setDisabled(True)
 
     def plot_sem(self):
         """
