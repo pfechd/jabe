@@ -18,6 +18,8 @@ class Data(object):
         self.anatomic_image = None
 
         self.children = []
+        # TODO: Remove this
+        self.sessions = []
 
         self.plot_settings = {}
 
@@ -31,8 +33,10 @@ class Data(object):
         if not mask:
             mask = self.mask
 
-        if self.children:
-            return any([child.ready_for_calculation(stimuli, mask) for child in self.children])
+        children = self.children + self.sessions
+
+        if children:
+            return any([child.ready_for_calculation(stimuli, mask) for child in children])
         else:
             return all([self.brain_file, stimuli, mask])
 
@@ -46,9 +50,9 @@ class Data(object):
             # Calculate the responses with the masks and stimuli
             self.apply_mask(mask)
             self.separate_into_responses(stimuli, percentage, global_)
-        elif self.children:
+        elif self.children or self.sessions:
             # Load children
-            for child in self.children:
+            for child in self.children + self.sessions:
                 if not child.ready_for_calculation():
                     continue
                 child.prepare_for_calculation(percentage, global_, mask, stimuli)
@@ -162,17 +166,4 @@ class Data(object):
 
     def remove_child(self, child):
         self.children.remove(child)
-
-    def combine_children_responses(self):
-        self.responses = {}
-        for child in self.children:
-            # If the child doesn't have the files loaded, skip it.
-            if not child.ready_for_calculation():
-                continue
-            session_response = child.calculate_mean()
-            for intensity, data in session_response.iteritems():
-                if intensity in self.responses:
-                    self.responses[intensity] = np.concatenate((self.responses[intensity], data))
-                else:
-                    self.responses[intensity] = data
 

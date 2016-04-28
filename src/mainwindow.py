@@ -110,7 +110,7 @@ class MainWindow(QMainWindow):
                     group_tree_item.addChild(individual_tree_item)
                     individual_tree_item.create_buttons()
 
-                    for session in individual.children:
+                    for session in individual.sessions:
                         session_tree_item = SessionTreeItem(session)
                         individual_tree_item.addChild(session_tree_item)
                         session_tree_item.create_buttons()
