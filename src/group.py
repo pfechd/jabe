@@ -74,6 +74,7 @@ class Group(Data):
             session_response = child.calculate_mean()
             for intensity, data in session_response.iteritems():
                 if intensity in self.responses:
+                    data = data.reshape(1, data.shape[0])
                     self.responses[intensity] = np.concatenate((self.responses[intensity], data))
                 else:
                     self.responses[intensity] = data.reshape(1, data.shape[0])
