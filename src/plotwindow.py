@@ -50,6 +50,7 @@ class CustomPlot(QDialog):
         self.ui.checkBox_smooth.toggled.connect(self.plot_smooth)
         self.ui.checkBox_amp.toggled.connect(self.plot_amplitude)
         #self.ui.checkBox_points.toggled.connect(self.show_points)
+        self.ui.checkBox_peak.toggled.connect(self.plot_peak)
         self.ui.stimuliBox.currentIndexChanged.connect(self.replot)
 
         self.ui.spinBox.valueChanged.connect(self.replot)
@@ -65,11 +66,14 @@ class CustomPlot(QDialog):
         self.plot_mean()
 
         if parent.ui.checkbox_peak_session.isChecked():
-            self.ui.checkBox_amp.setChecked(True)
+            self.ui.checkBox_peak.setChecked(True)
 
         if parent.ui.checkbox_fwhm_session.isChecked():
             self.ui.checkBox_fwhm.setChecked(True)
 
+        if parent.ui.checkbox_amplitude_session.isChecked():
+            self.ui.checkBox_amp.setChecked(True)
+            
         #if parent.ui.sem_checkbox_2.isChecked():
          #   self.ui.sem_checkbox_2.setChecked(True)
 
@@ -148,6 +152,7 @@ class CustomPlot(QDialog):
             #self.ui.checkBox_points.setChecked(False)
             self.ui.checkBox_fwhm.setChecked(False)
             self.ui.checkBox_amp.setChecked(False)
+            self.ui.checkBox_peak.setChecked(False)
             self.ui.checkBox_sem.setChecked(False)
             mean = self.session.calculate_mean()
             if self.ui.stimuliBox.currentText() == "All":
