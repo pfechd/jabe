@@ -106,6 +106,60 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
+      <widget class="QGroupBox" name="groupBox_4">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>150</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="title">
+        <string>Plot</string>
+       </property>
+       <widget class="QRadioButton" name="radioButton">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>40</y>
+          <width>141</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Several responses</string>
+        </property>
+       </widget>
+       <widget class="QRadioButton" name="radioButton_2">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>70</y>
+          <width>131</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="autoFillBackground">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Mean response</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </widget>
+     </item>
+     <item>
       <widget class="QGroupBox" name="groupBox">
        <property name="title">
         <string>Data</string>
@@ -114,7 +168,7 @@
         <item>
          <widget class="QCheckBox" name="checkBox_mean">
           <property name="text">
-           <string>Mean</string>
+           <string>Regular</string>
           </property>
           <property name="checked">
            <bool>true</bool>
@@ -143,22 +197,6 @@
          </layout>
         </item>
         <item>
-         <spacer name="verticalSpacer">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Maximum</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>10</width>
-            <height>100</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
          <widget class="QLabel" name="label_stimuli">
           <property name="maximumSize">
            <size>
@@ -175,13 +213,6 @@
          <widget class="QComboBox" name="stimuliBox"/>
         </item>
        </layout>
-      </widget>
-     </item>
-     <item>
-      <widget class="Line" name="line">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
       </widget>
      </item>
      <item>
@@ -204,16 +235,6 @@
          <widget class="QCheckBox" name="checkBox_peak">
           <property name="text">
            <string>Peak time</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="checkBox_points">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="text">
-           <string>Points</string>
           </property>
          </widget>
         </item>
@@ -247,68 +268,26 @@
       </widget>
      </item>
      <item>
-      <widget class="QGroupBox" name="groupBox_4">
-       <property name="minimumSize">
-        <size>
-         <width>150</width>
-         <height>0</height>
-        </size>
-       </property>
+      <widget class="QGroupBox" name="verticalGroupBox">
        <property name="title">
-        <string>Plot</string>
+        <string>Datalog</string>
        </property>
-       <widget class="QRadioButton" name="radioButton">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>40</y>
-          <width>141</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Several responses</string>
-        </property>
-       </widget>
-       <widget class="QRadioButton" name="radioButton_2">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>70</y>
-          <width>131</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="autoFillBackground">
-         <bool>false</bool>
-        </property>
-        <property name="text">
-         <string>Mean response</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
       </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Maximum</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>250</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
      </item>
     </layout>
    </item>
