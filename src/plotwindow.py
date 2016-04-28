@@ -59,10 +59,10 @@ class CustomPlot(QDialog):
         self.add_stimuli_types()
         self.plot_mean()
 
-        if parent.ui.peak_checkbox.isChecked():
+        if parent.ui.checkbox_peak_session.isChecked():
             self.ui.checkBox_amp.setChecked(True)
 
-        if parent.ui.fwhm_checkbox.isChecked():
+        if parent.ui.checkbox_fwhm_session.isChecked():
             self.ui.checkBox_fwhm.setChecked(True)
 
         #if parent.ui.sem_checkbox_2.isChecked():

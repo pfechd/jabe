@@ -80,7 +80,7 @@
     <item>
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="group_page">
        <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -346,7 +346,7 @@
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_17">
                      <item>
-                      <widget class="QCheckBox" name="checkBox_5">
+                      <widget class="QCheckBox" name="checkbox_amplitude_group">
                        <property name="enabled">
                         <bool>false</bool>
                        </property>
@@ -356,17 +356,7 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QCheckBox" name="checkBox_6">
-                       <property name="enabled">
-                        <bool>false</bool>
-                       </property>
-                       <property name="text">
-                        <string>SEM</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QCheckBox" name="checkBox_7">
+                      <widget class="QCheckBox" name="checkBox_peak_group">
                        <property name="enabled">
                         <bool>false</bool>
                        </property>
@@ -376,12 +366,22 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QCheckBox" name="checkBox_8">
+                      <widget class="QCheckBox" name="checkbox_fwhm_group">
                        <property name="enabled">
                         <bool>false</bool>
                        </property>
                        <property name="text">
                         <string>FWHM</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QCheckBox" name="checkbox_sem_group">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                       <property name="text">
+                        <string>SEM</string>
                        </property>
                       </widget>
                      </item>
@@ -502,7 +502,7 @@
                         <x>0</x>
                         <y>0</y>
                         <width>148</width>
-                        <height>318</height>
+                        <height>321</height>
                        </rect>
                       </property>
                       <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -832,7 +832,7 @@
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_51">
                      <item>
-                      <widget class="QCheckBox" name="checkBox_21">
+                      <widget class="QCheckBox" name="checkbox_amplitude_individual">
                        <property name="enabled">
                         <bool>false</bool>
                        </property>
@@ -842,17 +842,7 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QCheckBox" name="checkBox_22">
-                       <property name="enabled">
-                        <bool>false</bool>
-                       </property>
-                       <property name="text">
-                        <string>SEM</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QCheckBox" name="checkBox_23">
+                      <widget class="QCheckBox" name="checkbox_peak_individual">
                        <property name="enabled">
                         <bool>false</bool>
                        </property>
@@ -862,12 +852,22 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QCheckBox" name="checkBox_24">
+                      <widget class="QCheckBox" name="checkbox_fwhm_individual">
                        <property name="enabled">
                         <bool>false</bool>
                        </property>
                        <property name="text">
                         <string>FWHM</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QCheckBox" name="checkbox_sem_individual">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                       <property name="text">
+                        <string>SEM</string>
                        </property>
                       </widget>
                      </item>
@@ -988,7 +988,7 @@
                         <x>0</x>
                         <y>0</y>
                         <width>148</width>
-                        <height>318</height>
+                        <height>321</height>
                        </rect>
                       </property>
                       <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -1133,7 +1133,7 @@
                 <item>
                  <layout class="QHBoxLayout" name="horizontalLayout_22">
                   <item>
-                   <widget class="QGroupBox" name="groupBox_19">
+                   <widget class="QGroupBox" name="groupbox_plot_session">
                     <property name="title">
                      <string>Plot:</string>
                     </property>
@@ -1142,23 +1142,30 @@
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_24">
                      <item>
-                      <widget class="QCheckBox" name="sem_checkbox_2">
+                      <widget class="QCheckBox" name="checkbox_amplitude_session">
                        <property name="text">
-                        <string>SEM</string>
+                        <string>Amplitude</string>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QCheckBox" name="peak_checkbox">
+                      <widget class="QCheckBox" name="checkbox_peak_session">
                        <property name="text">
-                        <string>Peak time and amplitude</string>
+                        <string>Peak time</string>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QCheckBox" name="fwhm_checkbox">
+                      <widget class="QCheckBox" name="checkbox_fwhm_session">
                        <property name="text">
                         <string>FWHM</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QCheckBox" name="checkbox_sem_session">
+                       <property name="text">
+                        <string>SEM</string>
                        </property>
                       </widget>
                      </item>
@@ -1385,7 +1392,7 @@
      <x>0</x>
      <y>0</y>
      <width>1100</width>
-     <height>27</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
