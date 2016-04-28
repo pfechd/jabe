@@ -23,7 +23,6 @@ class GroupTreeItem(QTreeWidgetItem, Group):
         self.treeWidget().window().update_gui()
 
     def add_new_individual(self):
-        print "Add new individual pressed"
         individual = IndividualTreeItem()
         individual.update_name('Individual ' + str(self.nr_of_individuals + 1))
         self.add_individual(individual)

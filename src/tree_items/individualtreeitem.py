@@ -19,7 +19,6 @@ class IndividualTreeItem(QTreeWidgetItem, Group):
         self.treeWidget().window().update_gui()
 
     def add_new_session(self):
-        print "Add new session pressed"
         session = SessionTreeItem(name="Session " + str(len(self.sessions) + 1))
         self.add_session(session)
 
