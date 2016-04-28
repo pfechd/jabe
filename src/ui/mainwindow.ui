@@ -18,6 +18,13 @@
     <item>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
+       <widget class="QLabel" name="label_project">
+        <property name="text">
+         <string>Project</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QTreeWidget" name="tree_widget">
         <property name="horizontalScrollBarPolicy">
          <enum>Qt::ScrollBarAsNeeded</enum>
@@ -80,7 +87,7 @@
     <item>
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>3</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="group_page">
        <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -337,51 +344,34 @@
                 <item>
                  <layout class="QVBoxLayout" name="verticalLayout_4">
                   <item>
-                   <widget class="QGroupBox" name="groupBox_12">
+                   <widget class="QGroupBox" name="groupBox_10">
                     <property name="title">
-                     <string>Plot:</string>
+                     <string>Normalization level:</string>
                     </property>
                     <property name="flat">
                      <bool>true</bool>
                     </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_17">
+                    <layout class="QVBoxLayout" name="verticalLayout_15">
                      <item>
-                      <widget class="QCheckBox" name="checkbox_amplitude_group">
+                      <widget class="QRadioButton" name="radioButton_6">
                        <property name="enabled">
-                        <bool>false</bool>
+                        <bool>true</bool>
                        </property>
                        <property name="text">
-                        <string>Amplitude</string>
+                        <string>Local</string>
+                       </property>
+                       <property name="checked">
+                        <bool>true</bool>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QCheckBox" name="checkBox_peak_group">
+                      <widget class="QRadioButton" name="global_normalization_group_btn">
                        <property name="enabled">
-                        <bool>false</bool>
+                        <bool>true</bool>
                        </property>
                        <property name="text">
-                        <string>Peak time</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QCheckBox" name="checkbox_fwhm_group">
-                       <property name="enabled">
-                        <bool>false</bool>
-                       </property>
-                       <property name="text">
-                        <string>FWHM</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QCheckBox" name="checkbox_sem_group">
-                       <property name="enabled">
-                        <bool>false</bool>
-                       </property>
-                       <property name="text">
-                        <string>SEM</string>
+                        <string>Global</string>
                        </property>
                       </widget>
                      </item>
@@ -420,48 +410,55 @@
                        </property>
                       </widget>
                      </item>
-                     <item>
-                      <widget class="QRadioButton" name="radioButton_10">
-                       <property name="enabled">
-                        <bool>false</bool>
-                       </property>
-                       <property name="text">
-                        <string>None</string>
-                       </property>
-                      </widget>
-                     </item>
                     </layout>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QGroupBox" name="groupBox_10">
+                   <widget class="QGroupBox" name="groupBox_12">
                     <property name="title">
-                     <string>Normalized on:</string>
+                     <string>Plot:</string>
                     </property>
                     <property name="flat">
                      <bool>true</bool>
                     </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_15">
+                    <layout class="QVBoxLayout" name="verticalLayout_17">
                      <item>
-                      <widget class="QRadioButton" name="radioButton_6">
+                      <widget class="QCheckBox" name="checkbox_amplitude_group">
                        <property name="enabled">
-                        <bool>true</bool>
+                        <bool>false</bool>
                        </property>
                        <property name="text">
-                        <string>Local</string>
-                       </property>
-                       <property name="checked">
-                        <bool>true</bool>
+                        <string>Amplitude</string>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QRadioButton" name="global_normalization_group_btn">
+                      <widget class="QCheckBox" name="checkbox_peak_group">
                        <property name="enabled">
-                        <bool>true</bool>
+                        <bool>false</bool>
                        </property>
                        <property name="text">
-                        <string>Global</string>
+                        <string>Peak time</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QCheckBox" name="checkbox_sem_group">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                       <property name="text">
+                        <string>SEM</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QCheckBox" name="checkbox_fwhm_group">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                       <property name="text">
+                        <string>FWHM</string>
                        </property>
                       </widget>
                      </item>
@@ -502,7 +499,7 @@
                         <x>0</x>
                         <y>0</y>
                         <width>148</width>
-                        <height>321</height>
+                        <height>294</height>
                        </rect>
                       </property>
                       <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -823,51 +820,34 @@
                 <item>
                  <layout class="QVBoxLayout" name="verticalLayout_5">
                   <item>
-                   <widget class="QGroupBox" name="groupBox_44">
+                   <widget class="QGroupBox" name="groupBox_42">
                     <property name="title">
-                     <string>Plot:</string>
+                     <string>Normalization level::</string>
                     </property>
                     <property name="flat">
                      <bool>true</bool>
                     </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_51">
+                    <layout class="QVBoxLayout" name="verticalLayout_49">
                      <item>
-                      <widget class="QCheckBox" name="checkbox_amplitude_individual">
+                      <widget class="QRadioButton" name="radioButton_26">
                        <property name="enabled">
-                        <bool>false</bool>
+                        <bool>true</bool>
                        </property>
                        <property name="text">
-                        <string>Amplitude</string>
+                        <string>Local</string>
+                       </property>
+                       <property name="checked">
+                        <bool>true</bool>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QCheckBox" name="checkbox_peak_individual">
+                      <widget class="QRadioButton" name="global_normalization_individual_btn">
                        <property name="enabled">
-                        <bool>false</bool>
+                        <bool>true</bool>
                        </property>
                        <property name="text">
-                        <string>Peak time</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QCheckBox" name="checkbox_fwhm_individual">
-                       <property name="enabled">
-                        <bool>false</bool>
-                       </property>
-                       <property name="text">
-                        <string>FWHM</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QCheckBox" name="checkbox_sem_individual">
-                       <property name="enabled">
-                        <bool>false</bool>
-                       </property>
-                       <property name="text">
-                        <string>SEM</string>
+                        <string>Global</string>
                        </property>
                       </widget>
                      </item>
@@ -906,48 +886,55 @@
                        </property>
                       </widget>
                      </item>
-                     <item>
-                      <widget class="QRadioButton" name="radioButton_30">
-                       <property name="enabled">
-                        <bool>false</bool>
-                       </property>
-                       <property name="text">
-                        <string>None</string>
-                       </property>
-                      </widget>
-                     </item>
                     </layout>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QGroupBox" name="groupBox_42">
+                   <widget class="QGroupBox" name="groupBox_44">
                     <property name="title">
-                     <string>Normalized on:</string>
+                     <string>Plot:</string>
                     </property>
                     <property name="flat">
                      <bool>true</bool>
                     </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_49">
+                    <layout class="QVBoxLayout" name="verticalLayout_51">
                      <item>
-                      <widget class="QRadioButton" name="radioButton_26">
+                      <widget class="QCheckBox" name="checkbox_amplitude_individual">
                        <property name="enabled">
-                        <bool>true</bool>
+                        <bool>false</bool>
                        </property>
                        <property name="text">
-                        <string>Local</string>
-                       </property>
-                       <property name="checked">
-                        <bool>true</bool>
+                        <string>Amplitude</string>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QRadioButton" name="global_normalization_individual_btn">
+                      <widget class="QCheckBox" name="checkbox_peak_individual">
                        <property name="enabled">
-                        <bool>true</bool>
+                        <bool>false</bool>
                        </property>
                        <property name="text">
-                        <string>Global</string>
+                        <string>Peak time</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QCheckBox" name="checkbox_sem_individual">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                       <property name="text">
+                        <string>SEM</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QCheckBox" name="checkbox_fwhm_individual">
+                       <property name="enabled">
+                        <bool>false</bool>
+                       </property>
+                       <property name="text">
+                        <string>FWHM</string>
                        </property>
                       </widget>
                      </item>
@@ -988,7 +975,7 @@
                         <x>0</x>
                         <y>0</y>
                         <width>148</width>
-                        <height>321</height>
+                        <height>294</height>
                        </rect>
                       </property>
                       <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -1064,7 +1051,7 @@
                   <item>
                    <widget class="QGroupBox" name="groupBox_17">
                     <property name="title">
-                     <string>Normalized on:</string>
+                     <string>Normalization level::</string>
                     </property>
                     <property name="flat">
                      <bool>true</bool>
@@ -1156,16 +1143,16 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QCheckBox" name="checkbox_fwhm_session">
+                      <widget class="QCheckBox" name="checkbox_sem_session">
                        <property name="text">
-                        <string>FWHM</string>
+                        <string>SEM</string>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QCheckBox" name="checkbox_sem_session">
+                      <widget class="QCheckBox" name="checkbox_fwhm_session">
                        <property name="text">
-                        <string>SEM</string>
+                        <string>FWHM</string>
                        </property>
                       </widget>
                      </item>
@@ -1403,7 +1390,14 @@
     <addaction name="separator"/>
     <addaction name="exit_menu_btn"/>
    </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionManual"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="add_group_menu_btn">
@@ -1414,6 +1408,11 @@
   <action name="exit_menu_btn">
    <property name="text">
     <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionManual">
+   <property name="text">
+    <string>Manual</string>
    </property>
   </action>
  </widget>
