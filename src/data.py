@@ -71,7 +71,7 @@ class Data(object):
             end = start + shortest_interval
             response = self.masked_data[:, (start - 1):(end - 1)]
             response = self.normalize_sequence(start, end, response, percentage, global_)
-            intensity = stimuli.data[i, 1]
+            intensity = str(stimuli.data[i, 1])
             if intensity in self.responses:
                 self.responses[intensity] = np.concatenate((self.responses[intensity], response))
             else:

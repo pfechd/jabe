@@ -80,7 +80,7 @@ class CustomPlot(QDialog):
         """
         Export button callback. Creates a custom export window
         """
-        self.export_window = ExportWindow(self, self.session, self.toolbar)
+        self.export_window = ExportWindow(self, self.session, self.toolbar, self.ui.stimuliBox.currentText())
 
     def apply_fwhm(self):
         """
@@ -156,7 +156,7 @@ class CustomPlot(QDialog):
                     axis, = self.ax.plot(stimuli_data, color=self.generate_random_color())
                     self.mean.append(axis)
             else:
-                axis, = self.ax.plot(mean[int(self.ui.stimuliBox.currentText())], color=self.generate_random_color())
+                axis, = self.ax.plot(mean[self.ui.stimuliBox.currentText()], color=self.generate_random_color())
                 self.mean.append(axis)
 
             self.canvas.draw()
@@ -173,11 +173,11 @@ class CustomPlot(QDialog):
         """
 
         if self.ui.checkBox_sem.isChecked() and self.ui.stimuliBox.currentText() != "All" and isinstance(self.session, Session):
-            mean = self.session.calculate_mean()[int(self.ui.stimuliBox.currentText())]
+            mean = self.session.calculate_mean()[self.ui.stimuliBox.currentText()]
             x = np.arange(mean.size)
             self.ax.relim()
             sem = self.session.calculate_sem()
-            self.sem =self.ax.errorbar(x, mean, yerr=sem[int(self.ui.stimuliBox.currentText())])
+            self.sem =self.ax.errorbar(x, mean, yerr=sem[self.ui.stimuliBox.currentText()])
             self.canvas.draw()
         else:
             if self.sem:
@@ -245,4 +245,4 @@ class CustomPlot(QDialog):
         self.ui.stimuliBox.addItem("All")
         data = self.session.calculate_mean()
         for stimuli_type in data:
-            self.ui.stimuliBox.addItem(str(stimuli_type))
+            self.ui.stimuliBox.addItem(stimuli_type)
