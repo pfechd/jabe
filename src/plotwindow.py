@@ -127,8 +127,8 @@ class CustomPlot(QDialog):
                     axis, = self.ax.plot(curr(x), color=self.generate_random_color())
                     self.smooth.append(axis)
             else:
-                x = np.arange(before_smooth[int(self.ui.stimuliBox.currentText())].shape[0])
-                curr = UnivariateSpline(x, before_smooth[int(self.ui.stimuliBox.currentText())], s=self.ui.spinBox.value())
+                x = np.arange(before_smooth[self.ui.stimuliBox.currentText()].shape[0])
+                curr = UnivariateSpline(x, before_smooth[self.ui.stimuliBox.currentText()], s=self.ui.spinBox.value())
                 axis, = self.ax.plot(curr(x), color=self.generate_random_color())
                 self.smooth.append(axis)
 
