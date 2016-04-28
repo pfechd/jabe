@@ -34,7 +34,13 @@ class Group(Data):
             self.name = configuration['name']
 
     def calculate_mean(self):
-        """ Calculate the mean response """
+        """
+        Calculate the mean of every response grouped by stimuli type
+
+        :return: A dictionary where the key is the stimuli type and the value
+                 is the vector containing the mean value for the given time
+                 frame.
+        """
         self.combine_children_responses()
 
         mean_responses = {}
