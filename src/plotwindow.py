@@ -192,25 +192,34 @@ class CustomPlot(QDialog):
 
     def plot_amplitude(self):
         """
-        Amplitude checkbox callback. Annotate amplitude and time of peak in graph
+        Amplitude checkbox callback. Annotate amplitude in graph
         """
 
         if self.ui.checkBox_amp.isChecked():
             y = self.ax.lines[0].get_ydata()
             x = np.arange(len(y))
             max_amp = self.session.calculate_amplitude(x, y, 0)
-            self.amp = self.ax.annotate(
-                'Time: %.2f\nAmp: %.2f' % (max_amp[0], max_amp[1]),
-                xy=(max_amp[0], max_amp[1]), xytext=(max_amp[0] + 12, max_amp[1] - 1),
-                ha='right', va='bottom',
-                bbox=dict(boxstyle='round,pad=0.5', fc=self.generate_random_color(), alpha=0.5),
-                arrowprops=dict(arrowstyle='->', connectionstyle='arc3, rad=0')
-            )
+            self.amp = self.ax.axhline(max_amp[1], color=self.generate_random_color())
             self.canvas.draw()
         else:
             self.amp.remove()
             self.canvas.draw()
 
+    def show_peak(self):
+        """
+        Peak checkbox callback. Annotate time of peak in graph
+        """
+        
+        if self.ui.checkBox_peak.isChecked():
+            y = self.ax.lines[0].get_ydata()
+            x = np.arange(len(y))
+            max_amp = self.session.calculate_amplitude(x, y, 0)
+            self.amp_time = self.ax.axvline(max_amp[0], color=self.generate_random_color())
+            self.canvas.draw()
+        else:
+            self.amp_time.remove()
+            self.canvas.draw()
+            
     def show_points(self):
         """
         Points checkbox callback. Show data points in graph
