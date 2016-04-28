@@ -70,6 +70,6 @@ class Group(Data):
                 if intensity in self.responses:
                     self.responses[intensity] = np.concatenate((self.responses[intensity], data))
                 else:
-                    self.responses[intensity] = data
+                    self.responses[intensity] = data.reshape(1, data.shape[0])
 
 
