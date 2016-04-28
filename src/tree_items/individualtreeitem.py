@@ -84,7 +84,7 @@ class IndividualTreeItem(QTreeWidgetItem):
 
         :param layout: QLayout
         """
-        for session in self.individual.children:
+        for session in self.individual.sessions:
             box = QtWidgets.QCheckBox(session.name)
             layout.addWidget(box)
 
