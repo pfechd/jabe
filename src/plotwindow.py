@@ -114,10 +114,10 @@ class CustomPlot(QDialog):
             mean = self.session.calculate_mean()
             if self.ui.stimuliBox.currentText() == "All":
                 for stimuli_type,stimuli_data in mean.iteritems():
-                    axis, = self.ax.plot(stimuli_data[0], color=self.generate_random_color())
+                    axis, = self.ax.plot(stimuli_data, color=self.generate_random_color())
                     self.mean.append(axis)
             else:
-                axis, = self.ax.plot(mean[int(self.ui.stimuliBox.currentText())][0], color=self.generate_random_color())
+                axis, = self.ax.plot(mean[int(self.ui.stimuliBox.currentText())], color=self.generate_random_color())
                 self.mean.append(axis)
 
             self.canvas.draw()
@@ -143,11 +143,11 @@ class CustomPlot(QDialog):
         """
 
         if self.ui.checkBox_std.isChecked() and self.ui.stimuliBox.currentText() != "All" and isinstance(self.session, Session):
-            mean = self.session.calculate_mean()[int(self.ui.stimuliBox.currentText())][0]
+            mean = self.session.calculate_mean()[int(self.ui.stimuliBox.currentText())]
             x = np.arange(mean.size)
             self.ax.relim()
             std = self.session.calculate_std()
-            self.std =self.ax.errorbar(x, mean, yerr=std[int(self.ui.stimuliBox.currentText())][0])
+            self.std =self.ax.errorbar(x, mean, yerr=std[int(self.ui.stimuliBox.currentText())])
             #self.std = self.ax.errorbar(x, mean, yerr=self.session.calculate_sem()[int(self.ui.stimuliBox.currentText())])
             self.canvas.draw()
         else:
@@ -230,5 +230,6 @@ class CustomPlot(QDialog):
         """
         self.ui.stimuliBox.addItem("All")
         data = self.session.calculate_mean()
+        print data
         for stimuli_type in data:
             self.ui.stimuliBox.addItem(str(stimuli_type))

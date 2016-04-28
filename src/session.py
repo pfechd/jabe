@@ -61,12 +61,12 @@ class Session(Data):
         mean_responses = {}
 
         for stimuli_type, stimuli_data in self.responses.iteritems():
-            response_mean = np.zeros((1, stimuli_data.shape[1]))
+            response_mean = np.zeros(stimuli_data.shape[1])
 
             for i in range(stimuli_data.shape[1]):
                 rm1 = np.nonzero(stimuli_data[:, i])
                 if rm1[0].any():
-                    response_mean[:, i] = np.mean(stimuli_data[rm1[0], i])
+                    response_mean[i] = np.mean(stimuli_data[rm1[0], i])
 
             mean_responses[stimuli_type] = response_mean
 
@@ -77,12 +77,12 @@ class Session(Data):
         responses_std = {}
 
         for stimuli_type, stimuli_data in self.responses.iteritems():
-            response_std = np.zeros((1, stimuli_data.shape[1]))
+            response_std = np.zeros(stimuli_data.shape[1])
 
             for i in range(stimuli_data.shape[1]):
                 rm1 = np.nonzero(stimuli_data[:, i])
                 if rm1[0].any():
-                    response_std[:, i] = np.std(stimuli_data[rm1[0], i], ddof=1)
+                    response_std[i] = np.std(stimuli_data[rm1[0], i], ddof=1)
 
             responses_std[stimuli_type] = response_std
 
