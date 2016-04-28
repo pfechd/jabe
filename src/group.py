@@ -54,6 +54,9 @@ class Group(Data):
     def add_session(self, session):
         self.sessions.append(session)
 
+    def remove_session(self, session):
+        self.sessions.remove(session)
+
     def combine_children_responses(self):
         self.responses = {}
         children = self.children + self.sessions
