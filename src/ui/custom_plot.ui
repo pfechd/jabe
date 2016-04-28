@@ -158,7 +158,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QCheckBox" name="checkBox">
+         <widget class="QCheckBox" name="checkBox_peak">
           <property name="text">
            <string>Peak time</string>
           </property>
