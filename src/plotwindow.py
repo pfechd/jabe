@@ -63,8 +63,10 @@ class CustomPlot(QDialog):
         self.setWindowTitle('Plot - ' + session.name)
         self.export_window = None
         self.add_stimuli_types()
-        self.plot_several_sessions()
-        #self.plot_mean()
+        if isinstance(self.session,Session):
+            self.plot_mean()
+        else:
+            self.plot_several_sessions()
 
         if parent.ui.checkbox_peak_session.isChecked():
             self.ui.checkBox_peak.setChecked(True)
@@ -109,7 +111,10 @@ class CustomPlot(QDialog):
             for axis in self.mean:
                 axis.remove()
             self.mean = []
-        self.plot_mean()
+        if isinstance(self.session,Session):
+            self.plot_mean()
+        else:
+            self.plot_several_sessions()
         if self.smooth:
             for axis in self.smooth:
                 axis.remove()
@@ -273,7 +278,7 @@ class CustomPlot(QDialog):
                     axis, = self.ax.plot(stimuli_data[i,:], color=self.generate_random_color())
                     self.mean.append(axis)
         else:
-            for i in (sessions[self.ui.stimuliBox.currentText()]).shape[0]:
+            for i in range((sessions[self.ui.stimuliBox.currentText()]).shape[0]):
                 axis, = self.ax.plot((sessions[self.ui.stimuliBox.currentText()])[i,:], color=self.generate_random_color())
                 self.mean.append(axis)
 
