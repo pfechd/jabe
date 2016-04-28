@@ -1,8 +1,8 @@
-from PyQt5 import QtCore
-from PyQt5.QtWidgets import QFileDialog, QDialog
-from src.python.generated_ui.export_window import Ui_Export_Window
 import numpy as np
 import scipy.io as sio
+from PyQt5.QtWidgets import QFileDialog, QDialog
+
+from src.generated_ui import Ui_Export_Window
 
 
 class ExportWindow(QDialog):

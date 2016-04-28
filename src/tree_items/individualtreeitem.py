@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QTreeWidgetItem
 from PyQt5 import QtWidgets, QtGui
 from sessiontreeitem import SessionTreeItem
 from ..session import Session
-import src.python.generated_ui.icons_rc
+import src.generated_ui.icons_rc
 
 
 class IndividualTreeItem(QTreeWidgetItem):

@@ -7,7 +7,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
 from exportwindow import ExportWindow
-from src.python.generated_ui.custom_plot import Ui_Dialog
+from src.generated_ui import Ui_Dialog
 from session import Session
 
 
