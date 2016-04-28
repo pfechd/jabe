@@ -1,6 +1,6 @@
-from individual import Individual
 from data import Data
 import numpy as np
+from session import Session
 
 
 class Group(Data):
@@ -8,11 +8,7 @@ class Group(Data):
         super(Group, self).__init__()
 
         if configuration:
-            if 'individuals' in configuration:
-                for individual_settings in configuration['individuals']:
-                    self.children.append(Individual(individual_settings))
-            if 'name' in configuration:
-                self.name = configuration['name']
+            self.load_configuration(configuration)
         elif name:
             self.name = name
         else:
@@ -23,6 +19,18 @@ class Group(Data):
             'name': self.name,
             'individuals': [individual.get_configuration() for individual in self.children]
         }
+
+    def load_configuration(self, configuration):
+        if 'individuals' in configuration:
+            for individual_settings in configuration['individuals']:
+                self.children.append(Group(configuration=individual_settings))
+
+        if 'sessions' in configuration:
+            for session_configuration in configuration['sessions']:
+                self.children.append(Session(configuration=session_configuration))
+
+        if 'name' in configuration:
+            self.name = configuration['name']
 
     def calculate_mean(self):
         """ Calculate the mean response """

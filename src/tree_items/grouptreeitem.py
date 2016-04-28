@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QTreeWidgetItem
 from PyQt5 import QtWidgets, QtGui
 from individualtreeitem import IndividualTreeItem
-from ..individual import Individual
+from ..group import Group
 import src.generated_ui.icons_rc
 
 
@@ -13,7 +13,7 @@ class GroupTreeItem(QTreeWidgetItem):
         self.nr_of_individuals = 0
 
     def add_individual(self):
-        individual = Individual()
+        individual = Group()
         individual.name = 'Individual ' + str(self.nr_of_individuals)
         self.group.add_child(individual)
         individual_item = IndividualTreeItem(individual)
