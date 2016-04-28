@@ -54,7 +54,7 @@ class GroupTreeItem(QTreeWidgetItem):
         top_tree_items = []
         for individual in self.group.children:
             tree_item = QTreeWidgetItem([individual.name])
-            for session in individual.children:
+            for session in individual.sessions:
                 sess_item = QTreeWidgetItem([session.name])
                 tree_item.addChild(sess_item)
 

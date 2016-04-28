@@ -273,7 +273,6 @@ class CustomPlot(QDialog):
         sessions = self.session.responses
         if self.ui.stimuliBox.currentText() == "All":
             for stimuli_type,stimuli_data in sessions.iteritems():
-                print stimuli_data
                 for i in range(stimuli_data.shape[0]):
                     axis, = self.ax.plot(stimuli_data[i,:], color=self.generate_random_color())
                     self.mean.append(axis)

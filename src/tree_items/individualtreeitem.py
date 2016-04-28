@@ -56,7 +56,7 @@ class IndividualTreeItem(QTreeWidgetItem):
         :return: List of QTreeWidgetItems
         """
         top_tree_items = []
-        for session in self.individual.children:
+        for session in self.individual.sessions:
             tree_item = QTreeWidgetItem([session.name])
             if session.path:
                 epi_path_item = QTreeWidgetItem(['EPI: ' + session.path.split('/')[-1]])
