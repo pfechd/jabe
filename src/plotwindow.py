@@ -50,7 +50,7 @@ class CustomPlot(QDialog):
         self.ui.checkBox_smooth.toggled.connect(self.plot_smooth)
         self.ui.checkBox_amp.toggled.connect(self.plot_amplitude)
         self.ui.checkBox_points.toggled.connect(self.show_points)
-        self.ui.stimuliBox.currentIndexChanged.connect(self.plot_mean)
+        self.ui.stimuliBox.currentIndexChanged.connect(self.replot)
 
         self.ui.toolButton_home.clicked.connect(self.toolbar.home)
         self.ui.toolButton_export.clicked.connect(self.tool_export)
@@ -100,17 +100,24 @@ class CustomPlot(QDialog):
                 self.fwhm.remove()
             self.canvas.draw()
 
+    def replot(self):
+        if self.mean:
+            for axis in self.mean:
+                axis.remove()
+            self.mean = []
+        self.plot_mean()
+        if self.smooth:
+            for axis in self.smooth:
+                axis.remove()
+            self.smooth = []
+        self.plot_smooth()
+
     def plot_smooth(self):
         """
         Smooth checkbox callback. Plot smooth from session object
         """
         if self.ui.checkBox_smooth.isChecked():
             self.ax.relim()
-            if self.smooth:
-                for axis in self.smooth:
-                    axis.remove()
-                self.smooth = []
-
             for plot in self.mean:
                 ydata = plot.get_ydata()
                 x = np.arange(ydata.shape[0])
@@ -133,10 +140,6 @@ class CustomPlot(QDialog):
         """
         if self.ui.checkBox_mean.isChecked():
             self.ax.relim()
-            if self.mean:
-                for axis in self.mean:
-                    axis.remove()
-                self.mean = []
             self.ui.checkBox_points.setChecked(False)
             self.ui.checkBox_fwhm.setChecked(False)
             self.ui.checkBox_amp.setChecked(False)
