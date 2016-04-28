@@ -195,7 +195,7 @@ class MainWindow(QMainWindow):
             individual = self.ui.tree_widget.selectedItems()[0].individual
             individual.prepare_for_calculation(
                 self.ui.percent_individual_btn.isChecked(),
-                self.ui.global_normalization_ind_btn.isChecked())
+                self.ui.global_normalization_individual_btn.isChecked())
             CustomPlot(self, individual)
 
         if self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
