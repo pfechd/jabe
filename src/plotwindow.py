@@ -52,6 +52,8 @@ class CustomPlot(QDialog):
         self.ui.checkBox_points.toggled.connect(self.show_points)
         self.ui.stimuliBox.currentIndexChanged.connect(self.replot)
 
+        self.ui.spinBox.valueChanged.connect(self.replot)
+
         self.ui.toolButton_home.clicked.connect(self.toolbar.home)
         self.ui.toolButton_export.clicked.connect(self.tool_export)
         self.ui.toolButton_pan.clicked.connect(self.toolbar.pan)
@@ -118,15 +120,21 @@ class CustomPlot(QDialog):
         """
         if self.ui.checkBox_smooth.isChecked():
             self.ax.relim()
-            for plot in self.mean:
-                ydata = plot.get_ydata()
-                x = np.arange(ydata.shape[0])
-                curr = UnivariateSpline(x, np.asarray(ydata), s=self.ui.spinBox.value())
+            before_smooth = self.session.calculate_mean()
+
+            if self.ui.stimuliBox.currentText() == "All":
+                for stimuli_type,stimuli_data in before_smooth.iteritems():
+                    x = np.arange(stimuli_data.shape[0])
+                    curr = UnivariateSpline(x, stimuli_data, s=self.ui.spinBox.value())
+                    axis, = self.ax.plot(curr(x), color=self.generate_random_color())
+                    self.smooth.append(axis)
+            else:
+                x = np.arange(before_smooth[int(self.ui.stimuliBox.currentText())].shape[0])
+                curr = UnivariateSpline(x, before_smooth[int(self.ui.stimuliBox.currentText())], s=self.ui.spinBox.value())
                 axis, = self.ax.plot(curr(x), color=self.generate_random_color())
                 self.smooth.append(axis)
 
             self.canvas.draw()
-
         else:
             for axis in self.smooth:
                 axis.remove()
@@ -155,20 +163,11 @@ class CustomPlot(QDialog):
 
             self.canvas.draw()
 
-            self.ui.checkBox_fwhm.setEnabled(True)
-            self.ui.checkBox_amp.setEnabled(True)
-            self.ui.checkBox_points.setEnabled(True)
-            self.ui.spinBox.setEnabled(True)
         else:
             for axis in self.mean:
                 axis.remove()
             self.mean = []
             self.canvas.draw()
-
-            self.ui.checkBox_amp.setDisabled(True)
-            self.ui.checkBox_fwhm.setDisabled(True)
-            self.ui.checkBox_points.setDisabled(True)
-            self.ui.spinBox.setDisabled(True)
 
     def plot_sem(self):
         """

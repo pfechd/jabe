@@ -179,7 +179,7 @@
         <item>
          <widget class="QCheckBox" name="checkBox_amp">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="text">
            <string>Amplitude</string>
@@ -196,7 +196,7 @@
         <item>
          <widget class="QCheckBox" name="checkBox_points">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="text">
            <string>Points</string>
@@ -224,7 +224,7 @@
           <item>
            <widget class="QCheckBox" name="checkBox_fwhm">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="text">
              <string>FWHM</string>
@@ -234,7 +234,7 @@
           <item>
            <widget class="QSpinBox" name="spinBox">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="value">
              <number>20</number>
