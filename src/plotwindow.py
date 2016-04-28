@@ -113,7 +113,6 @@ class CustomPlot(QDialog):
 
             for plot in self.mean:
                 ydata = plot.get_ydata()
-                print type(ydata)
                 x = np.arange(ydata.shape[0])
                 curr = UnivariateSpline(x, np.asarray(ydata), s=self.ui.spinBox.value())
                 axis, = self.ax.plot(curr(x), color=self.generate_random_color())
