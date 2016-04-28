@@ -137,7 +137,7 @@ class MainWindow(QMainWindow):
 
     def add_group_pressed(self):
         current_row = len(self.groups)
-        name = 'New group ' + str(current_row + 1)
+        name = 'Group ' + str(current_row + 1)
         group = Group(name=name)
         self.groups.append(group)
         group_item = GroupTreeItem(group)
