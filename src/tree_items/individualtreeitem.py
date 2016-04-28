@@ -12,7 +12,7 @@ class IndividualTreeItem(QTreeWidgetItem):
         self.individual = individual
 
     def add_session(self):
-        session = Session(name="Session " + str(len(self.individual.children)))
+        session = Session(name="Session " + str(len(self.individual.sessions) + 1))
         self.individual.add_session(session)
         sess_tree_item = SessionTreeItem(session)
         self.addChild(sess_tree_item)
