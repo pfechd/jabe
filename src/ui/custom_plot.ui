@@ -122,9 +122,9 @@
          </widget>
         </item>
         <item>
-         <widget class="QCheckBox" name="checkBox_std">
+         <widget class="QCheckBox" name="checkBox_sem">
           <property name="text">
-           <string notr="true">Standard Deviation</string>
+           <string notr="true">Standard Error</string>
           </property>
           <property name="iconSize">
            <size>

@@ -29,7 +29,7 @@ class CustomPlot(QDialog):
         self.amp = None
         self.fwhm = None
         self.mean = []
-        self.std = None
+        self.sem = None
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
 
@@ -43,7 +43,7 @@ class CustomPlot(QDialog):
         self.ui.mplvl.addWidget(self.canvas)
 
         self.ui.checkBox_fwhm.toggled.connect(self.apply_fwhm)
-        self.ui.checkBox_std.toggled.connect(self.plot_std)
+        self.ui.checkBox_sem.toggled.connect(self.plot_sem)
         self.ui.checkBox_mean.toggled.connect(self.plot_mean)
         self.ui.checkBox_amp.toggled.connect(self.plot_amplitude)
         self.ui.checkBox_points.toggled.connect(self.show_points)
@@ -110,7 +110,7 @@ class CustomPlot(QDialog):
             self.ui.checkBox_points.setChecked(False)
             self.ui.checkBox_fwhm.setChecked(False)
             self.ui.checkBox_amp.setChecked(False)
-            self.ui.checkBox_std.setChecked(False)
+            self.ui.checkBox_sem.setChecked(False)
             mean = self.session.calculate_mean()
             if self.ui.stimuliBox.currentText() == "All":
                 for stimuli_type,stimuli_data in mean.iteritems():
@@ -137,44 +137,28 @@ class CustomPlot(QDialog):
             self.ui.checkBox_points.setDisabled(True)
             self.ui.spinBox.setDisabled(True)
 
-    def plot_std(self):
+    def plot_sem(self):
         """
-        Standard deviation checkbox callback. Plot standard deviation of mean.
+        Standard error of mean checkbox callback. Plot standard error of mean.
         """
 
-        if self.ui.checkBox_std.isChecked() and self.ui.stimuliBox.currentText() != "All" and isinstance(self.session, Session):
+        if self.ui.checkBox_sem.isChecked() and self.ui.stimuliBox.currentText() != "All" and isinstance(self.session, Session):
             mean = self.session.calculate_mean()[int(self.ui.stimuliBox.currentText())]
             x = np.arange(mean.size)
             self.ax.relim()
-            std = self.session.calculate_std()
-            self.std =self.ax.errorbar(x, mean, yerr=std[int(self.ui.stimuliBox.currentText())])
-            #self.std = self.ax.errorbar(x, mean, yerr=self.session.calculate_sem()[int(self.ui.stimuliBox.currentText())])
+            sem = self.session.calculate_sem()
+            self.sem =self.ax.errorbar(x, mean, yerr=sem[int(self.ui.stimuliBox.currentText())])
             self.canvas.draw()
         else:
-            if self.std:
-                self.std[0].remove()
-                for line in self.std[1]:
+            if self.sem:
+                self.sem[0].remove()
+                for line in self.sem[1]:
                     line.remove()
-                for line in self.std[2]:
+                for line in self.sem[2]:
                     line.remove()
+                self.sem = None
 
             self.canvas.draw()
-
-
-    #def plot_sem(self):
-        """
-            Standard error of mean checkbox callback. Plot standard error of mean.
-
-            :return:
-            """
-     #   if self.ui.sem_checkbox_2.isChecked():
-
-      #      self.canvas.draw()
-       # else:
-
-        #    self.canvas.draw()
-
-
 
     def plot_amplitude(self):
         """
@@ -230,6 +214,5 @@ class CustomPlot(QDialog):
         """
         self.ui.stimuliBox.addItem("All")
         data = self.session.calculate_mean()
-        print data
         for stimuli_type in data:
             self.ui.stimuliBox.addItem(str(stimuli_type))
