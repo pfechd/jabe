@@ -1,15 +1,22 @@
 from PyQt5.QtWidgets import QTreeWidgetItem
 from PyQt5 import QtWidgets, QtGui
 from sessiontreeitem import SessionTreeItem
-from ..session import Session
 from ..group import Group
-import src.generated_ui.icons_rc
 
 
 class IndividualTreeItem(QTreeWidgetItem, Group):
     def __init__(self, configuration=None):
         super(IndividualTreeItem, self).__init__(configuration=configuration)
         self.setText(0, self.name)
+
+    def load_configuration(self, configuration):
+        super(IndividualTreeItem, self).load_configuration(configuration)
+        self.setText(0, self.name)
+
+        if 'sessions' in configuration:
+                for session_configuration in configuration['sessions']:
+                        session_tree_item = SessionTreeItem(configuration=session_configuration)
+                        self.add_session(session_tree_item)
 
     def add_session(self, session):
         super(IndividualTreeItem, self).add_session(session)

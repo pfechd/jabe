@@ -14,6 +14,16 @@ class GroupTreeItem(QTreeWidgetItem, Group):
 
         self.nr_of_individuals = 0
 
+    def load_configuration(self, configuration):
+        super(GroupTreeItem, self).load_configuration(configuration)
+        self.setText(0, self.name)
+
+        if 'individuals' in configuration:
+            for individual_configuration in configuration['individuals']:
+                individual_tree_item = IndividualTreeItem()
+                self.add_individual(individual_tree_item)
+                individual_tree_item.load_configuration(individual_configuration)
+
     def add_individual(self, individual):
         self.add_child(individual)
         self.addChild(individual)

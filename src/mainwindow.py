@@ -94,19 +94,11 @@ class MainWindow(QMainWindow):
                 configuration = json.load(f)
 
             for group_configuration in configuration['groups']:
-                group_tree_item = GroupTreeItem(configuration=group_configuration)
+                group_tree_item = GroupTreeItem()
                 self.ui.tree_widget.addTopLevelItem(group_tree_item)
+                group_tree_item.load_configuration(group_configuration)
                 self.groups.append(group_tree_item)
                 group_tree_item.create_buttons()
-                if 'individuals' in group_configuration:
-                    for individual_configuration in group_configuration['individuals']:
-                        individual_tree_item = IndividualTreeItem(configuration=individual_configuration)
-                        group_tree_item.add_individual(individual_tree_item)
-
-                        if 'sessions' in individual_configuration:
-                            for session in individual_configuration['sessions']:
-                                session_tree_item = SessionTreeItem(configuration=session)
-                                individual_tree_item.add_session(session_tree_item)
 
             self.update_gui()
 
