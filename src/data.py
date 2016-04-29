@@ -167,3 +167,17 @@ class Data(object):
     def remove_child(self, child):
         self.children.remove(child)
 
+    def get_tr(self):
+        children = self.children + self.sessions
+        # if we have a stimuli, use that tr. Otherwise check your children
+        if self.stimuli:
+            return self.stimuli.tr
+        elif children:
+            for child in children:
+                #loop until we find a child that has a TR
+                tr = child.get_tr()
+                if tr:
+                    return tr
+        return None
+
+
