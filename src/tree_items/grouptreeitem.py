@@ -13,6 +13,7 @@ class GroupTreeItem(QTreeWidgetItem, Group):
 
     def load_configuration(self, configuration):
         super(GroupTreeItem, self).load_configuration(configuration)
+        # Set the name in the first column of the QTreeWidgetItem
         self.setText(0, self.name)
 
         if 'individuals' in configuration:
@@ -98,6 +99,7 @@ class GroupTreeItem(QTreeWidgetItem, Group):
             layout.addWidget(box)
 
     def update_name(self, text):
+        # Set the name in the first column of the QTreeWidgetItem
         self.setText(0, text)
         self.name = text
 

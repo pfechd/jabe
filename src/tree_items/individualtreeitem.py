@@ -10,6 +10,7 @@ class IndividualTreeItem(QTreeWidgetItem, Group):
 
     def load_configuration(self, configuration):
         super(IndividualTreeItem, self).load_configuration(configuration)
+        # Set the name in the first column of the QTreeWidgetItem
         self.setText(0, self.name)
 
         if 'sessions' in configuration:
@@ -98,5 +99,6 @@ class IndividualTreeItem(QTreeWidgetItem, Group):
             layout.addWidget(box)
 
     def update_name(self, text):
+        # Set the name in the first column of the QTreeWidgetItem
         self.setText(0, text)
         self.name = text

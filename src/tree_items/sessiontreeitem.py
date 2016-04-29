@@ -9,6 +9,7 @@ class SessionTreeItem(QTreeWidgetItem, Session):
 
     def load_configuration(self, configuration):
         super(SessionTreeItem, self).load_configuration(configuration)
+        # Set the name in the first column of the QTreeWidgetItem
         self.setText(0, self.name)
 
     def remove_item(self):
@@ -28,5 +29,6 @@ class SessionTreeItem(QTreeWidgetItem, Session):
         tree.setItemWidget(self, 1, b2)
 
     def update_name(self, text):
+        # Set the name in the first column of the QTreeWidgetItem
         self.setText(0, text)
         self.name = text
