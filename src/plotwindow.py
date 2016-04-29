@@ -220,7 +220,7 @@ class CustomPlot(QDialog):
             y = self.ax.lines[0].get_ydata()
             x = np.arange(len(y))
             max_peak = self.session.calculate_amplitude(x, y, 0)
-            self.peak_time = self.ax.axvline(max_peak[0], color=self.generate_random_color())
+            self.peak_time = self.ax.axvline(max_peak[0]*self.session.get_tr(), color=self.generate_random_color())
             self.canvas.draw()
         else:
             if self.peak_time:
