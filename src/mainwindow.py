@@ -166,9 +166,6 @@ class MainWindow(QMainWindow):
     def calculate_button_pressed(self):
         """ Callback function, run when the calculate button is pressed."""
 
-        # TODO: Prompt user for brain and mask paths instead of falling
-        # back unto hardcoded defaults
-
         if self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
             session = self.ui.tree_widget.selectedItems()[0]
             session.prepare_for_calculation(

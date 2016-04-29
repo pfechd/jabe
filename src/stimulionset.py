@@ -11,8 +11,7 @@ class StimuliOnset:
     """
     def __init__(self, path, tr):
         self.path = path
-        self.tr = tr  # TODO: Where should tr be stored?
-        # TODO: Handle loading wrong files
+        self.tr = tr
         stimuli_onset_file = scipy.io.loadmat(path)
         stimuli_onset = stimuli_onset_file['visual_stimuli']
         self.amount = stimuli_onset.shape[0]

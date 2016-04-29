@@ -61,7 +61,6 @@ class Data(object):
 
         shortest_interval = min([j - i for i, j in zip(stimuli.data[:-1, 0], stimuli.data[1:, 0])])
 
-        # TODO: Apply the mask to the sequence
         self.responses = {}
 
         # Ignore the images after the last time stamp
