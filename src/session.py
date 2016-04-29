@@ -108,17 +108,6 @@ class Session(Data):
 
         return responses_sem
 
-    def sub_from_baseline(self, response):
-        """ Subtract baseline from a response
-        :param response: the response to subtract from
-        """
-        sub_value = response[0]
-
-        for i in range(self.images):
-            response[i] -= sub_value
-
-        return response
-
     def get_voxel_size(self):
         """ Returns the size of one voxel in the image. """
         return self.brain_file._header.get_zooms()
