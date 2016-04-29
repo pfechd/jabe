@@ -142,7 +142,6 @@ class CustomPlot(QDialog):
             self.smooth = []
             self.canvas.draw()
 
-
     def plot_mean(self):
         """
         Mean checkbox callback. Plot mean from session object
