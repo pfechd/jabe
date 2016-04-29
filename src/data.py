@@ -53,9 +53,8 @@ class Data(object):
         elif self.children or self.sessions:
             # Load children
             for child in self.children + self.sessions:
-                if not child.ready_for_calculation():
-                    continue
-                child.prepare_for_calculation(percentage, global_, mask, stimuli)
+                if child.ready_for_calculation():
+                    child.prepare_for_calculation(percentage, global_, mask, stimuli)
 
     def separate_into_responses(self, stimuli, percentage, global_):
         number_of_stimuli = stimuli.amount
