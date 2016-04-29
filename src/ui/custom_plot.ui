@@ -119,14 +119,14 @@
        <property name="title">
         <string>Plot</string>
        </property>
-       <widget class="QRadioButton" name="radioButton">
+       <widget class="QRadioButton" name="several_responses_btn">
         <property name="enabled">
          <bool>false</bool>
         </property>
         <property name="geometry">
          <rect>
-          <x>10</x>
-          <y>40</y>
+          <x>0</x>
+          <y>70</y>
           <width>141</width>
           <height>20</height>
          </rect>
@@ -135,14 +135,14 @@
          <string>Several responses</string>
         </property>
        </widget>
-       <widget class="QRadioButton" name="radioButton_2">
+       <widget class="QRadioButton" name="mean_response_btn">
         <property name="enabled">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <property name="geometry">
          <rect>
-          <x>10</x>
-          <y>70</y>
+          <x>0</x>
+          <y>40</y>
           <width>131</width>
           <height>20</height>
          </rect>
@@ -166,7 +166,7 @@
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
-         <widget class="QCheckBox" name="checkBox_mean">
+         <widget class="QCheckBox" name="checkBox_regular">
           <property name="text">
            <string>Regular</string>
           </property>

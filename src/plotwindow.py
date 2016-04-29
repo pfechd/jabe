@@ -46,12 +46,13 @@ class CustomPlot(QDialog):
 
         self.ui.checkBox_fwhm.toggled.connect(self.apply_fwhm)
         self.ui.checkBox_sem.toggled.connect(self.plot_sem)
-        self.ui.checkBox_mean.toggled.connect(self.plot_mean)
+        self.ui.checkBox_regular.toggled.connect(self.plot_regular)
         self.ui.checkBox_smooth.toggled.connect(self.plot_smooth)
         self.ui.checkBox_amp.toggled.connect(self.plot_amplitude)
         #self.ui.checkBox_points.toggled.connect(self.show_points)
         self.ui.checkBox_peak.toggled.connect(self.plot_peak)
         self.ui.stimuliBox.currentIndexChanged.connect(self.replot)
+        self.ui.mean_response_btn.toggled.connect(self.replot)
 
         self.ui.spinBox.valueChanged.connect(self.replot)
 
@@ -63,10 +64,10 @@ class CustomPlot(QDialog):
         self.setWindowTitle('Plot - ' + session.name)
         self.export_window = None
         self.add_stimuli_types()
-        if isinstance(self.session,Session):
-            self.plot_mean()
-        else:
-            self.plot_several_sessions()
+
+        children = self.session.children + self.session.sessions
+        if children and len(children) > 1:
+            self.ui.several_responses_btn.setEnabled(True)
 
         if parent.ui.checkbox_peak_session.isChecked():
             self.ui.checkBox_peak.setChecked(True)
@@ -111,15 +112,13 @@ class CustomPlot(QDialog):
             for axis in self.mean:
                 axis.remove()
             self.mean = []
-        if isinstance(self.session,Session):
-            self.plot_mean()
-        else:
-            self.plot_several_sessions()
+        self.plot_regular()
         if self.smooth:
             for axis in self.smooth:
                 axis.remove()
             self.smooth = []
         self.plot_smooth()
+        self.fix_allowed_buttons()
 
     def plot_smooth(self):
         """
@@ -153,7 +152,7 @@ class CustomPlot(QDialog):
         """
         Mean checkbox callback. Plot mean from session object
         """
-        if self.ui.checkBox_mean.isChecked():
+        if self.ui.checkBox_regular.isChecked():
             self.ax.relim()
             #self.ui.checkBox_points.setChecked(False)
             self.ui.checkBox_fwhm.setChecked(False)
@@ -269,16 +268,45 @@ class CustomPlot(QDialog):
             self.ui.stimuliBox.addItem(stimuli_type)
 
     def plot_several_sessions(self):
-        self.session.combine_children_responses()
-        sessions = self.session.responses
-        if self.ui.stimuliBox.currentText() == "All":
-            for stimuli_type,stimuli_data in sessions.iteritems():
-                for i in range(stimuli_data.shape[0]):
-                    axis, = self.ax.plot(stimuli_data[i,:], color=self.generate_random_color())
+        if self.ui.checkBox_regular.isChecked():
+            sessions = self.session.responses
+            self.ax.relim()
+            if self.ui.stimuliBox.currentText() == "All":
+                for stimuli_type,stimuli_data in sessions.iteritems():
+                    for i in range(stimuli_data.shape[0]):
+                        axis, = self.ax.plot(stimuli_data[i,:], color=self.generate_random_color())
+                        self.mean.append(axis)
+            else:
+                for i in range((sessions[self.ui.stimuliBox.currentText()]).shape[0]):
+                    axis, = self.ax.plot((sessions[self.ui.stimuliBox.currentText()])[i,:], color=self.generate_random_color())
                     self.mean.append(axis)
-        else:
-            for i in range((sessions[self.ui.stimuliBox.currentText()]).shape[0]):
-                axis, = self.ax.plot((sessions[self.ui.stimuliBox.currentText()])[i,:], color=self.generate_random_color())
-                self.mean.append(axis)
 
+        else:
+            for axis in self.mean:
+                axis.remove()
+            self.mean = []
             self.canvas.draw()
+
+        self.canvas.draw()
+
+    def plot_regular(self):
+        if self.ui.mean_response_btn.isChecked():
+            self.plot_mean()
+        elif not isinstance(self.session,Session):
+            self.plot_several_sessions()
+
+    def fix_allowed_buttons(self):
+        if len(self.mean) != 1:
+            self.ui.checkBox_amp.setEnabled(False)
+            self.ui.checkBox_fwhm.setEnabled(False)
+            self.ui.checkBox_peak.setEnabled(False)
+            self.ui.checkBox_sem.setEnabled(False)
+        else:
+            self.ui.checkBox_amp.setEnabled(True)
+            self.ui.checkBox_fwhm.setEnabled(True)
+            self.ui.checkBox_peak.setEnabled(True)
+            self.ui.checkBox_sem.setEnabled(True)
+        if self.ui.mean_response_btn.isChecked():
+            self.ui.checkBox_smooth.setEnabled(True)
+        else:
+            self.ui.checkBox_smooth.setEnabled(False)
