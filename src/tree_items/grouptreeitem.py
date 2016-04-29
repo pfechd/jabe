@@ -25,7 +25,9 @@ class GroupTreeItem(QTreeWidgetItem, Group):
                 individual_tree_item.load_configuration(individual_configuration)
 
     def add_individual(self, individual):
+        # Add individual to superclass Group
         self.add_child(individual)
+        # Add individual to superclass QTreeWidgetItem
         self.addChild(individual)
         individual.create_buttons()
         self.setExpanded(True)
