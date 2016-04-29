@@ -63,7 +63,6 @@ class CustomPlot(QDialog):
         self.setWindowTitle('Plot - ' + session.name)
         self.export_window = None
         self.add_stimuli_types()
-        self.plot_mean()
 
         if parent.ui.checkbox_peak_session.isChecked():
             self.ui.checkBox_peak.setChecked(True)
@@ -106,12 +105,12 @@ class CustomPlot(QDialog):
     def replot(self):
         if self.mean:
             for axis in self.mean:
-                axis.remove()
+                axis[0].remove()
             self.mean = []
         self.plot_mean()
         if self.smooth:
             for axis in self.smooth:
-                axis.remove()
+                axis[0].remove()
             self.smooth = []
         self.plot_smooth()
 
@@ -128,19 +127,20 @@ class CustomPlot(QDialog):
                     x = np.arange(stimuli_data.shape[0])*self.session.get_tr()
                     curr = UnivariateSpline(x, stimuli_data, s=self.ui.spinBox.value())
                     axis, = self.ax.plot(x,curr(x), color=self.generate_random_color())
-                    self.smooth.append(axis)
+                    self.smooth.append((axis, stimuli_type + ", smoothed"))
             else:
                 x = np.arange(before_smooth[self.ui.stimuliBox.currentText()].shape[0])*self.session.get_tr()
                 curr = UnivariateSpline(x, before_smooth[self.ui.stimuliBox.currentText()], s=self.ui.spinBox.value())
                 axis, = self.ax.plot(x,curr(x), color=self.generate_random_color())
-                self.smooth.append(axis)
+                self.smooth.append((axis, self.ui.stimuliBox.currentText() + ", smoothed"))
 
-            self.canvas.draw()
         else:
             for axis in self.smooth:
-                axis.remove()
+                axis[0].remove()
             self.smooth = []
-            self.canvas.draw()
+
+        self.update_legend()
+        self.canvas.draw()
 
 
     def plot_mean(self):
@@ -159,19 +159,19 @@ class CustomPlot(QDialog):
                 for stimuli_type,stimuli_data in mean.iteritems():
                     x = np.arange(len(stimuli_data))*self.session.get_tr()
                     axis, = self.ax.plot(x,stimuli_data, color=self.generate_random_color())
-                    self.mean.append(axis)
+                    self.mean.append((axis,str(stimuli_type)))
             else:
                 x = np.arange(len(mean[self.ui.stimuliBox.currentText()]))*self.session.get_tr()
                 axis, = self.ax.plot(x,mean[self.ui.stimuliBox.currentText()], color=self.generate_random_color())
-                self.mean.append(axis)
-
-            self.canvas.draw()
+                self.mean.append((axis,str(self.ui.stimuliBox.currentText())))
 
         else:
             for axis in self.mean:
-                axis.remove()
+                axis[0].remove()
             self.mean = []
-            self.canvas.draw()
+
+        self.update_legend()
+        self.canvas.draw()
 
     def plot_sem(self):
         """
@@ -235,11 +235,11 @@ class CustomPlot(QDialog):
         if self.mean:
             if self.ui.checkBox_points.isChecked():
                 for axis in self.mean:
-                    axis.set_marker('o')
+                    axis[0].set_marker('o')
                 self.canvas.draw()
             else:
                 for axis in self.mean:
-                    axis.set_marker('')
+                    axis[0].set_marker('')
                 self.canvas.draw()
 
     @staticmethod
@@ -263,3 +263,9 @@ class CustomPlot(QDialog):
         data = self.session.calculate_mean()
         for stimuli_type in data:
             self.ui.stimuliBox.addItem(stimuli_type)
+
+    def update_legend(self):
+        all_plots = self.mean+self.smooth
+        if all_plots:
+            fix_order = zip(*all_plots)
+            plt.legend(fix_order[0],fix_order[1])
