@@ -19,6 +19,8 @@ class GroupTreeItem(QTreeWidgetItem, Group):
             for individual_configuration in configuration['individuals']:
                 individual_tree_item = IndividualTreeItem()
                 self.add_individual(individual_tree_item)
+                # Load configuration after adding the individual as it accesses
+                # the tree when creating buttons
                 individual_tree_item.load_configuration(individual_configuration)
 
     def add_individual(self, individual):
