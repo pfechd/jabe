@@ -14,9 +14,9 @@ class IndividualTreeItem(QTreeWidgetItem, Group):
         self.setText(0, self.name)
 
         if 'sessions' in configuration:
-                for session_configuration in configuration['sessions']:
-                        session_tree_item = SessionTreeItem(configuration=session_configuration)
-                        self.add_session(session_tree_item)
+            for session_configuration in configuration['sessions']:
+                session_tree_item = SessionTreeItem(configuration=session_configuration)
+                self.add_session(session_tree_item)
 
     def add_session(self, session):
         super(IndividualTreeItem, self).add_session(session)
