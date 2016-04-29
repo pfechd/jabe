@@ -4,10 +4,11 @@ from ..session import Session
 
 
 class SessionTreeItem(QTreeWidgetItem, Session):
-    def __init__(self, name=None, configuration=None):
+    def __init__(self, configuration=None):
         super(SessionTreeItem, self).__init__(configuration=configuration)
-        if name:
-            self.name = name
+
+    def load_configuration(self, configuration):
+        super(SessionTreeItem, self).load_configuration(configuration)
         self.setText(0, self.name)
 
     def remove_item(self):

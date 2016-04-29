@@ -7,7 +7,6 @@ from ..group import Group
 class IndividualTreeItem(QTreeWidgetItem, Group):
     def __init__(self, configuration=None):
         super(IndividualTreeItem, self).__init__(configuration=configuration)
-        self.setText(0, self.name)
 
     def load_configuration(self, configuration):
         super(IndividualTreeItem, self).load_configuration(configuration)
@@ -26,7 +25,8 @@ class IndividualTreeItem(QTreeWidgetItem, Group):
         self.treeWidget().window().update_gui()
 
     def add_new_session(self):
-        session = SessionTreeItem(name="Session " + str(len(self.sessions) + 1))
+        session = SessionTreeItem()
+        session.update_name("Session " + str(len(self.sessions) + 1))
         self.add_session(session)
 
     def remove_item(self):

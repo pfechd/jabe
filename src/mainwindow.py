@@ -123,7 +123,8 @@ class MainWindow(QMainWindow):
     def add_group_pressed(self):
         current_row = len(self.groups)
         name = 'Group ' + str(current_row + 1)
-        group = GroupTreeItem(name=name)
+        group = GroupTreeItem()
+        group.update_name(name)
         self.groups.append(group)
         self.ui.tree_widget.addTopLevelItem(group)
         group.create_buttons()

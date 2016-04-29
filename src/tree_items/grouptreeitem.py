@@ -6,11 +6,8 @@ import src.generated_ui.icons_rc
 
 
 class GroupTreeItem(QTreeWidgetItem, Group):
-    def __init__(self, name=None, configuration=None):
+    def __init__(self, configuration=None):
         super(GroupTreeItem, self).__init__(configuration=configuration)
-        if name:
-            self.name = name
-        self.setText(0, self.name)
 
         self.nr_of_individuals = 0
 
