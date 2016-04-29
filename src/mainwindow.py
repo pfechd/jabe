@@ -168,6 +168,7 @@ class MainWindow(QMainWindow):
 
         # TODO: Prompt user for brain and mask paths instead of falling
         # back unto hardcoded defaults
+        print self.ui.tree_widget.selectedItems()[0].aggregate(True, True)
 
         if self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
             session = self.ui.tree_widget.selectedItems()[0]

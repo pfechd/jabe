@@ -70,4 +70,20 @@ class Group(Data):
                 else:
                     self.responses[intensity] = data.reshape(1, data.shape[0])
 
+    def aggregate(self, percentage, global_, mask=None, stimuli=None):
+        self.responses = {}
+
+        for child in self.children + self.sessions:
+            # If the child doesn't have the files loaded, skip it.
+            if not child.ready_for_calculation():
+                continue
+            child_response = child.aggregate(percentage, global_, mask, stimuli)
+            print child_response
+            for intensity, data in child_response.iteritems():
+                if intensity in self.responses:
+                    self.responses[intensity] = np.concatenate((self.responses[intensity], data))
+                else:
+                    self.responses[intensity] = data
+
+        return self.responses
 
