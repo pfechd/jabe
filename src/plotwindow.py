@@ -65,6 +65,7 @@ class CustomPlot(QDialog):
         self.export_window = None
         self.add_stimuli_types()
 
+        # Enable the 'plot several' button if the object has more than 1 child
         children = self.session.children + self.session.sessions
         if children and len(children) > 1:
             self.ui.several_responses_btn.setEnabled(True)
@@ -108,6 +109,9 @@ class CustomPlot(QDialog):
             self.canvas.draw()
 
     def replot(self):
+        """
+        Replot regular and smoothed curve. Used when changing the data to plot
+        """
         if self.mean:
             for axis in self.mean:
                 axis.remove()
@@ -268,6 +272,9 @@ class CustomPlot(QDialog):
             self.ui.stimuliBox.addItem(stimuli_type)
 
     def plot_several_sessions(self):
+        """
+        Plot the active object's children, each as a seperate plot
+        """
         if self.ui.checkBox_regular.isChecked():
             sessions = self.session.responses
             self.ax.relim()
@@ -290,22 +297,30 @@ class CustomPlot(QDialog):
         self.canvas.draw()
 
     def plot_regular(self):
+        """
+        Plot either the mean of the object's data, or its children seperately, depnding on if the radiobutton is checked
+        """
         if self.ui.mean_response_btn.isChecked():
             self.plot_mean()
         elif not isinstance(self.session,Session):
             self.plot_several_sessions()
 
     def fix_allowed_buttons(self):
-        if len(self.mean) != 1:
-            self.ui.checkBox_amp.setEnabled(False)
-            self.ui.checkBox_fwhm.setEnabled(False)
-            self.ui.checkBox_peak.setEnabled(False)
-            self.ui.checkBox_sem.setEnabled(False)
-        else:
+        """
+        Enable or disable buttons depending on if they are meaningful in the current situation
+        """
+        # Enable the buttons if there are exactly 1 regular curve, or if there is one smoothed curve
+        if len(self.mean) == 1 or (len(self.mean) == 0 and len(self.smooth) == 1):
             self.ui.checkBox_amp.setEnabled(True)
             self.ui.checkBox_fwhm.setEnabled(True)
             self.ui.checkBox_peak.setEnabled(True)
             self.ui.checkBox_sem.setEnabled(True)
+        else:
+            self.ui.checkBox_amp.setEnabled(False)
+            self.ui.checkBox_fwhm.setEnabled(False)
+            self.ui.checkBox_peak.setEnabled(False)
+            self.ui.checkBox_sem.setEnabled(False)
+        # Only allow smooth if we are plotting mean
         if self.ui.mean_response_btn.isChecked():
             self.ui.checkBox_smooth.setEnabled(True)
         else:
