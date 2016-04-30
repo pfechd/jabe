@@ -112,7 +112,7 @@ class Session(Data):
         """ Returns the size of one voxel in the image. """
         return self.brain_file._header.get_zooms()
 
-    def aggregate(self, percentage, global_, mask=None, stimuli=None):
+    def aggregate_(self, percentage, global_, mask=None, stimuli=None):
         if not mask:
             mask = self.mask
         if not stimuli:

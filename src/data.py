@@ -181,4 +181,11 @@ class Data(object):
                     return tr
         return None
 
+    def aggregate(self, percentage, global_, mask=None, stimuli=None):
+        # TODO: Check if some child have had their data changed
+        # TODO: Check if the normalization settings have been changed
+        if self.responses:
+            return self.responses
+        else:
+            return self.aggregate_(percentage, global_, mask, stimuli)
 
