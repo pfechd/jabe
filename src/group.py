@@ -33,11 +33,10 @@ class Group(Data):
                  is the vector containing the mean value for the given time
                  frame.
         """
-        self.combine_children_responses()
-
+        responses = self.aggregate(self.percent_normalization, self.global_normalization)
         mean_responses = {}
 
-        for stimuli_type, stimuli_data in self.responses.iteritems():
+        for stimuli_type, stimuli_data in responses.iteritems():
             response_mean = np.zeros(stimuli_data.shape[1])
 
             for i in range(stimuli_data.shape[1]):

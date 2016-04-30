@@ -21,7 +21,9 @@ class Data(object):
         # TODO: Remove this
         self.sessions = []
 
-        self.plot_settings = {}
+        # Normalization settings
+        self.global_normalization = False
+        self.percent_normalization = False
 
         # Result of calculations are kept here
         self.masked_data = None
