@@ -72,18 +72,27 @@ class Group(Data):
 
     def aggregate(self, percentage, global_, mask=None, stimuli=None):
         self.responses = {}
+        min_width = float('inf')
 
         for child in self.children + self.sessions:
             # If the child doesn't have the files loaded, skip it.
             if not child.ready_for_calculation():
                 continue
             child_response = child.aggregate(percentage, global_, mask, stimuli)
-            print child_response
+
             for intensity, data in child_response.iteritems():
+                min_width = min(min_width, data.shape[1])
+
                 if intensity in self.responses:
-                    self.responses[intensity] = np.concatenate((self.responses[intensity], data))
+                    responses = self.responses[intensity][:, 0:min_width]
+                    data = data[:, 0:min_width]
+                    self.responses[intensity] = np.concatenate((responses, data))
                 else:
                     self.responses[intensity] = data
+
+        # Set all data to match the length of the least wide response
+        for intensity, data in self.responses.iteritems():
+            self.responses[intensity] = data[:, 0:min_width]
 
         return self.responses
 
