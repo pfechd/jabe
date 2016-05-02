@@ -12,6 +12,7 @@ class StimuliWindow(QDialog):
         super(StimuliWindow, self).__init__()
         self.ui = Ui_Stimuli_window()
         self.ui.setupUi(self)
+        self.ui.cancel.clicked.connect(self.close_window)
         self.ui.add_row.clicked.connect(self.add_row)
         self.show();
 
@@ -19,8 +20,14 @@ class StimuliWindow(QDialog):
         rows = self.ui.stimuli_table.rowCount()
         self.ui.stimuli_table.setRowCount(rows+1)
 
-if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    s = StimuliWindow()
-    sys.exit(app.exec_())
+    def close_window(self):
+        self.close()
+     
+    if __name__ == "__main__":
+        app = QtWidgets.QApplication(sys.argv)
+        s = StimuliWindow()
+        sys.exit(app.exec_())
+
+          
+     
 
