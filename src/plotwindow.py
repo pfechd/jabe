@@ -93,7 +93,7 @@ class CustomPlot(QDialog):
         if self.ui.checkBox_fwhm.isChecked():
             if self.mean is not None:
                 y = self.ax.lines[0].get_ydata()
-                x = np.arange(len(y))
+                x = np.arange(len(y))*self.session.get_tr()
                 smooth = self.ui.spinBox.value()
                 r1, r2 = self.session.calculate_fwhm(x, y, smooth)
                 self.fwhm = self.ax.axvspan(r1, r2, facecolor='g', alpha=0.3)
