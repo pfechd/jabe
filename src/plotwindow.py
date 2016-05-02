@@ -39,8 +39,10 @@ class CustomPlot(QDialog):
 
         self.session = session
         self.fig = plt.figure()
-        self.ax = self.fig.add_subplot(121)
-        self.img = self.fig.add_subplot(122)
+        self.ax = self.fig.add_subplot(141)
+        self.img1 = self.fig.add_subplot(142)
+        self.img2 = self.fig.add_subplot(143)
+        self.img3 = self.fig.add_subplot(144)
         self.canvas = FigureCanvas(self.fig)
         self.toolbar = NavigationToolbar(self.canvas, self, coordinates=True)
         self.toolbar.hide()
@@ -270,12 +272,16 @@ class CustomPlot(QDialog):
             self.ui.stimuliBox.addItem(stimuli_type)
 
     def show_brain(self):
+        most_ones = self.session.mask.get_index_of_roi()
         self.m = np.ma.masked_where(self.session.mask.data == 0, self.session.mask.data)
-        self.img.imshow(self.session.sequence[:,:,self.scroll, 0], cmap=mpl.cm.gray)
-        self.img.imshow(self.m[:,:,self.scroll], cmap=mpl.cm.spring, alpha=0.8)
-        self.fig.canvas.mpl_connect('scroll_event', self.change_scroll)
-        print self.session.anatomic_image.shape
-        print self.session.mask.data.shape
+        self.img1.imshow(self.session.sequence[:,:,most_ones[2], 0], cmap=mpl.cm.gray)
+        self.img1.imshow(self.m[:,:,most_ones[2]], cmap=mpl.cm.spring, alpha=0.8)
+        self.img2.imshow(self.session.sequence[:,most_ones[1],:, 0], cmap=mpl.cm.gray)
+        self.img2.imshow(self.m[:,most_ones[1],:], cmap=mpl.cm.spring, alpha=0.8)
+        self.img3.imshow(self.session.sequence[most_ones[0],:,:, 0], cmap=mpl.cm.gray)
+        self.img3.imshow(self.m[most_ones[0],:,:], cmap=mpl.cm.spring, alpha=0.8)
+        #self.fig.canvas.mpl_connect('scroll_event', self.change_scroll)
+        self.canvas.draw()
 
     def change_scroll(self, event):
         if event.button == "up" and self.scroll < self.session.sequence.shape[2]-1:
