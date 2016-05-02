@@ -269,15 +269,17 @@ class CustomPlot(QDialog):
             self.ui.stimuliBox.addItem(stimuli_type)
 
     def show_brain(self):
-        self.img.imshow(self.session.sequence[:,:,self.scroll,0])
+        self.img.imshow(self.session.anatomic_image[:,self.scroll,:])
         self.fig.canvas.mpl_connect('scroll_event', self.change_scroll)
+        print self.session.anatomic_image.shape
+        print self.session.mask.data.shape
 
     def change_scroll(self, event):
-        if event.button == "up" and self.scroll < self.session.sequence.shape[2]-1:
-            self.scroll+=1
+        if event.button == "up" and self.scroll < self.session.anatomic_image.shape[1]-1:
+            self.scroll+=5
         elif event.button == "down" and self.scroll > 1:
-            self.scroll-=1
+            self.scroll-=5
         self.img.clear()
-        self.img.imshow(self.session.sequence[:,:,self.scroll,0])
+        self.img.imshow(self.session.anatomic_image[:,self.scroll,:])
         self.canvas.draw()
 
