@@ -112,7 +112,7 @@ class Session(Data):
         """ Returns the size of one voxel in the image. """
         return self.brain_file._header.get_zooms()
 
-    def aggregate_(self, percentage, global_, mask=None, stimuli=None):
+    def aggregate_(self, percentage, global_, mask, stimuli):
         """
         Aggregate response data from children with the given settings. Do not
         call this method directly, instead use the `aggregate` method which
@@ -122,6 +122,10 @@ class Session(Data):
                  where N is the number of stimuli and M is the length of the
                  shortest stimuli.
         """
+        if not percentage:
+            percentage = self.percent_normalization
+        if not global_:
+            global_ = self.global_normalization
         if not mask:
             mask = self.mask
         if not stimuli:

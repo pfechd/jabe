@@ -181,7 +181,7 @@ class Data(object):
                     return tr
         return None
 
-    def aggregate(self, percentage, global_, mask=None, stimuli=None):
+    def aggregate(self, percentage=None, global_=None, mask=None, stimuli=None):
         """
         Aggregate response data from children with the given settings. This
         method caches data on all levels and only aggregates data when needed.
