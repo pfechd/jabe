@@ -273,19 +273,21 @@ class CustomPlot(QDialog):
 
     def plot_several_sessions(self):
         """
-        Plot the active object's children, each as a seperate plot
+        Plot the active object's children, each as a separate plot
         """
         if self.ui.checkBox_regular.isChecked():
             sessions = self.session.responses
             self.ax.relim()
             if self.ui.stimuliBox.currentText() == "All":
-                for stimuli_type,stimuli_data in sessions.iteritems():
+                for stimuli_type, stimuli_data in sessions.iteritems():
                     for i in range(stimuli_data.shape[0]):
-                        axis, = self.ax.plot(stimuli_data[i,:], color=self.generate_random_color())
+                        axis, = self.ax.plot(stimuli_data[i, :], color=self.generate_random_color())
                         self.mean.append(axis)
             else:
-                for i in range((sessions[self.ui.stimuliBox.currentText()]).shape[0]):
-                    axis, = self.ax.plot((sessions[self.ui.stimuliBox.currentText()])[i,:], color=self.generate_random_color())
+                session = sessions[self.ui.stimuliBox.currentText()]
+                for i in range(session.shape[0]):
+                    axis, = self.ax.plot((sessions[self.ui.stimuliBox.currentText()])[i, :],
+                                         color=self.generate_random_color())
                     self.mean.append(axis)
 
         else:
@@ -298,14 +300,15 @@ class CustomPlot(QDialog):
 
     def plot_regular(self):
         """
-        Plot either the mean of the object's data, or its children seperately, depnding on if the radiobutton is checked
+        Plot either the mean of the object's data, or its children separately,
+        depending on if the radiobutton is checked
         """
         if self.ui.mean_response_btn.isChecked():
             self.plot_mean()
         elif not isinstance(self.session,Session):
             self.plot_several_sessions()
 
-    def fix_allowed_buttons(self):
+    def set_allowed_buttons(self):
         """
         Enable or disable buttons depending on if they are meaningful in the current situation
         """
