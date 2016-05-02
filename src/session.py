@@ -30,6 +30,9 @@ class Session(Data):
         if 'path' in configuration:
             self.load_data(configuration['path'])
 
+        if 'anatomy_path' in configuration:
+            self.load_anatomy(configuration['anatomy_path'])
+
         if 'mask' in configuration:
             self.mask = Mask(configuration['mask']['path'])
 
@@ -42,6 +45,9 @@ class Session(Data):
 
         if self.path:
             configuration['path'] = self.path
+
+        if self.anatomy_path:
+            configuration['anatomy_path'] = self.anatomy_path
 
         if self.mask:
             configuration['mask'] = self.mask.get_configuration()
