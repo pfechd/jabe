@@ -2,6 +2,7 @@ import numpy as np
 import random
 
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 from PyQt5.QtWidgets import QDialog
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
@@ -269,17 +270,20 @@ class CustomPlot(QDialog):
             self.ui.stimuliBox.addItem(stimuli_type)
 
     def show_brain(self):
-        self.img.imshow(self.session.anatomic_image[:,self.scroll,:])
+        self.m = np.ma.masked_where(self.session.mask.data == 0, self.session.mask.data)
+        self.img.imshow(self.session.sequence[:,:,self.scroll, 0], cmap=mpl.cm.gray)
+        self.img.imshow(self.m[:,:,self.scroll], cmap=mpl.cm.spring, alpha=0.8)
         self.fig.canvas.mpl_connect('scroll_event', self.change_scroll)
         print self.session.anatomic_image.shape
         print self.session.mask.data.shape
 
     def change_scroll(self, event):
-        if event.button == "up" and self.scroll < self.session.anatomic_image.shape[1]-1:
-            self.scroll+=5
+        if event.button == "up" and self.scroll < self.session.sequence.shape[2]-1:
+            self.scroll+=1
         elif event.button == "down" and self.scroll > 1:
-            self.scroll-=5
+            self.scroll-=1
         self.img.clear()
-        self.img.imshow(self.session.anatomic_image[:,self.scroll,:])
+        self.img.imshow(self.session.sequence[:,:,self.scroll, 0], cmap=mpl.cm.gray)
+        self.img.imshow(self.m[:,:,self.scroll], cmap=mpl.cm.spring, alpha=0.8)
         self.canvas.draw()
 
