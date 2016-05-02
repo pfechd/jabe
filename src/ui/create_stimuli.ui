@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Dialog</class>
- <widget class="QDialog" name="Dialog">
+ <class>Stimuli_window</class>
+ <widget class="QDialog" name="Stimuli_window">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -17,7 +17,7 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QPushButton" name="pushButton_3">
+      <widget class="QPushButton" name="add_row">
        <property name="text">
         <string>Add Row</string>
        </property>
@@ -59,7 +59,7 @@
     </layout>
    </item>
    <item>
-    <widget class="QTableWidget" name="tableWidget">
+    <widget class="QTableWidget" name="stimuli_table">
      <attribute name="horizontalHeaderCascadingSectionResizes">
       <bool>false</bool>
      </attribute>
@@ -90,14 +90,14 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="create_stimuli">
        <property name="text">
         <string>Create Stimuli file</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_2">
+      <widget class="QPushButton" name="cancel">
        <property name="text">
         <string>Cancel</string>
        </property>
