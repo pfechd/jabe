@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>530</width>
-    <height>387</height>
+    <width>413</width>
+    <height>311</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,7 @@
     <rect>
      <x>9</x>
      <y>90</y>
-     <width>511</width>
+     <width>391</width>
      <height>71</height>
     </rect>
    </property>
@@ -46,6 +46,9 @@
         <width>100</width>
         <height>100</height>
        </size>
+      </property>
+      <property name="textInteractionFlags">
+       <set>Qt::TextEditorInteraction</set>
       </property>
      </widget>
     </item>
@@ -128,7 +131,7 @@
     <rect>
      <x>10</x>
      <y>180</y>
-     <width>511</width>
+     <width>391</width>
      <height>71</height>
     </rect>
    </property>
@@ -172,7 +175,7 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>511</width>
+     <width>391</width>
      <height>71</height>
     </rect>
    </property>
@@ -198,14 +201,14 @@
     </item>
    </layout>
   </widget>
-  <widget class="QPushButton" name="pushButton">
+  <widget class="QPushButton" name="pushButton_create">
    <property name="enabled">
     <bool>false</bool>
    </property>
    <property name="geometry">
     <rect>
-     <x>400</x>
-     <y>340</y>
+     <x>280</x>
+     <y>270</y>
      <width>114</width>
      <height>32</height>
     </rect>
@@ -217,8 +220,8 @@
   <widget class="QPushButton" name="pushButton_cancel">
    <property name="geometry">
     <rect>
-     <x>270</x>
-     <y>340</y>
+     <x>140</x>
+     <y>270</y>
      <width>114</width>
      <height>32</height>
     </rect>
@@ -226,53 +229,6 @@
    <property name="text">
     <string>Cancel</string>
    </property>
-  </widget>
-  <widget class="QGroupBox" name="horizontalGroupBox_file_name">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>260</y>
-     <width>511</width>
-     <height>71</height>
-    </rect>
-   </property>
-   <property name="title">
-    <string>File name:</string>
-   </property>
-   <layout class="QHBoxLayout" name="horizontalLayout_4">
-    <item>
-     <widget class="QTextEdit" name="textEdit_file_name">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>200</width>
-        <height>100</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <spacer name="horizontalSpacer_5">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeType">
-       <enum>QSizePolicy::Maximum</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>300</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-   </layout>
   </widget>
  </widget>
  <resources/>
