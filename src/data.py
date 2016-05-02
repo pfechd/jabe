@@ -15,6 +15,8 @@ class Data(object):
         self.images = None
         self.mask = None
         self.stimuli = None
+        self.anatomy_path = None
+        self.anatomy_file = None
         self.anatomic_image = None
 
         self.children = []
@@ -152,6 +154,11 @@ class Data(object):
         self.brain_file = nib.load(path)
         self.sequence = self.brain_file.get_data()
         self.images = self.sequence.shape[3]
+
+    def load_anatomy(self, path):
+        self.anatomy_path = path
+        self.anatomy_file = nib.load(path)
+        self.anatomic_image = self.anatomy_file.get_data()
 
     def load_stimuli(self, path, tr):
         self.stimuli = StimuliOnset(path, tr)
