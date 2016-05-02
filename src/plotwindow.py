@@ -271,24 +271,33 @@ class CustomPlot(QDialog):
         for stimuli_type in data:
             self.ui.stimuliBox.addItem(stimuli_type)
 
-    def show_brain(self):
-        most_ones = self.session.mask.get_index_of_roi()
+    def convert_coord(self, coord):
         a = np.array([self.session.brain_file._header["srow_x"],self.session.brain_file._header["srow_y"],self.session.brain_file._header["srow_z"],[0,0,0,1]])
-        b = most_ones
+        b = coord
         c = np.dot(a,b.T)
-        print c
-        print self.session.anatomy_file._header
         d = np.array([self.session.anatomy_file._header["srow_x"],self.session.anatomy_file._header["srow_y"],self.session.anatomy_file._header["srow_z"],[0,0,0,1]])
-        print d
         e = np.dot(np.linalg.inv(d),c)
-        print e
 
-        self.m = np.ma.masked_where(self.session.mask.data == 0, self.session.mask.data)
-        self.img1.imshow(self.session.sequence[:,:,most_ones[0][2], 0], cmap=mpl.cm.gray)
+        return np.transpose(e)
+
+    def show_brain(self):
+        most_ones = np.around(self.convert_coord(self.session.mask.get_index_of_roi())).astype(int)
+        new_mask = np.zeros(self.session.anatomic_image.shape)
+
+        shape_size = 20
+
+        for z in range(int(most_ones[0][2]) - shape_size / 2, int(most_ones[0][2]) + shape_size / 2 + 1):
+            for y in range(int(most_ones[0][1]) - shape_size / 2, int(most_ones[0][1]) + shape_size / 2 + 1):
+                for x in range(int(most_ones[0][0]) - shape_size / 2, int(most_ones[0][0]) + shape_size / 2 + 1):
+                    new_mask[x, y ,z] = 1
+
+
+        self.m = np.ma.masked_where(new_mask == 0, new_mask)
+        self.img1.imshow(self.session.anatomic_image[:,:,most_ones[0][2]], cmap=mpl.cm.gray)
         self.img1.imshow(self.m[:,:,most_ones[0][2]], cmap=mpl.cm.spring, alpha=0.8)
-        self.img2.imshow(self.session.sequence[:,most_ones[0][1],:, 0], cmap=mpl.cm.gray)
+        self.img2.imshow(self.session.anatomic_image[:,most_ones[0][1],:], cmap=mpl.cm.gray)
         self.img2.imshow(self.m[:,most_ones[0][1],:], cmap=mpl.cm.spring, alpha=0.8)
-        self.img3.imshow(self.session.sequence[most_ones[0][0],:,:, 0], cmap=mpl.cm.gray)
+        self.img3.imshow(self.session.anatomic_image[most_ones[0][0],:,:], cmap=mpl.cm.gray)
         self.img3.imshow(self.m[most_ones[0][0],:,:], cmap=mpl.cm.spring, alpha=0.8)
         #self.fig.canvas.mpl_connect('scroll_event', self.change_scroll)
         self.canvas.draw()
