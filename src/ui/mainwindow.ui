@@ -498,8 +498,8 @@
                        <rect>
                         <x>0</x>
                         <y>0</y>
-                        <width>148</width>
-                        <height>290</height>
+                        <width>134</width>
+                        <height>20</height>
                        </rect>
                       </property>
                       <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -974,8 +974,8 @@
                        <rect>
                         <x>0</x>
                         <y>0</y>
-                        <width>148</width>
-                        <height>290</height>
+                        <width>134</width>
+                        <height>20</height>
                        </rect>
                       </property>
                       <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -1183,14 +1183,14 @@
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_20">
                 <item>
-                 <layout class="QGridLayout" name="gridLayout_7" rowminimumheight="0,0,0,0" columnminimumwidth="0,0">
+                 <layout class="QGridLayout" name="gridLayout_7">
                   <property name="sizeConstraint">
                    <enum>QLayout::SetDefaultConstraint</enum>
                   </property>
                   <property name="topMargin">
                    <number>0</number>
                   </property>
-                  <item row="3" column="0">
+                  <item row="5" column="0">
                    <widget class="QLabel" name="session_mask_label">
                     <property name="minimumSize">
                      <size>
@@ -1209,7 +1209,7 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="3" column="1">
+                  <item row="5" column="1">
                    <widget class="QPushButton" name="add_session_mask_btn">
                     <property name="text">
                      <string>Choose mask</string>
@@ -1255,6 +1255,20 @@
                     </property>
                    </widget>
                   </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="session_anatomy_label">
+                    <property name="text">
+                     <string>No anatomy chosen</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QPushButton" name="add_session_anatomy_btn">
+                    <property name="text">
+                     <string>Choose anatomy</string>
+                    </property>
+                   </widget>
+                  </item>
                   <item row="1" column="0">
                    <widget class="QLabel" name="session_epi_label">
                     <property name="sizePolicy">
@@ -1286,17 +1300,17 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="0" column="1">
-                   <widget class="QPushButton" name="add_session_anatomy_btn">
+                  <item row="6" column="1">
+                   <widget class="QPushButton" name="create_session_mask_btn">
                     <property name="text">
-                     <string>Choose anatomy</string>
+                     <string>Create mask</string>
                     </property>
                    </widget>
                   </item>
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="session_anatomy_label">
+                  <item row="3" column="1">
+                   <widget class="QPushButton" name="create_session_stimuli_btn">
                     <property name="text">
-                     <string>No anatomy chosen</string>
+                     <string>Create stimuli</string>
                     </property>
                    </widget>
                   </item>
@@ -1393,7 +1407,7 @@
      <x>0</x>
      <y>0</y>
      <width>1100</width>
-     <height>27</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
