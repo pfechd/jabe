@@ -25,28 +25,6 @@ class Group(Data):
         if 'name' in configuration:
             self.name = configuration['name']
 
-    def calculate_mean(self):
-        """
-        Calculate the mean of every response grouped by stimuli type
-
-        :return: A dictionary where the key is the stimuli type and the value
-                 is the vector containing the mean value for the given time
-                 frame.
-        """
-        responses = self.aggregate(self.percent_normalization, self.global_normalization)
-        mean_responses = {}
-
-        for stimuli_type, stimuli_data in responses.iteritems():
-            response_mean = np.zeros(stimuli_data.shape[1])
-
-            for i in range(stimuli_data.shape[1]):
-                rm1 = np.nonzero(stimuli_data[:, i])
-                # TODO: Motivate this if-statement
-                if len(rm1[0]) > 0:
-                    response_mean[i] = np.mean(stimuli_data[rm1[0], i])
-
-            mean_responses[stimuli_type] = response_mean
-        return mean_responses
 
     def add_session(self, session):
         self.sessions.append(session)
