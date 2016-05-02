@@ -191,7 +191,7 @@ class MainWindow(QMainWindow):
 
     def brain_button_pressed(self):
         """ Callback function, run when the choose brain button is pressed."""
-        file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii)")
+        file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii *.nii.gz)")
         if file_name[0]:
             self.load_brain(file_name[0])
         else:
@@ -200,7 +200,7 @@ class MainWindow(QMainWindow):
 
     def anatomy_button_pressed(self):
         """ Callback function, run when the choose anatomy button is pressed."""
-        file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii)")
+        file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii *.nii.gz)")
         if file_name[0]:
             self.load_anatomy(file_name[0])
         else:
@@ -209,7 +209,7 @@ class MainWindow(QMainWindow):
 
     def mask_button_pressed(self):
         """ Callback function, run when the choose mask button is pressed."""
-        file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii)")
+        file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii *.nii.gz)")
         if file_name[0]:
             self.load_mask(file_name[0])
         else:
