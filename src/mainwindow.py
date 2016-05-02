@@ -12,6 +12,7 @@ from stimulionset import StimuliOnset
 from tree_items.grouptreeitem import GroupTreeItem
 from tree_items.individualtreeitem import IndividualTreeItem
 from tree_items.sessiontreeitem import SessionTreeItem
+from createmaskwindow import CreateMaskWindow
 from namedialog import NameDialog
 
 
@@ -37,6 +38,7 @@ class MainWindow(QMainWindow):
         self.ui.add_session_anatomy_btn.clicked.connect(self.anatomy_button_pressed)
         self.ui.add_session_epi_btn.clicked.connect(self.brain_button_pressed)
         self.ui.add_session_mask_btn.clicked.connect(self.mask_button_pressed)
+        self.ui.create_session_mask_btn.clicked.connect(self.create_mask_button_pressed)
         self.ui.add_session_stimuli_btn.clicked.connect(self.stimuli_button_pressed)
         self.ui.add_group_menu_btn.triggered.connect(self.add_group_pressed)
         self.ui.exit_menu_btn.triggered.connect(self.exit_button_pressed)
@@ -214,6 +216,11 @@ class MainWindow(QMainWindow):
             self.load_mask(file_name[0])
         else:
             print 'Mask not chosen'
+        self.update_gui()
+
+    def create_mask_button_pressed(self):
+        """ Callback function, run when the create mask button is pressed."""
+        CreateMaskWindow(self)
         self.update_gui()
 
     def stimuli_button_pressed(self):
