@@ -273,13 +273,23 @@ class CustomPlot(QDialog):
 
     def show_brain(self):
         most_ones = self.session.mask.get_index_of_roi()
+        a = np.array([self.session.brain_file._header["srow_x"],self.session.brain_file._header["srow_y"],self.session.brain_file._header["srow_z"],[0,0,0,1]])
+        b = most_ones
+        c = np.dot(a,b.T)
+        print c
+        print self.session.anatomy_file._header
+        d = np.array([self.session.anatomy_file._header["srow_x"],self.session.anatomy_file._header["srow_y"],self.session.anatomy_file._header["srow_z"],[0,0,0,1]])
+        print d
+        e = np.dot(np.linalg.inv(d),c)
+        print e
+
         self.m = np.ma.masked_where(self.session.mask.data == 0, self.session.mask.data)
-        self.img1.imshow(self.session.sequence[:,:,most_ones[2], 0], cmap=mpl.cm.gray)
-        self.img1.imshow(self.m[:,:,most_ones[2]], cmap=mpl.cm.spring, alpha=0.8)
-        self.img2.imshow(self.session.sequence[:,most_ones[1],:, 0], cmap=mpl.cm.gray)
-        self.img2.imshow(self.m[:,most_ones[1],:], cmap=mpl.cm.spring, alpha=0.8)
-        self.img3.imshow(self.session.sequence[most_ones[0],:,:, 0], cmap=mpl.cm.gray)
-        self.img3.imshow(self.m[most_ones[0],:,:], cmap=mpl.cm.spring, alpha=0.8)
+        self.img1.imshow(self.session.sequence[:,:,most_ones[0][2], 0], cmap=mpl.cm.gray)
+        self.img1.imshow(self.m[:,:,most_ones[0][2]], cmap=mpl.cm.spring, alpha=0.8)
+        self.img2.imshow(self.session.sequence[:,most_ones[0][1],:, 0], cmap=mpl.cm.gray)
+        self.img2.imshow(self.m[:,most_ones[0][1],:], cmap=mpl.cm.spring, alpha=0.8)
+        self.img3.imshow(self.session.sequence[most_ones[0][0],:,:, 0], cmap=mpl.cm.gray)
+        self.img3.imshow(self.m[most_ones[0][0],:,:], cmap=mpl.cm.spring, alpha=0.8)
         #self.fig.canvas.mpl_connect('scroll_event', self.change_scroll)
         self.canvas.draw()
 
