@@ -113,6 +113,15 @@ class Session(Data):
         return self.brain_file._header.get_zooms()
 
     def aggregate_(self, percentage, global_, mask=None, stimuli=None):
+        """
+        Aggregate response data from children with the given settings. Do not
+        call this method directly, instead use the `aggregate` method which
+        caches the results.
+
+        :return: A dictionary stimuli-values as keys NxM matrices as values
+                 where N is the number of stimuli and M is the length of the
+                 shortest stimuli.
+        """
         if not mask:
             mask = self.mask
         if not stimuli:

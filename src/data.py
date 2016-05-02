@@ -182,6 +182,14 @@ class Data(object):
         return None
 
     def aggregate(self, percentage, global_, mask=None, stimuli=None):
+        """
+        Aggregate response data from children with the given settings. This
+        method caches data on all levels and only aggregates data when needed.
+
+        :return: A dictionary stimuli-values as keys NxM matrices as values
+                 where N is the number of stimuli and M is the length of the
+                 shortest stimuli.
+        """
         # TODO: Check if some child have had their data changed
         # TODO: Check if the normalization settings have been changed
         if self.responses:
