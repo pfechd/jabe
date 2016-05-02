@@ -1,5 +1,6 @@
 from PyQt5 import QtWidgets
-from src.python.generated_ui.message import Ui_message
+
+from src.generated_ui import Ui_message
 
 
 class Message(QtWidgets.QDialog):

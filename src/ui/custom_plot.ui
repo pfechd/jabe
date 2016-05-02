@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>617</width>
+    <width>671</width>
     <height>540</height>
    </rect>
   </property>
@@ -122,20 +122,43 @@
          </widget>
         </item>
         <item>
-         <widget class="QCheckBox" name="checkBox_std">
+         <widget class="QCheckBox" name="checkBox_smooth">
           <property name="text">
-           <string notr="true">Standard Deviation</string>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>15</width>
-            <height>15</height>
-           </size>
-          </property>
-          <property name="tristate">
-           <bool>false</bool>
+           <string>Smooth</string>
           </property>
          </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Maximum</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>10</width>
+            <height>100</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_stimuli">
+          <property name="maximumSize">
+           <size>
+            <width>16777211</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Stimuli type:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="stimuliBox"/>
         </item>
        </layout>
       </widget>
@@ -156,10 +179,33 @@
         <item>
          <widget class="QCheckBox" name="checkBox_amp">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="text">
-           <string>Peak and Amplitude</string>
+           <string>Amplitude</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkBox_peak">
+          <property name="text">
+           <string>Peak time</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkBox_sem">
+          <property name="text">
+           <string notr="true">SEM</string>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>15</width>
+            <height>15</height>
+           </size>
+          </property>
+          <property name="tristate">
+           <bool>false</bool>
           </property>
          </widget>
         </item>
@@ -168,7 +214,7 @@
           <item>
            <widget class="QCheckBox" name="checkBox_fwhm">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="text">
              <string>FWHM</string>
@@ -178,7 +224,7 @@
           <item>
            <widget class="QSpinBox" name="spinBox">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="value">
              <number>20</number>
@@ -186,16 +232,6 @@
            </widget>
           </item>
          </layout>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="checkBox_points">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string>Points</string>
-          </property>
-         </widget>
         </item>
        </layout>
       </widget>

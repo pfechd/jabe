@@ -8,7 +8,6 @@ from generated_ui.mainwindow import Ui_MainWindow
 from group import Group
 from mask import Mask
 from plotwindow import CustomPlot
-from spmpath import SPMPath
 from stimulionset import StimuliOnset
 from tree_items.grouptreeitem import GroupTreeItem
 from tree_items.individualtreeitem import IndividualTreeItem
@@ -33,6 +32,8 @@ class MainWindow(QMainWindow):
         self.ui.tree_widget.setColumnWidth(1, 25)
         self.ui.tree_widget.setColumnWidth(2, 25)
         self.ui.extract_session_btn.clicked.connect(self.calculate_button_pressed)
+        self.ui.extract_btn_individual.clicked.connect(self.calculate_button_pressed)
+        self.ui.extract_btn_group.clicked.connect(self.calculate_button_pressed)
         self.ui.add_session_epi_btn.clicked.connect(self.brain_button_pressed)
         self.ui.add_session_mask_btn.clicked.connect(self.mask_button_pressed)
         self.ui.add_session_stimuli_btn.clicked.connect(self.stimuli_button_pressed)
@@ -92,27 +93,12 @@ class MainWindow(QMainWindow):
             with open('configuration.json', 'r') as f:
                 configuration = json.load(f)
 
-            self.groups = []
-
-            if 'groups' in configuration:
-                for group_configuration in configuration['groups']:
-                    group = Group(configuration=group_configuration)
-                    self.groups.append(group)
-
-            for group in self.groups:
-                group_tree_item = GroupTreeItem(group)
+            for group_configuration in configuration['groups']:
+                group_tree_item = GroupTreeItem()
                 self.ui.tree_widget.addTopLevelItem(group_tree_item)
+                group_tree_item.load_configuration(group_configuration)
+                self.groups.append(group_tree_item)
                 group_tree_item.create_buttons()
-                for individual in group.individuals:
-                    individual_tree_item = IndividualTreeItem(individual)
-
-                    group_tree_item.addChild(individual_tree_item)
-                    individual_tree_item.create_buttons()
-
-                    for session in individual.sessions:
-                        session_tree_item = SessionTreeItem(session)
-                        individual_tree_item.addChild(session_tree_item)
-                        session_tree_item.create_buttons()
 
             self.update_gui()
 
@@ -136,12 +122,12 @@ class MainWindow(QMainWindow):
 
     def add_group_pressed(self):
         current_row = len(self.groups)
-        name = 'New group ' + str(current_row)
-        group = Group(name=name)
+        name = 'Group ' + str(current_row + 1)
+        group = GroupTreeItem()
+        group.update_name(name)
         self.groups.append(group)
-        group_item = GroupTreeItem(group)
-        self.ui.tree_widget.addTopLevelItem(group_item)
-        group_item.create_buttons()
+        self.ui.tree_widget.addTopLevelItem(group)
+        group.create_buttons()
 
     def exit_button_pressed(self):
         self.close()
@@ -149,9 +135,9 @@ class MainWindow(QMainWindow):
     def add_item_clicked(self):
         if self.ui.tree_widget.selectedItems():
             if isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
-                self.ui.tree_widget.selectedItems()[0].add_individual()
+                self.ui.tree_widget.selectedItems()[0].add_child()
             elif isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
-                self.ui.tree_widget.selectedItems()[0].add_session()
+                self.ui.tree_widget.selectedItems()[0].add_new_session()
 
     def remove_pressed(self):
         if self.ui.tree_widget.selectedItems():
@@ -162,10 +148,17 @@ class MainWindow(QMainWindow):
 
     def update_buttons(self):
         if self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
-            individual = self.ui.tree_widget.selectedItems()[0].session
+            individual = self.ui.tree_widget.selectedItems()[0]
             for button in self.individual_buttons:
                 button.setEnabled(True)
             self.ui.extract_session_btn.setEnabled(individual.ready_for_calculation())
+        elif self.ui.tree_widget.selectedItems() and \
+                (isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem) or
+                     isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem)):
+            for button in self.individual_buttons:
+                button.setEnabled(False)
+            self.ui.extract_btn_group.setEnabled(True)
+            self.ui.extract_btn_individual.setEnabled(True)
         else:
             for button in self.individual_buttons:
                 button.setEnabled(False)
@@ -173,15 +166,27 @@ class MainWindow(QMainWindow):
     def calculate_button_pressed(self):
         """ Callback function, run when the calculate button is pressed."""
 
-        # TODO: Prompt user for brain and mask paths instead of falling
-        # back unto hardcoded defaults
-
         if self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
-            session = self.ui.tree_widget.selectedItems()[0].session
-            session.calculate(
-                self.ui.percent_btn.isChecked(),
-                self.ui.global_normalization_btn.isChecked())
+            session = self.ui.tree_widget.selectedItems()[0]
+            session.prepare_for_calculation(
+                self.ui.percent_session_btn.isChecked(),
+                self.ui.global_normalization_session_btn.isChecked())
             CustomPlot(self, session)
+
+        if self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
+            individual = self.ui.tree_widget.selectedItems()[0]
+            individual.prepare_for_calculation(
+                self.ui.percent_individual_btn.isChecked(),
+                self.ui.global_normalization_individual_btn.isChecked())
+            CustomPlot(self, individual)
+
+        if self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
+            group = self.ui.tree_widget.selectedItems()[0]
+            group.prepare_for_calculation(
+                self.ui.percent_group_btn.isChecked(),
+                self.ui.global_normalization_group_btn.isChecked())
+            CustomPlot(self, group)
+
 
     def brain_button_pressed(self):
         """ Callback function, run when the choose brain button is pressed."""
@@ -212,19 +217,19 @@ class MainWindow(QMainWindow):
 
     def load_brain(self, path):
         if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
-            session = self.ui.tree_widget.selectedItems()[0].session
+            session = self.ui.tree_widget.selectedItems()[0]
             session.load_data(path)
             self.update_gui()
 
     def load_mask(self, path):
         if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
-            session = self.ui.tree_widget.selectedItems()[0].session
+            session = self.ui.tree_widget.selectedItems()[0]
             session.mask = Mask(path)
             self.update_gui()
 
     def load_stimuli(self, path):
         if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
-            session = self.ui.tree_widget.selectedItems()[0].session
+            session = self.ui.tree_widget.selectedItems()[0]
             session.stimuli = StimuliOnset(path, 0.5)
             self.update_gui()
 
@@ -268,7 +273,7 @@ class MainWindow(QMainWindow):
     def update_text(self):
         if self.ui.tree_widget.selectedItems():
             if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
-                individual = self.ui.tree_widget.selectedItems()[0].session
+                individual = self.ui.tree_widget.selectedItems()[0]
 
                 if individual.path:
                     self.ui.session_epi_label.setText('EPI-images chosen: ' + individual.path.split('/')[-1])

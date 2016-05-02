@@ -57,12 +57,15 @@ class TestSession(unittest.TestCase):
     def test_calculate_mean(self):
         self.session.calculate()
 
-        expected_result = np.array([[0., -0.59081352]])
+        expected_result = {200: np.array([0.,  0.]), 40: np.array([0.,  0.]),
+                           130: np.array([0.,  0.]), 60: np.array([0.,  0.]),
+                           70: np.array([0.,  0.])}
         actual_mean = self.session.calculate_mean()
 
-        diff = actual_mean - expected_result
+        for type, value in actual_mean.iteritems():
+            diff = value - expected_result[type]
 
-        self.assertEqual((diff < 1e-8).all(), True)
+            self.assertEqual((diff < 1e-8).all(), True)
 
     def test_calculate_std(self):
         self.session.calculate()

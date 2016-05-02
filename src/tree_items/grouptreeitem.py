@@ -1,31 +1,48 @@
 from PyQt5.QtWidgets import QTreeWidgetItem
 from PyQt5 import QtWidgets, QtGui
 from individualtreeitem import IndividualTreeItem
-from ..individual import Individual
-import src.python.generated_ui.icons_rc
+from ..group import Group
+import src.generated_ui.icons_rc
 
 
-class GroupTreeItem(QTreeWidgetItem):
-    def __init__(self, group):
-        super(GroupTreeItem, self).__init__([group.name])
+class GroupTreeItem(QTreeWidgetItem, Group):
+    def __init__(self, configuration=None):
+        super(GroupTreeItem, self).__init__(configuration=configuration)
 
-        self.group = group
         self.nr_of_individuals = 0
 
-    def add_individual(self):
-        individual = Individual()
-        individual.name = 'Individual ' + str(self.nr_of_individuals)
-        self.group.add_individual(individual)
-        individual_item = IndividualTreeItem(individual)
-        self.addChild(individual_item)
-        individual_item.create_buttons()
+    def load_configuration(self, configuration):
+        super(GroupTreeItem, self).load_configuration(configuration)
+        # Set the name in the first column of the QTreeWidgetItem
+        self.setText(0, self.name)
+
+        if 'individuals' in configuration:
+            for individual_configuration in configuration['individuals']:
+                individual_tree_item = IndividualTreeItem()
+                self.add_individual(individual_tree_item)
+                # Load configuration after adding the individual as it accesses
+                # the tree when loading the configuration.
+                individual_tree_item.load_configuration(individual_configuration)
+
+    def add_individual(self, individual):
+        # Add individual to superclass Group
+        self.add_child(individual)
+        # Add individual to superclass QTreeWidgetItem
+        self.addChild(individual)
+        individual.create_buttons()
         self.setExpanded(True)
         self.nr_of_individuals += 1
+        self.treeWidget().window().update_gui()
+
+    def add_new_individual(self):
+        individual = IndividualTreeItem()
+        individual.update_name('Individual ' + str(self.nr_of_individuals + 1))
+        self.add_individual(individual)
 
     def remove_item(self):
         tree = self.treeWidget()
         tree.takeTopLevelItem(tree.indexFromItem(self).row())
-        tree.parent().parent().groups.remove(self.group)
+        tree.parent().parent().groups.remove(self)
         if len(tree.selectedItems()) == 0:
                 tree.window().ui.stackedWidget.setCurrentIndex(1)
 
@@ -37,7 +54,7 @@ class GroupTreeItem(QTreeWidgetItem):
         b.setFixedSize(16, 16)
         b.setIcon(icon)
         b.setFlat(True)
-        b.clicked.connect(self.add_individual)
+        b.clicked.connect(self.add_new_individual)
         tree.setItemWidget(self, 2, b)
 
         b2 = QtWidgets.QPushButton()
@@ -51,9 +68,9 @@ class GroupTreeItem(QTreeWidgetItem):
 
     def get_overview_tree(self):
         top_tree_items = []
-        for individual in self.group.individuals:
+        for individual in self.children:
             tree_item = QTreeWidgetItem([individual.name])
-            for session in individual.sessions:
+            for session in individual.children:
                 sess_item = QTreeWidgetItem([session.name])
                 tree_item.addChild(sess_item)
 
@@ -78,12 +95,13 @@ class GroupTreeItem(QTreeWidgetItem):
         return top_tree_items
 
     def add_individuals_boxes(self, layout):
-        for individual in self.group.individuals:
+        for individual in self.children:
             box = QtWidgets.QCheckBox(individual.name)
             box.setChecked(True)
             layout.addWidget(box)
 
     def update_name(self, text):
+        # Set the name in the first column of the QTreeWidgetItem
         self.setText(0, text)
-        self.group.name = text
+        self.name = text
 

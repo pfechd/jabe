@@ -1,15 +1,19 @@
 from PyQt5.QtWidgets import QTreeWidgetItem
 from PyQt5 import QtWidgets, QtGui
+from ..session import Session
 
 
-class SessionTreeItem(QTreeWidgetItem):
-    def __init__(self, session):
-        super(SessionTreeItem, self).__init__([session.name])
+class SessionTreeItem(QTreeWidgetItem, Session):
+    def __init__(self, configuration=None):
+        super(SessionTreeItem, self).__init__(configuration=configuration)
 
-        self.session = session
+    def load_configuration(self, configuration):
+        super(SessionTreeItem, self).load_configuration(configuration)
+        # Set the name in the first column of the QTreeWidgetItem
+        self.setText(0, self.name)
 
     def remove_item(self):
-        self.parent().individual.remove_session(self.session)
+        self.parent().remove_session(self)
         self.treeWidget().window().update_gui()
         self.parent().removeChild(self)
 
@@ -25,5 +29,6 @@ class SessionTreeItem(QTreeWidgetItem):
         tree.setItemWidget(self, 1, b2)
 
     def update_name(self, text):
+        # Set the name in the first column of the QTreeWidgetItem
         self.setText(0, text)
-        self.session.name = text
+        self.name = text
