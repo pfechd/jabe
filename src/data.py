@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.interpolate import UnivariateSpline
+from scipy.stats import sem
 import nibabel as nib
 from src.stimulionset import StimuliOnset
 
@@ -220,3 +221,19 @@ class Data(object):
             mean_responses[stimuli_type] = response_mean
         return mean_responses
 
+    def calculate_sem(self):
+        """ Calculate the standard error of the mean (SEM) of the response """
+        responses = self.aggregate()
+        responses_sem = {}
+
+        for stimuli_type, stimuli_data in responses.iteritems():
+            response_sem = np.zeros(stimuli_data.shape[1])
+
+            for i in range(stimuli_data.shape[1]):
+                rm1 = np.nonzero(stimuli_data[:, i])
+                if rm1[0].any():
+                    response_sem[i] = sem(stimuli_data[rm1[0], i], ddof=1)
+
+            responses_sem[stimuli_type] = response_sem
+
+        return responses_sem

@@ -2,7 +2,6 @@
 
 import numpy as np
 import nibabel as nib
-from scipy.stats import sem
 from mask import Mask
 from stimulionset import StimuliOnset
 from data import Data
@@ -70,21 +69,6 @@ class Session(Data):
 
         return responses_std
 
-    def calculate_sem(self):
-        """ Calculate the standard error of the mean (SEM) of the response """
-        responses_sem = {}
-
-        for stimuli_type, stimuli_data in self.responses.iteritems():
-            response_sem = np.zeros(stimuli_data.shape[1])
-
-            for i in range(stimuli_data.shape[1]):
-                rm1 = np.nonzero(stimuli_data[:, i])
-                if rm1[0].any():
-                    response_sem[i] = sem(stimuli_data[rm1[0], i], ddof=1)
-
-            responses_sem[stimuli_type] = response_sem
-
-        return responses_sem
 
     def get_voxel_size(self):
         """ Returns the size of one voxel in the image. """
