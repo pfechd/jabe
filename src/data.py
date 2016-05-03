@@ -216,7 +216,7 @@ class Data(object):
 
     def calculate_sem(self):
         """ Calculate the standard error of the mean (SEM) of the response """
-        responses = self.aggregate()
+        responses = self.aggregate(self.percent_normalization, self.global_normalization)
         responses_sem = {}
 
         for stimuli_type, stimuli_data in responses.iteritems():
