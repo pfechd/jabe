@@ -12,6 +12,7 @@ from scipy.interpolate import UnivariateSpline
 from exportwindow import ExportWindow
 from src.generated_ui.custom_plot import Ui_Dialog
 from session import Session
+from anatomywindow import AnatomyWindow
 
 
 class CustomPlot(QDialog):
@@ -40,13 +41,12 @@ class CustomPlot(QDialog):
 
         self.session = session
         self.fig = plt.figure()
-        if isinstance(self.session,Session):
-            self.ax = self.fig.add_subplot(141)
-            self.img1 = self.fig.add_subplot(142)
-            self.img2 = self.fig.add_subplot(143)
-            self.img3 = self.fig.add_subplot(144)
-        else:
-            self.ax = self.fig.add_subplot(111)
+
+        self.ax = self.fig.add_subplot(111)
+        self.ui.toolButton_anatomy.hide()
+
+        if isinstance(self.session, Session):
+            self.ui.toolButton_anatomy.show()
 
         self.canvas = FigureCanvas(self.fig)
         self.toolbar = NavigationToolbar(self.canvas, self, coordinates=True)
@@ -69,14 +69,12 @@ class CustomPlot(QDialog):
         self.ui.toolButton_export.clicked.connect(self.tool_export)
         self.ui.toolButton_pan.clicked.connect(self.toolbar.pan)
         self.ui.toolButton_zoom.clicked.connect(self.toolbar.zoom)
+        self.ui.toolButton_anatomy.clicked.connect(self.tool_anatomy)
 
         self.setWindowTitle('Plot - ' + session.name)
         self.export_window = None
         self.add_stimuli_types()
         self.plot_mean()
-
-        if isinstance(self.session,Session):
-            self.show_brain()
 
         if parent.ui.checkbox_peak_session.isChecked():
             self.ui.checkBox_peak.setChecked(True)
@@ -91,6 +89,9 @@ class CustomPlot(QDialog):
          #   self.ui.sem_checkbox_2.setChecked(True)
 
         self.show()
+
+    def tool_anatomy(self):
+         self.anatomy_window = AnatomyWindow(self, self.session)
 
     def tool_export(self):
         """
@@ -276,31 +277,6 @@ class CustomPlot(QDialog):
         for stimuli_type in data:
             self.ui.stimuliBox.addItem(stimuli_type)
 
-    def convert_coord(self, coord):
-        conversion_matrix = np.linalg.inv(self.session.anatomy_file._affine).dot(self.session.brain_file._affine)
-        return apply_affine(conversion_matrix, coord)
-
-    def show_brain(self):
-        most_ones = np.around(self.convert_coord(self.session.mask.get_index_of_roi())).astype(int)
-        new_mask = np.zeros(self.session.anatomic_image.shape)
-
-        shape_size = 20
-
-        for z in range(int(most_ones[0][2]) - shape_size / 2, int(most_ones[0][2]) + shape_size / 2 + 1):
-            for y in range(int(most_ones[0][1]) - shape_size / 2, int(most_ones[0][1]) + shape_size / 2 + 1):
-                for x in range(int(most_ones[0][0]) - shape_size / 2, int(most_ones[0][0]) + shape_size / 2 + 1):
-                    new_mask[x, y ,z] = 1
-
-
-        self.m = np.ma.masked_where(new_mask == 0, new_mask)
-        self.img1.imshow(self.session.anatomic_image[:,:,most_ones[0][2]], cmap=mpl.cm.gray)
-        self.img1.imshow(self.m[:,:,most_ones[0][2]], cmap=mpl.cm.spring, alpha=0.8)
-        self.img2.imshow(self.session.anatomic_image[:,most_ones[0][1],:], cmap=mpl.cm.gray)
-        self.img2.imshow(self.m[:,most_ones[0][1],:], cmap=mpl.cm.spring, alpha=0.8)
-        self.img3.imshow(self.session.anatomic_image[most_ones[0][0],:,:], cmap=mpl.cm.gray)
-        self.img3.imshow(self.m[most_ones[0][0],:,:], cmap=mpl.cm.spring, alpha=0.8)
-        #self.fig.canvas.mpl_connect('scroll_event', self.change_scroll)
-        self.canvas.draw()
 
     def change_scroll(self, event):
         if event.button == "up" and self.scroll < self.session.sequence.shape[2]-1:
