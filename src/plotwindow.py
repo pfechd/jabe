@@ -22,6 +22,12 @@ class CustomPlot(QDialog):
     Data is read from session object
     """
 
+    _colors = ['#0000FF', '#FF0000', '#00FF00', '#00002C', '#FF1AB9',
+               '#FFD300', '#005800', '#8484FF', '#9E4F46', '#00FFC1',
+               '#008495', '#00007B', '#95D34F', '#F69EDC', '#D312FF',
+               '#7B1A6A', '#F61261', '#FFC184', '#232309', '#8DA77B',
+               '#F68409', '#847200', '#72F6FF', '#9EC1FF', '#72617B']
+
     def __init__(self, parent, session):
         """
         Create plot window
@@ -29,6 +35,7 @@ class CustomPlot(QDialog):
         :param parent: Parent window object
         :param session: Session object to plot data from
         """
+
         super(CustomPlot, self).__init__(parent)
         self.amp = None
         self.fwhm = None
@@ -38,6 +45,7 @@ class CustomPlot(QDialog):
         self.scroll = 3
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
+        self.color_index = 0
 
         self.session = session
         self.fig = plt.figure()
@@ -150,12 +158,12 @@ class CustomPlot(QDialog):
                 for stimuli_type,stimuli_data in before_smooth.iteritems():
                     x = np.arange(stimuli_data.shape[0])*self.session.get_tr()
                     curr = UnivariateSpline(x, stimuli_data, s=self.ui.spinBox.value())
-                    axis, = self.ax.plot(x,curr(x), color=self.generate_random_color())
+                    axis, = self.ax.plot(x, curr(x), color=self.get_color())
                     self.smooth.append(axis)
             else:
                 x = np.arange(before_smooth[self.ui.stimuliBox.currentText()].shape[0])*self.session.get_tr()
                 curr = UnivariateSpline(x, before_smooth[self.ui.stimuliBox.currentText()], s=self.ui.spinBox.value())
-                axis, = self.ax.plot(x,curr(x), color=self.generate_random_color())
+                axis, = self.ax.plot(x, curr(x), color=self.get_color())
                 self.smooth.append(axis)
 
             self.canvas.draw()
@@ -221,7 +229,7 @@ class CustomPlot(QDialog):
             y = self.ax.lines[0].get_ydata()
             x = np.arange(len(y))
             max_amp = self.session.calculate_amplitude(x, y, 0)
-            self.amp = self.ax.axhline(max_amp[1], color=self.generate_random_color())
+            self.amp = self.ax.axhline(max_amp[1], color=self.get_color())
             self.canvas.draw()
         else:
             self.amp.remove()
@@ -236,7 +244,7 @@ class CustomPlot(QDialog):
             y = self.ax.lines[0].get_ydata()
             x = np.arange(len(y))
             max_peak = self.session.calculate_amplitude(x, y, 0)
-            self.peak_time = self.ax.axvline(max_peak[0]*self.session.get_tr(), color=self.generate_random_color())
+            self.peak_time = self.ax.axvline(max_peak[0] * self.session.get_tr(), color=self.get_color())
             self.canvas.draw()
         else:
             if self.peak_time:
@@ -258,18 +266,17 @@ class CustomPlot(QDialog):
                     axis.set_marker('')
                 self.canvas.draw()
 
-    @staticmethod
-    def generate_random_color():
+    def get_color(self):
         """
         Generate random color for graph
 
         :return: RGB hex string
         """
 
-        def r():
-            return random.randint(0, 255)
+        color = CustomPlot._colors[self.color_index]
+        self.color_index = (self.color_index + 1) % len(CustomPlot._colors)
 
-        return '#%02X%02X%02X' % (r(), r(), r())
+        return color
 
     def add_stimuli_types(self):
         """
@@ -305,12 +312,12 @@ class CustomPlot(QDialog):
         if self.ui.stimuliBox.currentText() == "All":
             for stimuli_type, stimuli_data in data_dict.iteritems():
                 x = np.arange(len(stimuli_data))*self.session.get_tr()
-                axis, = self.ax.plot(x, stimuli_data, color=self.generate_random_color())
+                axis, = self.ax.plot(x, stimuli_data, color=self.get_color())
                 self.regular.append(axis)
         else:
             data = data_dict[self.ui.stimuliBox.currentText()]
             x = np.arange(len(data))*self.session.get_tr()
-            axis, = self.ax.plot(x, data, color=self.generate_random_color())
+            axis, = self.ax.plot(x, data, color=self.get_color())
             self.regular.append(axis)
 
     def plot_regular(self):
