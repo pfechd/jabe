@@ -167,15 +167,7 @@ class CustomPlot(QDialog):
             self.ui.checkBox_peak.setChecked(False)
             self.ui.checkBox_sem.setChecked(False)
             mean = self.session.calculate_mean()
-            if self.ui.stimuliBox.currentText() == "All":
-                for stimuli_type,stimuli_data in mean.iteritems():
-                    x = np.arange(len(stimuli_data))*self.session.get_tr()
-                    axis, = self.ax.plot(x,stimuli_data, color=self.generate_random_color())
-                    self.regular.append(axis)
-            else:
-                x = np.arange(len(mean[self.ui.stimuliBox.currentText()]))*self.session.get_tr()
-                axis, = self.ax.plot(x,mean[self.ui.stimuliBox.currentText()], color=self.generate_random_color())
-                self.regular.append(axis)
+            self.plot_data(mean)
 
             self.canvas.draw()
 
@@ -283,22 +275,29 @@ class CustomPlot(QDialog):
             self.ax.relim()
             sessions = self.session.responses
             children = self.session.sessions + self.session.children
-            print children
             for child in children:
                 child_mean = child.calculate_mean()
-                if self.ui.stimuliBox.currentText() == "All":
-                    for stimuli_type, stimuli_data in child_mean.iteritems():
-                        axis, = self.ax.plot(stimuli_data, color=self.generate_random_color())
-                        self.regular.append(axis)
-                else:
-                    axis, = self.ax.plot(child_mean[self.ui.stimuliBox.currentText()],
-                                         color=self.generate_random_color())
-                    self.regular.append(axis)
+                self.plot_data(child_mean)
 
         else:
             self.remove_regular_plots()
 
         self.canvas.draw()
+
+    def plot_data(self, data_dict):
+        """
+        Plots the data that exists in the dictionary data_dict, depending on stimuli selected
+        """
+        if self.ui.stimuliBox.currentText() == "All":
+            for stimuli_type, stimuli_data in data_dict.iteritems():
+                x = np.arange(len(stimuli_data))*self.session.get_tr()
+                axis, = self.ax.plot(x, stimuli_data, color=self.generate_random_color())
+                self.regular.append(axis)
+        else:
+            data = data_dict[self.ui.stimuliBox.currentText()]
+            x = np.arange(len(data))*self.session.get_tr()
+            axis, = self.ax.plot(x, data, color=self.generate_random_color())
+            self.regular.append(axis)
 
     def plot_regular(self):
         """
