@@ -4,10 +4,10 @@ import numpy as np
 import nibabel as nib
 from mask import Mask
 from stimulionset import StimuliOnset
-from data import Data
+from group import Group
 
 
-class Session(Data):
+class Session(Group):
     """
     Class used for representing and doing calculations with brain data
 

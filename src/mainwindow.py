@@ -5,7 +5,6 @@ from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QSpacerItem, QSizePolicy
 
 from generated_ui.mainwindow import Ui_MainWindow
-from group import Group
 from mask import Mask
 from plotwindow import CustomPlot
 from stimulionset import StimuliOnset
