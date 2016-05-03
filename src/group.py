@@ -6,16 +6,10 @@ from src.stimulionset import StimuliOnset
 
 
 class Group(object):
-    def __init__(self, name=None, configuration=None):
-        self.name = name
+    def __init__(self, configuration=None):
+        self.name = ""
         self.sessions = []
-        self.name = None
 
-        # The path to the file containing brain information
-        self.path = None
-        self.brain_file = None
-        self.sequence = None
-        self.images = None
         self.mask = None
         self.stimuli = None
         self.anatomy_path = None
@@ -31,13 +25,10 @@ class Group(object):
         self.percent_normalization = False
 
         # Result of calculations are kept here
-        self.masked_data = None
         self.responses = {}
 
         if configuration:
             self.load_configuration(configuration)
-        elif name:
-            pass
 
     def ready_for_calculation(self, stimuli=None, mask=None):
         if not stimuli:
@@ -50,64 +41,7 @@ class Group(object):
         if children:
             return any([child.ready_for_calculation(stimuli, mask) for child in children])
         else:
-            return all([self.brain_file, stimuli, mask])
-
-    def separate_into_responses(self, stimuli, percentage, global_):
-        number_of_stimuli = stimuli.amount
-
-        shortest_interval = min([j - i for i, j in zip(stimuli.data[:-1, 0], stimuli.data[1:, 0])])
-
-        self.responses = {}
-
-        # Ignore the images after the last time stamp
-        for i in range(number_of_stimuli - 1):
-            start = stimuli.data[i, 0]
-            end = start + shortest_interval
-            response = self.masked_data[:, (start - 1):(end - 1)]
-            response = self.normalize_sequence(start, end, response, percentage, global_)
-            intensity = str(stimuli.data[i, 1])
-            if intensity in self.responses:
-                self.responses[intensity] = np.concatenate((self.responses[intensity], response))
-            else:
-                self.responses[intensity] = response
-
-    def apply_mask(self, mask):
-        """
-        Apply the given mask to the brain and save the data for further
-        calculations in the member masked_data.
-
-        :param mask: Mask object which should be applied
-        """
-        self.masked_data = np.zeros((1, self.images))
-
-        for i in range(self.images):
-            visual_brain = mask.data * self.sequence[:, :, :, i]
-            visual_brain_time = np.nonzero(visual_brain)
-            self.masked_data[:, i] = np.mean(visual_brain[visual_brain_time])
-
-    def normalize_sequence(self, start, end, response, percentage, global_):
-        """
-        Applies normalization on the response data depending on type and reference point.
-
-        :param start: the response sequence' start index in data.
-        :param end: the response sequence' last index in data.
-        :param response: the data sequence to be normalized
-        :param percentage: Whether percentual change from reference value should be shown.
-        If false, the response will be normalized by subtraction of the reference value.
-        :param global_: Whether reference value should be the global mean.
-        If false, reference value will be the start value of the response
-        """
-        if global_:
-            time_indexes = list(range(start, end))
-            ref = np.mean(self.sequence[:, :, :, time_indexes], (0, 1, 2))     # Mean of spatial dimensions
-        else:
-            ref = np.ones(end - start) * response[0][0]
-
-        if percentage:
-            if ref.all():
-                return (response / ref - 1) * 100
-        else:
-            return response - ref
+            return all([stimuli, mask])
 
     @staticmethod
     def calculate_fwhm(x, y, smoothing):
@@ -142,12 +76,6 @@ class Group(object):
         spline = UnivariateSpline(x, y, s=smoothing)  # Remove spline if smoothing is unnecessary
         max_amp = np.argmax(spline(x))
         return max_amp, spline(x)[max_amp]
-
-    def load_data(self, path):
-        self.path = path
-        self.brain_file = nib.load(path)
-        self.sequence = self.brain_file.get_data()
-        self.images = self.sequence.shape[3]
 
     def load_anatomy(self, path):
         self.anatomy_path = path
