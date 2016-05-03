@@ -73,11 +73,12 @@ class Group(Data):
                 continue
             session_response = child.calculate_mean()
             for intensity, data in session_response.iteritems():
+                # Convert data into 1xN matrix to be able to properly concatenate into the result
+                data = data.reshape(1, data.shape[0])
                 if intensity in self.responses:
-                    # Convert data into 1xN matrix to be able to properly concatenate into the result
                     data = data.reshape(1, data.shape[0])
                     self.responses[intensity] = np.concatenate((self.responses[intensity], data))
                 else:
-                    self.responses[intensity] = data.reshape(1, data.shape[0])
+                    self.responses[intensity] = data
 
 
