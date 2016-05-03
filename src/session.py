@@ -2,7 +2,6 @@
 
 import numpy as np
 import nibabel as nib
-from scipy.stats import sem
 from mask import Mask
 from stimulionset import StimuliOnset
 from data import Data
@@ -18,6 +17,11 @@ class Session(Data):
 
     def __init__(self, name=None, configuration=None):
         super(Session, self).__init__()
+
+        self.did_global_normalization = False
+        self.did_percent_normalization = False
+        self.used_mask = None
+        self.used_stimuli = None
 
         if configuration:
             self.load_configuration(configuration)
@@ -60,28 +64,6 @@ class Session(Data):
 
         return configuration
 
-    def calculate_mean(self):
-        """
-        Calculate the mean of every response grouped by stimuli type
-
-        :return: A dictionary where the key is the stimuli type and the value
-                 is the vector containing the mean value for the given time
-                 frame.
-        """
-        mean_responses = {}
-
-        for stimuli_type, stimuli_data in self.responses.iteritems():
-            response_mean = np.zeros(stimuli_data.shape[1])
-
-            for i in range(stimuli_data.shape[1]):
-                rm1 = np.nonzero(stimuli_data[:, i])
-                if rm1[0].any():
-                    response_mean[i] = np.mean(stimuli_data[rm1[0], i])
-
-            mean_responses[stimuli_type] = response_mean
-
-        return mean_responses
-
     def calculate_std(self):
         """ Calculate the standard deviation of the response """
         responses_std = {}
@@ -98,23 +80,49 @@ class Session(Data):
 
         return responses_std
 
-    def calculate_sem(self):
-        """ Calculate the standard error of the mean (SEM) of the response """
-        responses_sem = {}
-
-        for stimuli_type, stimuli_data in self.responses.iteritems():
-            response_sem = np.zeros(stimuli_data.shape[1])
-
-            for i in range(stimuli_data.shape[1]):
-                rm1 = np.nonzero(stimuli_data[:, i])
-                if rm1[0].any():
-                    response_sem[i] = sem(stimuli_data[rm1[0], i], ddof=1)
-
-            responses_sem[stimuli_type] = response_sem
-
-        return responses_sem
 
     def get_voxel_size(self):
         """ Returns the size of one voxel in the image. """
         return self.brain_file._header.get_zooms()
+
+    def settings_changed(self, percentage, global_, mask, stimuli):
+        """
+        Given the settings the method returns whether the same settings was
+        run in the previous aggregation.
+        """
+        if not mask:
+            mask = self.mask
+        if not stimuli:
+            stimuli = self.stimuli
+
+        return any([self.did_percent_normalization != percentage,
+                    self.did_global_normalization != global_,
+                    self.used_mask != mask,
+                    self.used_stimuli != stimuli])
+
+    def _aggregate(self, percentage, global_, mask, stimuli):
+        """
+        Aggregate response data from children with the given settings. Do not
+        call this method directly, instead use the `aggregate` method which
+        caches the results.
+
+        :return: A dictionary stimuli-values as keys NxM matrices as values
+                 where N is the number of stimuli and M is the length of the
+                 shortest stimuli.
+        """
+        if not mask:
+            mask = self.mask
+        if not stimuli:
+            stimuli = self.stimuli
+
+        # Save settings used
+        self.did_percent_normalization = percentage
+        self.did_global_normalization = global_
+        self.used_mask = mask
+        self.used_stimuli = stimuli
+
+        self.apply_mask(mask)
+        self.separate_into_responses(stimuli, percentage, global_)
+
+        return self.responses
 
