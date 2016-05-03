@@ -112,8 +112,14 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>150</width>
+         <width>100</width>
          <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
         </size>
        </property>
        <property name="title">
@@ -125,14 +131,14 @@
         </property>
         <property name="geometry">
          <rect>
-          <x>0</x>
+          <x>10</x>
           <y>70</y>
           <width>141</width>
           <height>20</height>
          </rect>
         </property>
         <property name="text">
-         <string>Several responses</string>
+         <string>Several</string>
         </property>
        </widget>
        <widget class="QRadioButton" name="mean_response_btn">
@@ -141,7 +147,7 @@
         </property>
         <property name="geometry">
          <rect>
-          <x>0</x>
+          <x>10</x>
           <y>40</y>
           <width>131</width>
           <height>20</height>
@@ -151,7 +157,7 @@
          <bool>false</bool>
         </property>
         <property name="text">
-         <string>Mean response</string>
+         <string>Mean</string>
         </property>
         <property name="checked">
          <bool>true</bool>
