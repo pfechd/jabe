@@ -76,7 +76,6 @@ class Group(Data):
                 # Convert data into 1xN matrix to be able to properly concatenate into the result
                 data = data.reshape(1, data.shape[0])
                 if intensity in self.responses:
-                    data = data.reshape(1, data.shape[0])
                     self.responses[intensity] = np.concatenate((self.responses[intensity], data))
                 else:
                     self.responses[intensity] = data
