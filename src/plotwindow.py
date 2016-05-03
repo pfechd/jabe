@@ -188,7 +188,7 @@ class CustomPlot(QDialog):
         Standard error of mean checkbox callback. Plot standard error of mean.
         """
 
-        if self.ui.checkBox_sem.isChecked() and self.ui.stimuliBox.currentText() != "All" and isinstance(self.session, Session):
+        if self.ui.checkBox_sem.isChecked() and self.ui.stimuliBox.currentText() != "All":
             mean = self.session.calculate_mean()[self.ui.stimuliBox.currentText()]
             x = np.arange(mean.size)*self.session.get_tr()
             self.ax.relim()
