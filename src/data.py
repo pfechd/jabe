@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.interpolate import UnivariateSpline
+from scipy.stats import sem
 import nibabel as nib
 from src.stimulionset import StimuliOnset
 
@@ -15,13 +16,17 @@ class Data(object):
         self.images = None
         self.mask = None
         self.stimuli = None
+        self.anatomy_path = None
+        self.anatomy_file = None
         self.anatomic_image = None
 
         self.children = []
         # TODO: Remove this
         self.sessions = []
 
-        self.plot_settings = {}
+        # Normalization settings
+        self.global_normalization = False
+        self.percent_normalization = False
 
         # Result of calculations are kept here
         self.masked_data = None
@@ -40,29 +45,11 @@ class Data(object):
         else:
             return all([self.brain_file, stimuli, mask])
 
-    def prepare_for_calculation(self, percentage, global_, mask=None, stimuli=None):
-        if not mask:
-            mask = self.mask
-        if not stimuli:
-            stimuli = self.stimuli
-
-        if self.brain_file:
-            # Calculate the responses with the masks and stimuli
-            self.apply_mask(mask)
-            self.separate_into_responses(stimuli, percentage, global_)
-        elif self.children or self.sessions:
-            # Load children
-            for child in self.children + self.sessions:
-                if not child.ready_for_calculation():
-                    continue
-                child.prepare_for_calculation(percentage, global_, mask, stimuli)
-
     def separate_into_responses(self, stimuli, percentage, global_):
         number_of_stimuli = stimuli.amount
 
         shortest_interval = min([j - i for i, j in zip(stimuli.data[:-1, 0], stimuli.data[1:, 0])])
 
-        # TODO: Apply the mask to the sequence
         self.responses = {}
 
         # Ignore the images after the last time stamp
@@ -155,6 +142,11 @@ class Data(object):
         self.sequence = self.brain_file.get_data()
         self.images = self.sequence.shape[3]
 
+    def load_anatomy(self, path):
+        self.anatomy_path = path
+        self.anatomy_file = nib.load(path)
+        self.anatomic_image = self.anatomy_file.get_data()
+
     def load_stimuli(self, path, tr):
         self.stimuli = StimuliOnset(path, tr)
 
@@ -180,4 +172,67 @@ class Data(object):
                     return tr
         return None
 
+    def settings_changed(self, percentage, global_, mask, stimuli):
+        """
+        Ask every child if the settings from their previous aggregation is
+        different from the current settings
+        """
+        return any([child.settings_changed(percentage, global_,
+                                           mask, stimuli)
+                    for child in self.children + self.sessions])
 
+    def aggregate(self, percentage=None, global_=None, mask=None, stimuli=None):
+        """
+        Aggregate response data from children with the given settings. This
+        method caches data on all levels and only aggregates data when needed.
+
+        :return: A dictionary stimuli-values as keys NxM matrices as values
+                 where N is the number of stimuli and M is the length of the
+                 shortest stimuli.
+        """
+        settings_changed = self.settings_changed(percentage, global_, mask, stimuli)
+
+        if self.responses and not settings_changed:
+            return self.responses
+        else:
+            return self._aggregate(percentage, global_, mask, stimuli)
+
+    def calculate_mean(self):
+        """
+        Calculate the mean of every response grouped by stimuli type
+
+        :return: A dictionary where the key is the stimuli type and the value
+                 is the vector containing the mean value for the given time
+                 frame.
+        """
+        responses = self.aggregate(self.percent_normalization, self.global_normalization)
+        mean_responses = {}
+
+        for stimuli_type, stimuli_data in responses.iteritems():
+            response_mean = np.zeros(stimuli_data.shape[1])
+
+            for i in range(stimuli_data.shape[1]):
+                rm1 = np.nonzero(stimuli_data[:, i])
+                # TODO: Motivate this if-statement
+                if len(rm1[0]) > 0:
+                    response_mean[i] = np.mean(stimuli_data[rm1[0], i])
+
+            mean_responses[stimuli_type] = response_mean
+        return mean_responses
+
+    def calculate_sem(self):
+        """ Calculate the standard error of the mean (SEM) of the response """
+        responses = self.aggregate(self.percent_normalization, self.global_normalization)
+        responses_sem = {}
+
+        for stimuli_type, stimuli_data in responses.iteritems():
+            response_sem = np.zeros(stimuli_data.shape[1])
+
+            for i in range(stimuli_data.shape[1]):
+                rm1 = np.nonzero(stimuli_data[:, i])
+                if rm1[0].any():
+                    response_sem[i] = sem(stimuli_data[rm1[0], i], ddof=1)
+
+            responses_sem[stimuli_type] = response_sem
+
+        return responses_sem
