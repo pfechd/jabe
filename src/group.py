@@ -6,6 +6,10 @@ from src.stimulionset import StimuliOnset
 
 
 class Group(object):
+    """
+    Class containing methods for analysing a group of groups and
+    groups of sessions recursively.
+    """
     def __init__(self, configuration=None):
         self.name = ""
         self.sessions = []
