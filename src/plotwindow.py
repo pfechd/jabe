@@ -29,7 +29,7 @@ class CustomPlot(QDialog):
         super(CustomPlot, self).__init__(parent)
         self.amp = None
         self.fwhm = None
-        self.mean = []
+        self.regular = []
         self.smooth = []
         self.sem = None
         self.ui = Ui_Dialog()
@@ -96,7 +96,7 @@ class CustomPlot(QDialog):
         """
 
         if self.ui.checkBox_fwhm.isChecked():
-            if self.mean is not None:
+            if self.regular is not None:
                 y = self.ax.lines[0].get_ydata()
                 x = np.arange(len(y))
                 smooth = self.ui.spinBox.value()
@@ -112,17 +112,17 @@ class CustomPlot(QDialog):
         """
         Replot regular and smoothed curve. Used when changing the data to plot
         """
-        if self.mean:
-            for axis in self.mean:
-                axis.remove()
-            self.mean = []
+        self.remove_regular_plots()
         self.plot_regular()
-        if self.smooth:
-            for axis in self.smooth:
-                axis.remove()
-            self.smooth = []
+        self.remove_smoothed_plots()
         self.plot_smooth()
         self.fix_allowed_buttons()
+
+    def remove_regular_plots(self):
+        if self.regular:
+            for axis in self.regular:
+                axis.remove()
+            self.regular = []
 
     def plot_smooth(self):
         """
@@ -146,11 +146,14 @@ class CustomPlot(QDialog):
 
             self.canvas.draw()
         else:
+            self.remove_smoothed_plots()
+            self.canvas.draw()
+
+    def remove_smoothed_plots(self):
+        if self.smooth:
             for axis in self.smooth:
                 axis.remove()
             self.smooth = []
-            self.canvas.draw()
-
 
     def plot_mean(self):
         """
@@ -167,17 +170,15 @@ class CustomPlot(QDialog):
             if self.ui.stimuliBox.currentText() == "All":
                 for stimuli_type,stimuli_data in mean.iteritems():
                     axis, = self.ax.plot(stimuli_data, color=self.generate_random_color())
-                    self.mean.append(axis)
+                    self.regular.append(axis)
             else:
                 axis, = self.ax.plot(mean[self.ui.stimuliBox.currentText()], color=self.generate_random_color())
-                self.mean.append(axis)
+                self.regular.append(axis)
 
             self.canvas.draw()
 
         else:
-            for axis in self.mean:
-                axis.remove()
-            self.mean = []
+            self.remove_regular_plots()
             self.canvas.draw()
 
     def plot_sem(self):
@@ -208,7 +209,7 @@ class CustomPlot(QDialog):
         Amplitude checkbox callback. Annotate amplitude in graph with a horizontal line
         """
         
-        if self.ui.checkBox_amp.isChecked() and (self.mean or self.smooth):
+        if self.ui.checkBox_amp.isChecked() and (self.regular or self.smooth):
             y = self.ax.lines[0].get_ydata()
             x = np.arange(len(y))
             max_amp = self.session.calculate_amplitude(x, y, 0)
@@ -223,7 +224,7 @@ class CustomPlot(QDialog):
         """
         Peak checkbox callback. Annotate time of peak in graph with a vertical line
         """
-        if self.ui.checkBox_peak.isChecked() and (self.mean or self.smooth):
+        if self.ui.checkBox_peak.isChecked() and (self.regular or self.smooth):
             y = self.ax.lines[0].get_ydata()
             x = np.arange(len(y))
             max_peak = self.session.calculate_amplitude(x, y, 0)
@@ -239,13 +240,13 @@ class CustomPlot(QDialog):
         """
         Points checkbox callback. Show data points in graph
         """
-        if self.mean:
+        if self.regular:
             if self.ui.checkBox_points.isChecked():
-                for axis in self.mean:
+                for axis in self.regular:
                     axis.set_marker('o')
                 self.canvas.draw()
             else:
-                for axis in self.mean:
+                for axis in self.regular:
                     axis.set_marker('')
                 self.canvas.draw()
 
@@ -276,24 +277,23 @@ class CustomPlot(QDialog):
         Plot the active object's children, each as a separate plot
         """
         if self.ui.checkBox_regular.isChecked():
+            self.remove_smoothed_plots()
             sessions = self.session.responses
             self.ax.relim()
             if self.ui.stimuliBox.currentText() == "All":
                 for stimuli_type, stimuli_data in sessions.iteritems():
                     for i in range(stimuli_data.shape[0]):
                         axis, = self.ax.plot(stimuli_data[i, :], color=self.generate_random_color())
-                        self.mean.append(axis)
+                        self.regular.append(axis)
             else:
                 session = sessions[self.ui.stimuliBox.currentText()]
                 for i in range(session.shape[0]):
                     axis, = self.ax.plot((sessions[self.ui.stimuliBox.currentText()])[i, :],
                                          color=self.generate_random_color())
-                    self.mean.append(axis)
+                    self.regular.append(axis)
 
         else:
-            for axis in self.mean:
-                axis.remove()
-            self.mean = []
+            self.remove_regular_plots()
             self.canvas.draw()
 
         self.canvas.draw()
@@ -313,7 +313,7 @@ class CustomPlot(QDialog):
         Enable or disable buttons depending on if they are meaningful in the current situation
         """
         # Enable the buttons if there are exactly 1 regular curve, or if there is one smoothed curve
-        if len(self.mean) == 1 or (len(self.mean) == 0 and len(self.smooth) == 1):
+        if len(self.regular) == 1 or (len(self.regular) == 0 and len(self.smooth) == 1):
             self.ui.checkBox_amp.setEnabled(True)
             self.ui.checkBox_fwhm.setEnabled(True)
             self.ui.checkBox_peak.setEnabled(True)
