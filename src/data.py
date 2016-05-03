@@ -15,6 +15,8 @@ class Data(object):
         self.images = None
         self.mask = None
         self.stimuli = None
+        self.anatomy_path = None
+        self.anatomy_file = None
         self.anatomic_image = None
 
         self.children = []
@@ -53,16 +55,14 @@ class Data(object):
         elif self.children or self.sessions:
             # Load children
             for child in self.children + self.sessions:
-                if not child.ready_for_calculation():
-                    continue
-                child.prepare_for_calculation(percentage, global_, mask, stimuli)
+                if child.ready_for_calculation():
+                    child.prepare_for_calculation(percentage, global_, mask, stimuli)
 
     def separate_into_responses(self, stimuli, percentage, global_):
         number_of_stimuli = stimuli.amount
 
         shortest_interval = min([j - i for i, j in zip(stimuli.data[:-1, 0], stimuli.data[1:, 0])])
 
-        # TODO: Apply the mask to the sequence
         self.responses = {}
 
         # Ignore the images after the last time stamp
@@ -155,6 +155,11 @@ class Data(object):
         self.sequence = self.brain_file.get_data()
         self.images = self.sequence.shape[3]
 
+    def load_anatomy(self, path):
+        self.anatomy_path = path
+        self.anatomy_file = nib.load(path)
+        self.anatomic_image = self.anatomy_file.get_data()
+
     def load_stimuli(self, path, tr):
         self.stimuli = StimuliOnset(path, tr)
 
@@ -166,4 +171,18 @@ class Data(object):
 
     def remove_child(self, child):
         self.children.remove(child)
+
+    def get_tr(self):
+        children = self.children + self.sessions
+        # if we have a stimuli, use that tr. Otherwise check your children
+        if self.stimuli:
+            return self.stimuli.tr
+        elif children:
+            for child in children:
+                #loop until we find a child that has a TR
+                tr = child.get_tr()
+                if tr:
+                    return tr
+        return None
+
 

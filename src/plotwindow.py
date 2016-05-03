@@ -98,7 +98,7 @@ class CustomPlot(QDialog):
         if self.ui.checkBox_fwhm.isChecked():
             if self.regular is not None:
                 y = self.ax.lines[0].get_ydata()
-                x = np.arange(len(y))
+                x = np.arange(len(y))*self.session.get_tr()
                 smooth = self.ui.spinBox.value()
                 r1, r2 = self.session.calculate_fwhm(x, y, smooth)
                 self.fwhm = self.ax.axvspan(r1, r2, facecolor='g', alpha=0.3)
@@ -134,14 +134,14 @@ class CustomPlot(QDialog):
 
             if self.ui.stimuliBox.currentText() == "All":
                 for stimuli_type,stimuli_data in before_smooth.iteritems():
-                    x = np.arange(stimuli_data.shape[0])
+                    x = np.arange(stimuli_data.shape[0])*self.session.get_tr()
                     curr = UnivariateSpline(x, stimuli_data, s=self.ui.spinBox.value())
-                    axis, = self.ax.plot(curr(x), color=self.generate_random_color())
+                    axis, = self.ax.plot(x,curr(x), color=self.generate_random_color())
                     self.smooth.append(axis)
             else:
-                x = np.arange(before_smooth[self.ui.stimuliBox.currentText()].shape[0])
+                x = np.arange(before_smooth[self.ui.stimuliBox.currentText()].shape[0])*self.session.get_tr()
                 curr = UnivariateSpline(x, before_smooth[self.ui.stimuliBox.currentText()], s=self.ui.spinBox.value())
-                axis, = self.ax.plot(curr(x), color=self.generate_random_color())
+                axis, = self.ax.plot(x,curr(x), color=self.generate_random_color())
                 self.smooth.append(axis)
 
             self.canvas.draw()
@@ -169,10 +169,12 @@ class CustomPlot(QDialog):
             mean = self.session.calculate_mean()
             if self.ui.stimuliBox.currentText() == "All":
                 for stimuli_type,stimuli_data in mean.iteritems():
-                    axis, = self.ax.plot(stimuli_data, color=self.generate_random_color())
+                    x = np.arange(len(stimuli_data))*self.session.get_tr()
+                    axis, = self.ax.plot(x,stimuli_data, color=self.generate_random_color())
                     self.regular.append(axis)
             else:
-                axis, = self.ax.plot(mean[self.ui.stimuliBox.currentText()], color=self.generate_random_color())
+                x = np.arange(len(mean[self.ui.stimuliBox.currentText()]))*self.session.get_tr()
+                axis, = self.ax.plot(x,mean[self.ui.stimuliBox.currentText()], color=self.generate_random_color())
                 self.regular.append(axis)
 
             self.canvas.draw()
@@ -188,7 +190,7 @@ class CustomPlot(QDialog):
 
         if self.ui.checkBox_sem.isChecked() and self.ui.stimuliBox.currentText() != "All" and isinstance(self.session, Session):
             mean = self.session.calculate_mean()[self.ui.stimuliBox.currentText()]
-            x = np.arange(mean.size)
+            x = np.arange(mean.size)*self.session.get_tr()
             self.ax.relim()
             sem = self.session.calculate_sem()
             self.sem =self.ax.errorbar(x, mean, yerr=sem[self.ui.stimuliBox.currentText()])
@@ -228,7 +230,7 @@ class CustomPlot(QDialog):
             y = self.ax.lines[0].get_ydata()
             x = np.arange(len(y))
             max_peak = self.session.calculate_amplitude(x, y, 0)
-            self.peak_time = self.ax.axvline(max_peak[0], color=self.generate_random_color())
+            self.peak_time = self.ax.axvline(max_peak[0]*self.session.get_tr(), color=self.generate_random_color())
             self.canvas.draw()
         else:
             if self.peak_time:

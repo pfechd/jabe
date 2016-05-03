@@ -22,14 +22,6 @@ class Group(Data):
         }
 
     def load_configuration(self, configuration):
-        if 'individuals' in configuration:
-            for individual_settings in configuration['individuals']:
-                self.children.append(Group(configuration=individual_settings))
-
-        if 'sessions' in configuration:
-            for session_configuration in configuration['sessions']:
-                self.sessions.append(Session(configuration=session_configuration))
-
         if 'name' in configuration:
             self.name = configuration['name']
 
@@ -76,7 +68,7 @@ class Group(Data):
                 # Convert data into 1xN matrix to be able to properly concatenate into the result
                 data = data.reshape(1, data.shape[0])
                 if intensity in self.responses:
-                    self.responses[intensity] = np.concatenate((self.responses[intensity], data))
+                    self.responses[intensity] = np.concatenate((self.responses[intensity], data.reshape(1, data.shape[0])))
                 else:
                     self.responses[intensity] = data
 

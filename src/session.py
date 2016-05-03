@@ -19,18 +19,19 @@ class Session(Data):
     def __init__(self, name=None, configuration=None):
         super(Session, self).__init__()
 
-        if name:
-            self.name = name
-        elif configuration:
+        if configuration:
             self.load_configuration(configuration)
-        else:
-            raise NotImplementedError('Error not implemented')
+        elif name:
+            self.name = name
 
     def load_configuration(self, configuration):
         self.name = configuration['name']
 
         if 'path' in configuration:
             self.load_data(configuration['path'])
+
+        if 'anatomy_path' in configuration:
+            self.load_anatomy(configuration['anatomy_path'])
 
         if 'mask' in configuration:
             self.mask = Mask(configuration['mask']['path'])
@@ -44,6 +45,9 @@ class Session(Data):
 
         if self.path:
             configuration['path'] = self.path
+
+        if self.anatomy_path:
+            configuration['anatomy_path'] = self.anatomy_path
 
         if self.mask:
             configuration['mask'] = self.mask.get_configuration()
@@ -109,17 +113,6 @@ class Session(Data):
             responses_sem[stimuli_type] = response_sem
 
         return responses_sem
-
-    def sub_from_baseline(self, response):
-        """ Subtract baseline from a response
-        :param response: the response to subtract from
-        """
-        sub_value = response[0]
-
-        for i in range(self.images):
-            response[i] -= sub_value
-
-        return response
 
     def get_voxel_size(self):
         """ Returns the size of one voxel in the image. """
