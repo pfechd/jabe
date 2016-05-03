@@ -43,22 +43,6 @@ class Data(object):
         else:
             return all([self.brain_file, stimuli, mask])
 
-    def prepare_for_calculation(self, percentage, global_, mask=None, stimuli=None):
-        if not mask:
-            mask = self.mask
-        if not stimuli:
-            stimuli = self.stimuli
-
-        if self.brain_file:
-            # Calculate the responses with the masks and stimuli
-            self.apply_mask(mask)
-            self.separate_into_responses(stimuli, percentage, global_)
-        elif self.children or self.sessions:
-            # Load children
-            for child in self.children + self.sessions:
-                if child.ready_for_calculation():
-                    child.prepare_for_calculation(percentage, global_, mask, stimuli)
-
     def separate_into_responses(self, stimuli, percentage, global_):
         number_of_stimuli = stimuli.amount
 
