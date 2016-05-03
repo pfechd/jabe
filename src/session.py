@@ -94,7 +94,7 @@ class Session(Data):
                     self.used_mask != mask,
                     self.used_stimuli != stimuli])
 
-    def aggregate_(self, percentage, global_, mask, stimuli):
+    def _aggregate(self, percentage, global_, mask, stimuli):
         """
         Aggregate response data from children with the given settings. Do not
         call this method directly, instead use the `aggregate` method which

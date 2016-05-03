@@ -47,7 +47,7 @@ class Group(Data):
                 else:
                     self.responses[intensity] = data.reshape(1, data.shape[0])
 
-    def aggregate_(self, percentage, global_, mask, stimuli):
+    def _aggregate(self, percentage, global_, mask, stimuli):
         self.responses = {}
         min_width = float('inf')
 

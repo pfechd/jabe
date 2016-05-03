@@ -189,7 +189,7 @@ class Data(object):
         if self.responses and not settings_changed:
             return self.responses
         else:
-            return self.aggregate_(percentage, global_, mask, stimuli)
+            return self._aggregate(percentage, global_, mask, stimuli)
 
     def calculate_mean(self):
         """
