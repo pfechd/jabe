@@ -52,7 +52,7 @@ class Mask:
         return {'path': self.path}
 
     def get_index_of_roi(self):
-        most_ones = np.array([[0,0,0,1]])
+        most_ones = np.array([[0,0,0]])
         ones_amount = 0
         for i in range(self.data.shape[0]):
             ones = np.count_nonzero(self.data[i,:,:])

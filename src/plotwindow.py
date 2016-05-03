@@ -1,5 +1,6 @@
 import numpy as np
 import random
+from nibabel.affines import apply_affine
 
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -39,10 +40,14 @@ class CustomPlot(QDialog):
 
         self.session = session
         self.fig = plt.figure()
-        self.ax = self.fig.add_subplot(141)
-        self.img1 = self.fig.add_subplot(142)
-        self.img2 = self.fig.add_subplot(143)
-        self.img3 = self.fig.add_subplot(144)
+        if isinstance(self.session,Session):
+            self.ax = self.fig.add_subplot(141)
+            self.img1 = self.fig.add_subplot(142)
+            self.img2 = self.fig.add_subplot(143)
+            self.img3 = self.fig.add_subplot(144)
+        else:
+            self.ax = self.fig.add_subplot(111)
+
         self.canvas = FigureCanvas(self.fig)
         self.toolbar = NavigationToolbar(self.canvas, self, coordinates=True)
         self.toolbar.hide()
@@ -272,13 +277,8 @@ class CustomPlot(QDialog):
             self.ui.stimuliBox.addItem(stimuli_type)
 
     def convert_coord(self, coord):
-        a = np.array([self.session.brain_file._header["srow_x"],self.session.brain_file._header["srow_y"],self.session.brain_file._header["srow_z"],[0,0,0,1]])
-        b = coord
-        c = np.dot(a,b.T)
-        d = np.array([self.session.anatomy_file._header["srow_x"],self.session.anatomy_file._header["srow_y"],self.session.anatomy_file._header["srow_z"],[0,0,0,1]])
-        e = np.dot(np.linalg.inv(d),c)
-
-        return np.transpose(e)
+        conversion_matrix = np.linalg.inv(self.session.anatomy_file._affine).dot(self.session.brain_file._affine)
+        return apply_affine(conversion_matrix, coord)
 
     def show_brain(self):
         most_ones = np.around(self.convert_coord(self.session.mask.get_index_of_roi())).astype(int)
