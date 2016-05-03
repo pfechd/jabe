@@ -280,23 +280,23 @@ class CustomPlot(QDialog):
         """
         if self.ui.checkBox_regular.isChecked():
             self.remove_smoothed_plots()
-            sessions = self.session.responses
             self.ax.relim()
-            if self.ui.stimuliBox.currentText() == "All":
-                for stimuli_type, stimuli_data in sessions.iteritems():
-                    for i in range(stimuli_data.shape[0]):
-                        axis, = self.ax.plot(stimuli_data[i, :], color=self.generate_random_color())
+            sessions = self.session.responses
+            children = self.session.sessions + self.session.children
+            print children
+            for child in children:
+                child_mean = child.calculate_mean()
+                if self.ui.stimuliBox.currentText() == "All":
+                    for stimuli_type, stimuli_data in child_mean.iteritems():
+                        axis, = self.ax.plot(stimuli_data, color=self.generate_random_color())
                         self.regular.append(axis)
-            else:
-                session = sessions[self.ui.stimuliBox.currentText()]
-                for i in range(session.shape[0]):
-                    axis, = self.ax.plot((sessions[self.ui.stimuliBox.currentText()])[i, :],
+                else:
+                    axis, = self.ax.plot(child_mean[self.ui.stimuliBox.currentText()],
                                          color=self.generate_random_color())
                     self.regular.append(axis)
 
         else:
             self.remove_regular_plots()
-            self.canvas.draw()
 
         self.canvas.draw()
 
