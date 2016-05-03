@@ -116,7 +116,7 @@ class CustomPlot(QDialog):
         self.plot_regular()
         self.remove_smoothed_plots()
         self.plot_smooth()
-        self.fix_allowed_buttons()
+        self.set_allowed_buttons()
 
     def remove_regular_plots(self):
         if self.regular:
@@ -128,7 +128,7 @@ class CustomPlot(QDialog):
         """
         Smooth checkbox callback. Plot smooth from session object
         """
-        if self.ui.checkBox_smooth.isChecked():
+        if self.ui.checkBox_smooth.isChecked() and self.ui.mean_response_btn.isChecked():
             self.ax.relim()
             before_smooth = self.session.calculate_mean()
 
