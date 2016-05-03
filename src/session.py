@@ -15,7 +15,7 @@ class Session(Group):
     data is stored in the member data
     """
 
-    def __init__(self, name=None, configuration=None):
+    def __init__(self, configuration=None):
         super(Session, self).__init__()
 
         self.brain_file = None
@@ -31,8 +31,6 @@ class Session(Group):
 
         if configuration:
             self.load_configuration(configuration)
-        elif name:
-            self.name = name
 
     def load_configuration(self, configuration):
         self.name = configuration['name']
