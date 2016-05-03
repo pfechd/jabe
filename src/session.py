@@ -18,6 +18,11 @@ class Session(Data):
     def __init__(self, name=None, configuration=None):
         super(Session, self).__init__()
 
+        self.did_global_normalization = False
+        self.did_percent_normalization = False
+        self.used_mask = None
+        self.used_stimuli = None
+
         if configuration:
             self.load_configuration(configuration)
         elif name:
@@ -74,6 +79,21 @@ class Session(Data):
         """ Returns the size of one voxel in the image. """
         return self.brain_file._header.get_zooms()
 
+    def settings_changed(self, percentage, global_, mask, stimuli):
+        """
+        Given the settings the method returns whether the same settings was
+        run in the previous aggregation.
+        """
+        if not mask:
+            mask = self.mask
+        if not stimuli:
+            stimuli = self.stimuli
+
+        return any([self.did_percent_normalization != percentage,
+                    self.did_global_normalization != global_,
+                    self.used_mask != mask,
+                    self.used_stimuli != stimuli])
+
     def aggregate_(self, percentage, global_, mask, stimuli):
         """
         Aggregate response data from children with the given settings. Do not
@@ -84,14 +104,16 @@ class Session(Data):
                  where N is the number of stimuli and M is the length of the
                  shortest stimuli.
         """
-        if not percentage:
-            percentage = self.percent_normalization
-        if not global_:
-            global_ = self.global_normalization
         if not mask:
             mask = self.mask
         if not stimuli:
             stimuli = self.stimuli
+
+        # Save settings used
+        self.did_percent_normalization = percentage
+        self.did_global_normalization = global_
+        self.used_mask = mask
+        self.used_stimuli = stimuli
 
         self.apply_mask(mask)
         self.separate_into_responses(stimuli, percentage, global_)

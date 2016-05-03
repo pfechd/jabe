@@ -182,6 +182,15 @@ class Data(object):
                     return tr
         return None
 
+    def settings_changed(self, percentage, global_, mask, stimuli):
+        """
+        Ask every child if the settings from their previous aggregation is
+        different from the current settings
+        """
+        return any([child.settings_changed(percentage, global_,
+                                           mask, stimuli)
+                    for child in self.children + self.sessions])
+
     def aggregate(self, percentage=None, global_=None, mask=None, stimuli=None):
         """
         Aggregate response data from children with the given settings. This
@@ -191,9 +200,9 @@ class Data(object):
                  where N is the number of stimuli and M is the length of the
                  shortest stimuli.
         """
-        # TODO: Check if some child have had their data changed
-        # TODO: Check if the normalization settings have been changed
-        if self.responses:
+        settings_changed = self.settings_changed(percentage, global_, mask, stimuli)
+
+        if self.responses and not settings_changed:
             return self.responses
         else:
             return self.aggregate_(percentage, global_, mask, stimuli)
