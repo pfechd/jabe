@@ -5,7 +5,6 @@ from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QSpacerItem, QSizePolicy
 
 from generated_ui.mainwindow import Ui_MainWindow
-from group import Group
 from mask import Mask
 from plotwindow import CustomPlot
 from stimulionset import StimuliOnset
@@ -34,6 +33,7 @@ class MainWindow(QMainWindow):
         self.ui.extract_session_btn.clicked.connect(self.calculate_button_pressed)
         self.ui.extract_btn_individual.clicked.connect(self.calculate_button_pressed)
         self.ui.extract_btn_group.clicked.connect(self.calculate_button_pressed)
+        self.ui.add_session_anatomy_btn.clicked.connect(self.anatomy_button_pressed)
         self.ui.add_session_epi_btn.clicked.connect(self.brain_button_pressed)
         self.ui.add_session_mask_btn.clicked.connect(self.mask_button_pressed)
         self.ui.add_session_stimuli_btn.clicked.connect(self.stimuli_button_pressed)
@@ -168,38 +168,44 @@ class MainWindow(QMainWindow):
 
         if self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
             session = self.ui.tree_widget.selectedItems()[0]
-            session.prepare_for_calculation(
-                self.ui.percent_session_btn.isChecked(),
-                self.ui.global_normalization_session_btn.isChecked())
+            session.percent_normalization = self.ui.percent_session_btn.isChecked()
+            session.global_normalization = self.ui.global_normalization_session_btn.isChecked()
             CustomPlot(self, session)
 
         if self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
             individual = self.ui.tree_widget.selectedItems()[0]
-            individual.prepare_for_calculation(
-                self.ui.percent_individual_btn.isChecked(),
-                self.ui.global_normalization_individual_btn.isChecked())
+            individual.percent_normalization = self.ui.percent_individual_btn.isChecked()
+            individual.global_normalization = self.ui.global_normalization_individual_btn.isChecked()
             CustomPlot(self, individual)
 
         if self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
             group = self.ui.tree_widget.selectedItems()[0]
-            group.prepare_for_calculation(
-                self.ui.percent_group_btn.isChecked(),
-                self.ui.global_normalization_group_btn.isChecked())
+            group.percent_normalization = self.ui.percent_group_btn.isChecked()
+            group.global_normalization = self.ui.global_normalization_group_btn.isChecked()
             CustomPlot(self, group)
 
 
     def brain_button_pressed(self):
         """ Callback function, run when the choose brain button is pressed."""
-        file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii)")
+        file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii *.nii.gz)")
         if file_name[0]:
             self.load_brain(file_name[0])
         else:
             print 'File not chosen'
         self.update_gui()
 
+    def anatomy_button_pressed(self):
+        """ Callback function, run when the choose anatomy button is pressed."""
+        file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii *.nii.gz)")
+        if file_name[0]:
+            self.load_anatomy(file_name[0])
+        else:
+            print 'File not chosen'
+        self.update_gui()
+
     def mask_button_pressed(self):
         """ Callback function, run when the choose mask button is pressed."""
-        file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii)")
+        file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii *.nii.gz)")
         if file_name[0]:
             self.load_mask(file_name[0])
         else:
@@ -222,6 +228,12 @@ class MainWindow(QMainWindow):
         if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
             session = self.ui.tree_widget.selectedItems()[0]
             session.load_data(path)
+            self.update_gui()
+
+    def load_anatomy(self, path):
+        if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
+            session = self.ui.tree_widget.selectedItems()[0]
+            session.load_anatomy(path)
             self.update_gui()
 
     def load_mask(self, path):
@@ -278,10 +290,15 @@ class MainWindow(QMainWindow):
             if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
                 individual = self.ui.tree_widget.selectedItems()[0]
 
-                if individual.path:
-                    self.ui.session_epi_label.setText('EPI-images chosen: ' + individual.path.split('/')[-1])
+                if individual.brain:
+                    self.ui.session_epi_label.setText('EPI-images chosen: ' + individual.brain.path.split('/')[-1])
                 else:
                     self.ui.session_epi_label.setText('No EPI-images chosen')
+
+                if individual.anatomy:
+                    self.ui.session_anatomy_label.setText('Anatomy chosen: ' + individual.anatomy.path.split('/')[-1])
+                else:
+                    self.ui.session_anatomy_label.setText('No anatomy chosen')
 
                 if individual.mask:
                     self.ui.session_mask_label.setText('Mask picked: ' + individual.mask.path.split('/')[-1])
@@ -314,7 +331,3 @@ class MainWindow(QMainWindow):
                 child.widget().deleteLater()
             elif child.layout() is not None:
                 self.clear_layout(child.layout())
-
-    def configure_spm(self):
-        """ Callback function, run when the spm menu item is pressed."""
-        SPMPath(self.manager).exec_()
