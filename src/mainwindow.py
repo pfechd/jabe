@@ -329,7 +329,3 @@ class MainWindow(QMainWindow):
                 child.widget().deleteLater()
             elif child.layout() is not None:
                 self.clear_layout(child.layout())
-
-    def configure_spm(self):
-        """ Callback function, run when the spm menu item is pressed."""
-        SPMPath(self.manager).exec_()
