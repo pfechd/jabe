@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import QMainWindow, QFileDialog, QSpacerItem, QSizePolicy
 from generated_ui.mainwindow import Ui_MainWindow
 from mask import Mask
 from plotwindow import CustomPlot
+from stimuliwindow import StimuliWindow
 from stimulionset import StimuliOnset
 from tree_items.grouptreeitem import GroupTreeItem
 from tree_items.individualtreeitem import IndividualTreeItem
@@ -37,6 +38,7 @@ class MainWindow(QMainWindow):
         self.ui.add_session_epi_btn.clicked.connect(self.brain_button_pressed)
         self.ui.add_session_mask_btn.clicked.connect(self.mask_button_pressed)
         self.ui.add_session_stimuli_btn.clicked.connect(self.stimuli_button_pressed)
+        self.ui.create_session_stimuli_btn.clicked.connect(self.create_stimuli_button_pressed)
         self.ui.add_group_menu_btn.triggered.connect(self.add_group_pressed)
         self.ui.exit_menu_btn.triggered.connect(self.exit_button_pressed)
         self.ui.add_individual_btn.clicked.connect(self.add_item_clicked)
@@ -223,6 +225,8 @@ class MainWindow(QMainWindow):
 
     def create_stimuli_button_pressed(self):
         """ Callback function, run when the chreate simuli button is pressed."""
+        
+        self.stimuli_window = StimuliWindow()
         
     def load_brain(self, path):
         if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
