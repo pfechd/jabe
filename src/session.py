@@ -3,6 +3,7 @@
 import numpy as np
 import nibabel as nib
 from mask import Mask
+from src.brain import Brain
 from stimulionset import StimuliOnset
 from group import Group
 
@@ -18,12 +19,8 @@ class Session(Group):
     def __init__(self, configuration=None):
         super(Session, self).__init__()
 
-        self.brain_file = None
-        self.sequence = None
-        # The path to the file containing brain information
-        self.path = None
+        self.brain = None
         self.masked_data = None
-        self.images = None
         self.did_global_normalization = False
         self.did_percent_normalization = False
         self.used_mask = None
@@ -51,11 +48,11 @@ class Session(Group):
     def get_configuration(self):
         configuration = {}
 
-        if self.path:
-            configuration['path'] = self.path
+        if self.brain:
+            configuration['path'] = self.brain.path
 
-        if self.anatomy_path:
-            configuration['anatomy_path'] = self.anatomy_path
+        if self.anatomy:
+            configuration['anatomy_path'] = self.anatomy.path
 
         if self.mask:
             configuration['mask'] = self.mask.get_configuration()
@@ -85,12 +82,12 @@ class Session(Group):
         return responses_std
 
     def ready_for_calculation(self, stimuli=None, mask=None):
-        return self.brain_file is not None and \
+        return self.brain is not None and \
                super(Session, self).ready_for_calculation(stimuli, mask)
 
     def get_voxel_size(self):
         """ Returns the size of one voxel in the image. """
-        return self.brain_file._header.get_zooms()
+        return self.brain.brain_file._header.get_zooms()
 
     def settings_changed(self, percentage, global_, mask, stimuli):
         """
@@ -159,10 +156,10 @@ class Session(Group):
 
         :param mask: Mask object which should be applied
         """
-        self.masked_data = np.zeros((1, self.images))
+        self.masked_data = np.zeros((1, self.brain.images))
 
-        for i in range(self.images):
-            visual_brain = mask.data * self.sequence[:, :, :, i]
+        for i in range(self.brain.images):
+            visual_brain = mask.data * self.brain.sequence[:, :, :, i]
             visual_brain_time = np.nonzero(visual_brain)
             self.masked_data[:, i] = np.mean(visual_brain[visual_brain_time])
 
@@ -180,7 +177,7 @@ class Session(Group):
         """
         if global_:
             time_indexes = list(range(start, end))
-            ref = np.mean(self.sequence[:, :, :, time_indexes], (0, 1, 2))     # Mean of spatial dimensions
+            ref = np.mean(self.brain.sequence[:, :, :, time_indexes], (0, 1, 2))     # Mean of spatial dimensions
         else:
             ref = np.ones(end - start) * response[0][0]
 
@@ -191,8 +188,5 @@ class Session(Group):
             return response - ref
 
     def load_data(self, path):
-        self.path = path
-        self.brain_file = nib.load(path)
-        self.sequence = self.brain_file.get_data()
-        self.images = self.sequence.shape[3]
+        self.brain = Brain(path)
 

@@ -2,6 +2,8 @@ import numpy as np
 from scipy.interpolate import UnivariateSpline
 from scipy.stats import sem
 import nibabel as nib
+
+from src.brain import Brain
 from src.stimulionset import StimuliOnset
 
 
@@ -15,9 +17,7 @@ class Group(object):
 
         self.mask = None
         self.stimuli = None
-        self.anatomy_path = None
-        self.anatomy_file = None
-        self.anatomic_image = None
+        self.anatomy = None
 
         self.children = []
         # TODO: Remove this
@@ -81,9 +81,7 @@ class Group(object):
         return max_amp, spline(x)[max_amp]
 
     def load_anatomy(self, path):
-        self.anatomy_path = path
-        self.anatomy_file = nib.load(path)
-        self.anatomic_image = self.anatomy_file.get_data()
+        self.anatomy = Brain(path)
 
     def load_stimuli(self, path, tr):
         self.stimuli = StimuliOnset(path, tr)
