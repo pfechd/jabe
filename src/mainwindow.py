@@ -5,10 +5,9 @@ from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QSpacerItem, QSizePolicy
 
 from generated_ui.mainwindow import Ui_MainWindow
-from group import Group
 from mask import Mask
 from plotwindow import CustomPlot
-from stimulionset import StimuliOnset
+from stimuli import Stimuli
 from tree_items.grouptreeitem import GroupTreeItem
 from tree_items.individualtreeitem import IndividualTreeItem
 from tree_items.sessiontreeitem import SessionTreeItem
@@ -52,6 +51,9 @@ class MainWindow(QMainWindow):
         self.ui.session_name.returnPressed.connect(self.ui.session_name.clearFocus)
         self.ui.group_name.returnPressed.connect(self.ui.group_name.clearFocus)
         self.ui.individual_name.returnPressed.connect(self.ui.individual_name.clearFocus)
+        self.ui.session_description.textChanged.connect(self.description_changed)
+        self.ui.group_description.textChanged.connect(self.description_changed)
+        self.ui.individual_description.textChanged.connect(self.description_changed)
         self.ui.stackedWidget.setCurrentIndex(1)
         self.show()
 
@@ -225,7 +227,7 @@ class MainWindow(QMainWindow):
     def load_brain(self, path):
         if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
             session = self.ui.tree_widget.selectedItems()[0]
-            session.load_data(path)
+            session.load_sequence(path)
             self.update_gui()
 
     def load_anatomy(self, path):
@@ -243,7 +245,7 @@ class MainWindow(QMainWindow):
     def load_stimuli(self, path):
         if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
             session = self.ui.tree_widget.selectedItems()[0]
-            session.stimuli = StimuliOnset(path, 0.5)
+            session.stimuli = Stimuli(path, 0.5)
             self.update_gui()
 
     def update_gui(self):
@@ -257,6 +259,7 @@ class MainWindow(QMainWindow):
             if isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
                 self.ui.stackedWidget.setCurrentIndex(2)
                 self.ui.individual_name.setText(self.ui.tree_widget.selectedItems()[0].text(0))
+                self.ui.individual_description.setText(self.ui.tree_widget.selectedItems()[0].description)
 
                 # Add overview tree in individual panel
                 self.ui.sessions_overview_tree.clear()
@@ -270,9 +273,11 @@ class MainWindow(QMainWindow):
             elif isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
                 self.ui.stackedWidget.setCurrentIndex(3)
                 self.ui.session_name.setText(self.ui.tree_widget.selectedItems()[0].text(0))
+                self.ui.session_description.setText(self.ui.tree_widget.selectedItems()[0].description)
             else:
                 self.ui.stackedWidget.setCurrentIndex(0)
                 self.ui.group_name.setText(self.ui.tree_widget.selectedItems()[0].text(0))
+                self.ui.group_description.setText(self.ui.tree_widget.selectedItems()[0].description)
 
                 # Add overview tree in group panel
                 self.ui.individual_overview_tree.clear()
@@ -288,13 +293,13 @@ class MainWindow(QMainWindow):
             if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
                 individual = self.ui.tree_widget.selectedItems()[0]
 
-                if individual.path:
-                    self.ui.session_epi_label.setText('EPI-images chosen: ' + individual.path.split('/')[-1])
+                if individual.brain:
+                    self.ui.session_epi_label.setText('EPI-images chosen: ' + individual.brain.path.split('/')[-1])
                 else:
                     self.ui.session_epi_label.setText('No EPI-images chosen')
 
-                if individual.anatomy_path:
-                    self.ui.session_anatomy_label.setText('Anatomy chosen: ' + individual.anatomy_path.split('/')[-1])
+                if individual.anatomy:
+                    self.ui.session_anatomy_label.setText('Anatomy chosen: ' + individual.anatomy.path.split('/')[-1])
                 else:
                     self.ui.session_anatomy_label.setText('No anatomy chosen')
 
@@ -322,6 +327,17 @@ class MainWindow(QMainWindow):
 
             self.ui.tree_widget.selectedItems()[0].update_name(text)
 
+    def description_changed(self):
+        if self.ui.tree_widget.selectedItems():
+            if isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
+                text = self.ui.individual_description.toPlainText()
+            elif isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
+                text = self.ui.session_description.toPlainText()
+            else:
+                text = self.ui.group_description.toPlainText()
+
+            self.ui.tree_widget.selectedItems()[0].description = text
+
     def clear_layout(self, layout):
         while layout.count():
             child = layout.takeAt(0)
@@ -329,7 +345,3 @@ class MainWindow(QMainWindow):
                 child.widget().deleteLater()
             elif child.layout() is not None:
                 self.clear_layout(child.layout())
-
-    def configure_spm(self):
-        """ Callback function, run when the spm menu item is pressed."""
-        SPMPath(self.manager).exec_()
