@@ -4,7 +4,7 @@ from scipy.stats import sem
 import nibabel as nib
 
 from src.brain import Brain
-from src.stimulionset import StimuliOnset
+from src.stimuli import Stimuli
 
 
 class Group(object):
@@ -85,7 +85,7 @@ class Group(object):
         self.anatomy = Brain(path)
 
     def load_stimuli(self, path, tr):
-        self.stimuli = StimuliOnset(path, tr)
+        self.stimuli = Stimuli(path, tr)
 
     def load_mask(self, mask):
         self.mask = mask

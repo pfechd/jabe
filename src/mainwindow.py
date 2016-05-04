@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QMainWindow, QFileDialog, QSpacerItem, QSizePolicy
 from generated_ui.mainwindow import Ui_MainWindow
 from mask import Mask
 from plotwindow import CustomPlot
-from stimulionset import StimuliOnset
+from stimuli import Stimuli
 from tree_items.grouptreeitem import GroupTreeItem
 from tree_items.individualtreeitem import IndividualTreeItem
 from tree_items.sessiontreeitem import SessionTreeItem
@@ -245,7 +245,7 @@ class MainWindow(QMainWindow):
     def load_stimuli(self, path):
         if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
             session = self.ui.tree_widget.selectedItems()[0]
-            session.stimuli = StimuliOnset(path, 0.5)
+            session.stimuli = Stimuli(path, 0.5)
             self.update_gui()
 
     def update_gui(self):

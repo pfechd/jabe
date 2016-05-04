@@ -4,7 +4,7 @@ import numpy as np
 import nibabel as nib
 from mask import Mask
 from src.brain import Brain
-from stimulionset import StimuliOnset
+from stimuli import Stimuli
 from group import Group
 
 
@@ -45,8 +45,8 @@ class Session(Group):
             self.mask = Mask(configuration['mask']['path'])
 
         if 'stimuli' in configuration:
-            self.stimuli = StimuliOnset(configuration['stimuli']['path'],
-                                        configuration['stimuli']['tr'])
+            self.stimuli = Stimuli(configuration['stimuli']['path'],
+                                   configuration['stimuli']['tr'])
 
     def get_configuration(self):
         configuration = {}
