@@ -16,3 +16,7 @@ class Brain:
             self.images = 1
         else:
             self.images = self.sequence.shape[3]
+
+    def get_voxel_size(self):
+        """ Returns the size of one voxel in the image. """
+        return self.brain_file._header.get_zooms()

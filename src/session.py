@@ -75,10 +75,6 @@ class Session(Group):
         return self.brain is not None and \
                super(Session, self).ready_for_calculation(stimuli, mask)
 
-    def get_voxel_size(self):
-        """ Returns the size of one voxel in the image. """
-        return self.brain.brain_file._header.get_zooms()
-
     def settings_changed(self, percentage, global_, mask, stimuli):
         """
         Given the settings the method returns whether the same settings was
