@@ -2,11 +2,15 @@ import nibabel
 
 
 class Brain:
+    """
+    Class used for representing and loading brain images.
+
+    Currently only supports NIfTI1. The data is accessible via the member
+    `data`.
+    """
     def __init__(self, path):
         """
-
-
-        :param path: The file path to the brain.
+        :param path: The file path to the brain image/sequence.
         """
         self.path = path
         self.brain_file = nibabel.load(path)
