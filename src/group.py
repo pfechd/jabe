@@ -193,23 +193,6 @@ class Group(object):
     def remove_session(self, session):
         self.sessions.remove(session)
 
-    def combine_children_responses(self):
-        self.responses = {}
-        children = self.children + self.sessions
-
-        for child in children:
-            # If the child doesn't have the files loaded, skip it.
-            if not child.ready_for_calculation():
-                continue
-            session_response = child.calculate_mean()
-            for intensity, data in session_response.iteritems():
-                # Convert data into 1xN matrix to be able to properly concatenate into the result
-                data = data.reshape(1, data.shape[0])
-                if intensity in self.responses:
-                    self.responses[intensity] = np.concatenate((self.responses[intensity], data))
-                else:
-                    self.responses[intensity] = data
-
     def _aggregate(self, percentage, global_, mask, stimuli):
         self.responses = {}
         min_width = float('inf')
