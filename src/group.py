@@ -15,6 +15,7 @@ class Group(object):
     def __init__(self, configuration=None):
         self.name = ""
         self.description = ""
+        self.plot_settings = {}
 
         self.mask = None
         self.stimuli = None
@@ -178,6 +179,7 @@ class Group(object):
         return {
             'name': self.name,
             'description': self.description,
+            'plot_settings': self.plot_settings,
             'individuals': [individual.get_configuration() for individual in self.children],
             'sessions': [session.get_configuration() for session in self.sessions]
         }
@@ -187,6 +189,8 @@ class Group(object):
             self.name = configuration['name']
         if 'description' in configuration:
             self.description = configuration['description']
+        if 'plot_settings' in configuration:
+            self.plot_settings = configuration['plot_settings']
 
     def add_session(self, session):
         self.sessions.append(session)
@@ -219,3 +223,10 @@ class Group(object):
             self.responses[intensity] = data[:, 0:min_width]
 
         return self.responses
+
+    def get_setting(self, setting):
+        """ Return the specified plot setting. To simplify the code, it is assumed as False if it does not exist """
+        if setting in self.plot_settings:
+            return self.plot_settings[setting]
+        else:
+            return False

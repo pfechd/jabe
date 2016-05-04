@@ -35,6 +35,9 @@ class Session(Group):
         if 'description' in configuration:
             self.description = configuration['description']
 
+        if 'plot_settings' in configuration:
+            self.plot_settings = configuration['plot_settings']
+
         if 'path' in configuration:
             self.load_data(configuration['path'])
 
@@ -68,6 +71,9 @@ class Session(Group):
 
         if self.description:
             configuration['description'] = self.description
+
+        if self.plot_settings:
+            configuration['plot_settings'] = self.plot_settings
 
         return configuration
 
