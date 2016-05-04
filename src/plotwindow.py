@@ -61,6 +61,9 @@ class CustomPlot(QDialog):
         self.ui.toolButton_pan.clicked.connect(self.toolbar.pan)
         self.ui.toolButton_zoom.clicked.connect(self.toolbar.zoom)
 
+        self.ui.peak_label.hide()
+        self.ui.amp_label.hide()
+
         self.setWindowTitle('Plot - ' + session.name)
         self.export_window = None
         self.add_stimuli_types()
@@ -212,11 +215,14 @@ class CustomPlot(QDialog):
             x = np.arange(len(y))
             max_amp = self.session.calculate_amplitude(x, y, 0)
             self.amp = self.ax.axhline(max_amp[1], color=self.generate_random_color())
+            self.ui.amp_label.setText("Amplitude: %.2f" % max_amp[1])
+            self.ui.amp_label.show()
             self.canvas.draw()
         else:
             self.amp.remove()
             self.amp = None
             self.canvas.draw()
+            self.ui.amp_label.hide()
 
     def plot_peak(self):
         """
@@ -226,13 +232,16 @@ class CustomPlot(QDialog):
             y = self.ax.lines[0].get_ydata()
             x = np.arange(len(y))
             max_peak = self.session.calculate_amplitude(x, y, 0)
-            self.peak_time = self.ax.axvline(max_peak[0]*self.session.get_tr(), color=self.generate_random_color())
+            self.peak_time = self.ax.axvline(max_peak[0] * self.session.get_tr(), color=self.generate_random_color())
+            self.ui.peak_label.setText("Peak: " + str(max_peak[0] * self.session.get_tr()))
+            self.ui.peak_label.show()
             self.canvas.draw()
         else:
             if self.peak_time:
                 self.peak_time.remove()
                 self.peak_time = None
                 self.canvas.draw()
+            self.ui.peak_label.hide()
             
     def show_points(self):
         """
@@ -297,7 +306,7 @@ class CustomPlot(QDialog):
                 x = np.arange(len(stimuli_data))*self.session.get_tr()
                 axis, = self.ax.plot(x, stimuli_data, color=self.generate_random_color(), label=stimuli_type)
                 self.regular.append(axis)
-        else:
+        elif self.ui.stimuliBox.currentText() in data_dict:
             data = data_dict[self.ui.stimuliBox.currentText()]
             x = np.arange(len(data))*self.session.get_tr()
             axis, = self.ax.plot(x, data, color=self.generate_random_color(), label=self.ui.stimuliBox.currentText())
