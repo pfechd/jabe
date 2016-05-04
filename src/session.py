@@ -36,7 +36,7 @@ class Session(Group):
             self.description = configuration['description']
 
         if 'path' in configuration:
-            self.load_data(configuration['path'])
+            self.load_sequence(configuration['path'])
 
         if 'anatomy_path' in configuration:
             self.load_anatomy(configuration['anatomy_path'])
@@ -173,6 +173,6 @@ class Session(Group):
         else:
             return response - ref
 
-    def load_data(self, path):
+    def load_sequence(self, path):
         self.brain = Brain(path)
 

@@ -227,7 +227,7 @@ class MainWindow(QMainWindow):
     def load_brain(self, path):
         if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
             session = self.ui.tree_widget.selectedItems()[0]
-            session.load_data(path)
+            session.load_sequence(path)
             self.update_gui()
 
     def load_anatomy(self, path):
