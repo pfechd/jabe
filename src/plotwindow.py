@@ -78,6 +78,9 @@ class CustomPlot(QDialog):
 
         if parent.ui.checkbox_amplitude_session.isChecked():
             self.ui.checkBox_amp.setChecked(True)
+
+        # Move the subplot to make space for the legend
+        self.fig.subplots_adjust(right=0.8)
             
         #if parent.ui.sem_checkbox_2.isChecked():
          #   self.ui.sem_checkbox_2.setChecked(True)
@@ -147,7 +150,7 @@ class CustomPlot(QDialog):
         else:
             self.remove_smoothed_plots()
 
-        plt.legend()
+        plt.legend(bbox_to_anchor=(1.01, 1), loc=2, borderaxespad=0., prop={'size':11})
         self.canvas.draw()
 
     def remove_smoothed_plots(self):
@@ -173,7 +176,7 @@ class CustomPlot(QDialog):
         else:
             self.remove_regular_plots()
 
-        plt.legend()
+        plt.legend(bbox_to_anchor=(1.01, 1), loc=2, borderaxespad=0., prop={'size':11})
         self.canvas.draw()
 
     def plot_sem(self):
