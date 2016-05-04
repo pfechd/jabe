@@ -215,6 +215,9 @@ class MainWindow(QMainWindow):
             print 'Stimuli not chosen'
         self.update_gui()
 
+    def create_stimuli_button_pressed(self):
+        """ Callback function, run when the chreate simuli button is pressed."""
+        
     def load_brain(self, path):
         if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
             session = self.ui.tree_widget.selectedItems()[0]
