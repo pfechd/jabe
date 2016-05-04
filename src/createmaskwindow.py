@@ -63,7 +63,7 @@ class CreateMaskWindow(QDialog):
     def save_mask_window(self):
         file_name = QFileDialog.getSaveFileName(self, "Save file as nii", "", ".nii")
         if len(file_name[0]):
-            #path = file_name[0]+file_name[1]
+            path = file_name[0]+file_name[1]
             #self.parent().save_mask(path)
             #self.parent().load_mask(path)
         else:

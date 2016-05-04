@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>413</width>
-    <height>311</height>
+    <height>335</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -178,9 +178,9 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>260</y>
+     <y>270</y>
      <width>391</width>
-     <height>41</height>
+     <height>51</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -211,7 +211,7 @@
       <property name="maximumSize">
        <size>
         <width>230</width>
-        <height>40</height>
+        <height>16777215</height>
        </size>
       </property>
       <property name="text">
@@ -222,7 +222,7 @@
     <item>
      <widget class="QPushButton" name="pushButton_create">
       <property name="enabled">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
       <property name="minimumSize">
        <size>
