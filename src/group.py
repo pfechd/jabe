@@ -12,7 +12,6 @@ class Group(object):
     """
     def __init__(self, configuration=None):
         self.name = ""
-        self.sessions = []
 
         self.mask = None
         self.stimuli = None
