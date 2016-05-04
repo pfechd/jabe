@@ -302,7 +302,7 @@ class CustomPlot(QDialog):
                 x = np.arange(len(stimuli_data))*self.session.get_tr()
                 axis, = self.ax.plot(x, stimuli_data, color=self.generate_random_color())
                 self.regular.append(axis)
-        else:
+        elif self.ui.stimuliBox.currentText() in data_dict:
             data = data_dict[self.ui.stimuliBox.currentText()]
             x = np.arange(len(data))*self.session.get_tr()
             axis, = self.ax.plot(x, data, color=self.generate_random_color())
