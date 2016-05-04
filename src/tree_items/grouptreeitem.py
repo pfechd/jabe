@@ -74,8 +74,8 @@ class GroupTreeItem(QTreeWidgetItem, Group):
                 sess_item = QTreeWidgetItem([session.name])
                 tree_item.addChild(sess_item)
 
-                if session.path:
-                    epi_path_item = QTreeWidgetItem(['EPI: ' + session.path.split('/')[-1]])
+                if session.brain:
+                    epi_path_item = QTreeWidgetItem(['EPI: ' + session.brain.path.split('/')[-1]])
                 else:
                     epi_path_item = QTreeWidgetItem(['EPI: None'])
 

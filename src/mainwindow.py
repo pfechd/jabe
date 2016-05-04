@@ -287,13 +287,13 @@ class MainWindow(QMainWindow):
             if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
                 individual = self.ui.tree_widget.selectedItems()[0]
 
-                if individual.path:
-                    self.ui.session_epi_label.setText('EPI-images chosen: ' + individual.path.split('/')[-1])
+                if individual.brain:
+                    self.ui.session_epi_label.setText('EPI-images chosen: ' + individual.brain.path.split('/')[-1])
                 else:
                     self.ui.session_epi_label.setText('No EPI-images chosen')
 
-                if individual.anatomy_path:
-                    self.ui.session_anatomy_label.setText('Anatomy chosen: ' + individual.anatomy_path.split('/')[-1])
+                if individual.anatomy:
+                    self.ui.session_anatomy_label.setText('Anatomy chosen: ' + individual.anatomy.path.split('/')[-1])
                 else:
                     self.ui.session_anatomy_label.setText('No anatomy chosen')
 
