@@ -51,4 +51,3 @@ class ExportWindow(QDialog):
             else:
                 np.savetxt(filename[0] + filename[1], data[self.stimuli_type], "%.18f")
         self.close()
-

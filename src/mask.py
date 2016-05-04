@@ -67,7 +67,6 @@ class Mask:
                 ones_amount = ones
                 most_ones[0][1] = i
 
-
         ones_amount = 0
         for i in range(self.data.shape[2]):
             ones = np.count_nonzero(self.data[:,:,i])
