@@ -61,9 +61,6 @@ class CustomPlot(QDialog):
         self.ui.toolButton_pan.clicked.connect(self.toolbar.pan)
         self.ui.toolButton_zoom.clicked.connect(self.toolbar.zoom)
 
-        self.ui.peak_label.hide()
-        self.ui.amp_label.hide()
-
         self.setWindowTitle('Plot - ' + session.name)
         self.export_window = None
         self.add_stimuli_types()
@@ -84,7 +81,7 @@ class CustomPlot(QDialog):
 
         # Move the subplot to make space for the legend
         self.fig.subplots_adjust(right=0.8)
-            
+
         #if parent.ui.sem_checkbox_2.isChecked():
          #   self.ui.sem_checkbox_2.setChecked(True)
 
@@ -209,20 +206,17 @@ class CustomPlot(QDialog):
         """
         Amplitude checkbox callback. Annotate amplitude in graph with a horizontal line
         """
-        
+
         if self.ui.checkBox_amp.isChecked() and (self.regular or self.smooth):
             y = self.ax.lines[0].get_ydata()
             x = np.arange(len(y))
             max_amp = self.session.calculate_amplitude(x, y, 0)
             self.amp = self.ax.axhline(max_amp[1], color=self.generate_random_color())
-            self.ui.amp_label.setText("Amplitude: %.2f" % max_amp[1])
-            self.ui.amp_label.show()
             self.canvas.draw()
         else:
             self.amp.remove()
             self.amp = None
             self.canvas.draw()
-            self.ui.amp_label.hide()
 
     def plot_peak(self):
         """
@@ -232,17 +226,14 @@ class CustomPlot(QDialog):
             y = self.ax.lines[0].get_ydata()
             x = np.arange(len(y))
             max_peak = self.session.calculate_amplitude(x, y, 0)
-            self.peak_time = self.ax.axvline(max_peak[0] * self.session.get_tr(), color=self.generate_random_color())
-            self.ui.peak_label.setText("Peak: " + str(max_peak[0] * self.session.get_tr()))
-            self.ui.peak_label.show()
+            self.peak_time = self.ax.axvline(max_peak[0]*self.session.get_tr(), color=self.generate_random_color())
             self.canvas.draw()
         else:
             if self.peak_time:
                 self.peak_time.remove()
                 self.peak_time = None
                 self.canvas.draw()
-            self.ui.peak_label.hide()
-            
+
     def show_points(self):
         """
         Points checkbox callback. Show data points in graph
@@ -290,26 +281,35 @@ class CustomPlot(QDialog):
             children = self.session.sessions + self.session.children
             for child in children:
                 child_mean = child.calculate_mean()
-                self.plot_data(child_mean)
+                self.plot_data(child_mean, child.name)
 
         else:
             self.remove_regular_plots()
 
         self.canvas.draw()
 
-    def plot_data(self, data_dict):
+    def plot_data(self, data_dict, name = None):
         """
         Plots the data that exists in the dictionary data_dict, depending on stimuli selected
         """
         if self.ui.stimuliBox.currentText() == "All":
             for stimuli_type, stimuli_data in data_dict.iteritems():
                 x = np.arange(len(stimuli_data))*self.session.get_tr()
-                axis, = self.ax.plot(x, stimuli_data, color=self.generate_random_color(), label=stimuli_type)
+                if name:
+                    label = name + "\n" + stimuli_type
+                else:
+                    label = stimuli_type
+                axis, = self.ax.plot(x, stimuli_data, color=self.generate_random_color(), label=label)
                 self.regular.append(axis)
-        elif self.ui.stimuliBox.currentText() in data_dict:
-            data = data_dict[self.ui.stimuliBox.currentText()]
+        else:
+            type = self.ui.stimuliBox.currentText()
+            data = data_dict[type]
             x = np.arange(len(data))*self.session.get_tr()
-            axis, = self.ax.plot(x, data, color=self.generate_random_color(), label=self.ui.stimuliBox.currentText())
+            if name:
+                label = name + "\n" + type
+            else:
+                label = type
+            axis, = self.ax.plot(x, data, color=self.generate_random_color(), label=label)
             self.regular.append(axis)
 
     def plot_regular(self):
