@@ -11,4 +11,8 @@ class Brain:
         self.path = path
         self.brain_file = nibabel.load(path)
         self.sequence = self.brain_file.get_data()
-        self.images = self.sequence.shape[3]
+
+        if len(self.sequence.shape) < 4:
+            self.images = 1
+        else:
+            self.images = self.sequence.shape[3]
