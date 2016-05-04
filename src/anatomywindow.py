@@ -43,12 +43,12 @@ class AnatomyWindow(QDialog):
         self.show()
 
     def convert_coord(self, coord):
-        conversion_matrix = np.linalg.inv(self.session.anatomy_file._affine).dot(self.session.brain_file._affine)
+        conversion_matrix = np.linalg.inv(self.session.anatomy.brain_file._affine).dot(self.session.brain.brain_file._affine)
         return apply_affine(conversion_matrix, coord)
 
     def show_brain(self):
         most_ones = np.around(self.convert_coord(self.session.mask.get_index_of_roi())).astype(int)
-        new_mask = np.zeros(self.session.anatomic_image.shape)
+        new_mask = np.zeros(self.session.anatomy.brain_file.shape)
 
         shape_size = 20
 
@@ -58,11 +58,11 @@ class AnatomyWindow(QDialog):
                     new_mask[x, y ,z] = 1
 
         masked_array = np.ma.masked_where(new_mask == 0, new_mask)
-        self.img1.imshow(self.session.anatomic_image[:,:,most_ones[0][2]], cmap=mpl.cm.gray)
+        self.img1.imshow(self.session.anatomy.sequence[:,:,most_ones[0][2]], cmap=mpl.cm.gray)
         self.img1.imshow(masked_array[:,:,most_ones[0][2]], cmap=mpl.cm.spring, alpha=0.8)
-        self.img2.imshow(self.session.anatomic_image[:,most_ones[0][1],:], cmap=mpl.cm.gray)
+        self.img2.imshow(self.session.anatomy.sequence[:,most_ones[0][1],:], cmap=mpl.cm.gray)
         self.img2.imshow(masked_array[:,most_ones[0][1],:], cmap=mpl.cm.spring, alpha=0.8)
-        self.img3.imshow(self.session.anatomic_image[most_ones[0][0],:,:], cmap=mpl.cm.gray)
+        self.img3.imshow(self.session.anatomy.sequence[most_ones[0][0],:,:], cmap=mpl.cm.gray)
         self.img3.imshow(masked_array[most_ones[0][0],:,:], cmap=mpl.cm.spring, alpha=0.8)
 
         self.img1.xaxis.set_visible(False)
