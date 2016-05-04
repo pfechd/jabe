@@ -65,22 +65,6 @@ class Session(Group):
 
         return configuration
 
-    def calculate_std(self):
-        """ Calculate the standard deviation of the response """
-        responses_std = {}
-
-        for stimuli_type, stimuli_data in self.responses.iteritems():
-            response_std = np.zeros(stimuli_data.shape[1])
-
-            for i in range(stimuli_data.shape[1]):
-                rm1 = np.nonzero(stimuli_data[:, i])
-                if rm1[0].any():
-                    response_std[i] = np.std(stimuli_data[rm1[0], i], ddof=1)
-
-            responses_std[stimuli_type] = response_std
-
-        return responses_std
-
     def ready_for_calculation(self, stimuli=None, mask=None):
         return self.brain is not None and \
                super(Session, self).ready_for_calculation(stimuli, mask)
