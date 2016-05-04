@@ -226,7 +226,7 @@ class MainWindow(QMainWindow):
     def create_stimuli_button_pressed(self):
         """ Callback function, run when the chreate simuli button is pressed."""
         
-        self.stimuli_window = StimuliWindow()
+        self.stimuli_window = StimuliWindow(self)
         
     def load_brain(self, path):
         if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
