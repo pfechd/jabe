@@ -12,14 +12,14 @@ class StimuliWindow(QDialog):
     Window for creating a stimuli by manually putting in values in a table.
     """
     
-    def __init__(self):
+    def __init__(self, parent):
         """
         Create stimuli window.
 
         :param parent: Parent window object.
         """
         
-        super(StimuliWindow, self).__init__()
+        super(StimuliWindow, self).__init__(parent)
         self.ui = Ui_Stimuli_window()
         self.ui.setupUi(self)
         self.ui.cancel.clicked.connect(self.close_window)
@@ -34,31 +34,46 @@ class StimuliWindow(QDialog):
     def close_window(self):
         self.close()
 
+    def create_stimuli_array(self):
+        """
+        Tries to create an array of the values in the table. 
+
+        :return: If successful, an array representing the table. If not, an empty array.
+        """
+        
+        stimuli = []
+        all_rows = self.ui.stimuli_table.rowCount()
+        if all_rows == 0:
+            QMessageBox.warning(self, "Warning", "Your table contains no rows. Please add rows and values.")
+            return []
+        else:
+            for row in xrange(0, all_rows):
+                # Goes through all columns in all rows of the table, converts them to
+                # float and adds them to the stimuli array if they are numbers
+                onset = []
+                time = self.ui.stimuli_table.item(row, 0).text()
+                value = self.ui.stimuli_table.item(row,1).text()
+                if self.is_number(time) and self.is_number(value):
+                    stimuli.append([float(time), float(value)])
+                else:
+                    QMessageBox.warning(self, "Warning", "You have entered one or more invalid values. Please enter only numbers.")
+                    return []
+                
+        return stimuli
+        
     def save_stimuli(self):
         """ Saves the values from the table to a .mat file"""
 
-        stimuli = []
-        valid_table = True
-        all_rows = self.ui.stimuli_table.rowCount()
-        for row in xrange(0, all_rows):
-            # Goes through all columns in all rows of the table, converts them to
-            # float and adds them to the stimuli array if they are numbers
-            onset = []
-            time = self.ui.stimuli_table.item(row, 0).text()
-            value = self.ui.stimuli_table.item(row,1).text()
-            if self.is_number(time) and self.is_number(value):
-                stimuli.append([float(time), float(value)])
-            else:
-                valid_table = False
-                QMessageBox.warning(self, "Warning", "You have entered one or more invalid values. Please enter only numbers")
+        stimuli = self.create_stimuli_array()
+            if stimuli:
+                # If the table is valid, eg is not empty, save it and load the created stimuli to the main window
+                filename = QFileDialog.getSaveFileName(self, "Save stimuli", "", ".mat")
+                if filename[0]:
+                    self.close()
+                    stimuli = np.array(stimuli)
+                    sio.savemat(filename[0], {'visual_stimuli':stimuli})
+                    self.parent().load_stimuli(filename[0] + filename[1])
                 
-        if valid_table:
-            filename = QFileDialog.getSaveFileName(self, "Save stimuli", "", ".mat")
-            if filename[0]:
-                self.close()
-                stimuli = np.array(stimuli)
-                sio.savemat(filename[0] + filename[1], {'visual_stimuli':stimuli})
-        
     def is_number(self, s):
         """
         Checks if a value is a number.
@@ -72,12 +87,3 @@ class StimuliWindow(QDialog):
             return True
         except ValueError:
             return False
-        
-if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    s = StimuliWindow()
-    sys.exit(app.exec_())
-     
-          
-     
-
