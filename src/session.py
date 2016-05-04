@@ -177,7 +177,7 @@ class Session(Group):
         """
         if global_:
             time_indexes = list(range(start, end))
-            ref = np.mean(self.sequence[:, :, :, time_indexes], (0, 1, 2))     # Mean of spatial dimensions
+            ref = np.mean(self.brain.sequence[:, :, :, time_indexes], (0, 1, 2))     # Mean of spatial dimensions
         else:
             ref = np.ones(end - start) * response[0][0]
 
