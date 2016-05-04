@@ -68,8 +68,8 @@ class IndividualTreeItem(QTreeWidgetItem, Group):
         top_tree_items = []
         for session in self.sessions:
             tree_item = QTreeWidgetItem([session.name])
-            if session.path:
-                epi_path_item = QTreeWidgetItem(['EPI: ' + session.path.split('/')[-1]])
+            if session.brain:
+                epi_path_item = QTreeWidgetItem(['EPI: ' + session.brain.path.split('/')[-1]])
             else:
                 epi_path_item = QTreeWidgetItem(['EPI: None'])
 
