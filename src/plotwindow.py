@@ -296,20 +296,16 @@ class CustomPlot(QDialog):
             for stimuli_type, stimuli_data in data_dict.iteritems():
                 x = np.arange(len(stimuli_data))*self.session.get_tr()
                 if name:
-                    label = name + "\n" + stimuli_type
-                else:
-                    label = stimuli_type
-                axis, = self.ax.plot(x, stimuli_data, color=self.generate_random_color(), label=label)
+                    stimuli_type = name + "\n" + stimuli_type
+                axis, = self.ax.plot(x, stimuli_data, color=self.generate_random_color(), label=stimuli_type)
                 self.regular.append(axis)
         else:
             type = self.ui.stimuliBox.currentText()
             data = data_dict[type]
             x = np.arange(len(data))*self.session.get_tr()
             if name:
-                label = name + "\n" + type
-            else:
-                label = type
-            axis, = self.ax.plot(x, data, color=self.generate_random_color(), label=label)
+                type = name + "\n" + type
+            axis, = self.ax.plot(x, data, color=self.generate_random_color(), label=type)
             self.regular.append(axis)
 
     def plot_regular(self):
