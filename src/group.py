@@ -14,6 +14,7 @@ class Group(object):
     """
     def __init__(self, configuration=None):
         self.name = ""
+        self.description = ""
 
         self.mask = None
         self.stimuli = None
@@ -176,6 +177,7 @@ class Group(object):
     def get_configuration(self):
         return {
             'name': self.name,
+            'description': self.description,
             'individuals': [individual.get_configuration() for individual in self.children],
             'sessions': [session.get_configuration() for session in self.sessions]
         }
@@ -183,6 +185,8 @@ class Group(object):
     def load_configuration(self, configuration):
         if 'name' in configuration:
             self.name = configuration['name']
+        if 'description' in configuration:
+            self.description = configuration['description']
 
     def add_session(self, session):
         self.sessions.append(session)

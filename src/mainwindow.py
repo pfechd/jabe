@@ -51,6 +51,9 @@ class MainWindow(QMainWindow):
         self.ui.session_name.returnPressed.connect(self.ui.session_name.clearFocus)
         self.ui.group_name.returnPressed.connect(self.ui.group_name.clearFocus)
         self.ui.individual_name.returnPressed.connect(self.ui.individual_name.clearFocus)
+        self.ui.session_description.textChanged.connect(self.description_changed)
+        self.ui.group_description.textChanged.connect(self.description_changed)
+        self.ui.individual_description.textChanged.connect(self.description_changed)
         self.ui.stackedWidget.setCurrentIndex(1)
         self.show()
 
@@ -256,6 +259,7 @@ class MainWindow(QMainWindow):
             if isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
                 self.ui.stackedWidget.setCurrentIndex(2)
                 self.ui.individual_name.setText(self.ui.tree_widget.selectedItems()[0].text(0))
+                self.ui.individual_description.setText(self.ui.tree_widget.selectedItems()[0].description)
 
                 # Add overview tree in individual panel
                 self.ui.sessions_overview_tree.clear()
@@ -269,9 +273,11 @@ class MainWindow(QMainWindow):
             elif isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
                 self.ui.stackedWidget.setCurrentIndex(3)
                 self.ui.session_name.setText(self.ui.tree_widget.selectedItems()[0].text(0))
+                self.ui.session_description.setText(self.ui.tree_widget.selectedItems()[0].description)
             else:
                 self.ui.stackedWidget.setCurrentIndex(0)
                 self.ui.group_name.setText(self.ui.tree_widget.selectedItems()[0].text(0))
+                self.ui.group_description.setText(self.ui.tree_widget.selectedItems()[0].description)
 
                 # Add overview tree in group panel
                 self.ui.individual_overview_tree.clear()
@@ -320,6 +326,17 @@ class MainWindow(QMainWindow):
                 text = self.ui.group_name.text()
 
             self.ui.tree_widget.selectedItems()[0].update_name(text)
+
+    def description_changed(self):
+        if self.ui.tree_widget.selectedItems():
+            if isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
+                text = self.ui.individual_description.toPlainText()
+            elif isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
+                text = self.ui.session_description.toPlainText()
+            else:
+                text = self.ui.group_description.toPlainText()
+
+            self.ui.tree_widget.selectedItems()[0].description = text
 
     def clear_layout(self, layout):
         while layout.count():
