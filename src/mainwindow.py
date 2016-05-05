@@ -198,7 +198,6 @@ class MainWindow(QMainWindow):
         """ Callback function, run when the calculate button is pressed."""
         CustomPlot(self, self.ui.tree_widget.selectedItems()[0])
 
-
     def brain_button_pressed(self):
         """ Callback function, run when the choose brain button is pressed."""
         file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii *.nii.gz)")
