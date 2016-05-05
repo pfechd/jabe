@@ -26,7 +26,7 @@ class StimuliWindow(QDialog):
         self.ui.add_row.clicked.connect(self.add_row)
         self.ui.remove_row.clicked.connect(self.remove_row)
         self.ui.create_stimuli.clicked.connect(self.save_stimuli)
-        self.show()
+        self.exec_()
 
     def add_row(self):
         rows = self.ui.stimuli_table.rowCount()
@@ -56,8 +56,15 @@ class StimuliWindow(QDialog):
             for row in xrange(0, all_rows):
                 # Goes through all columns in all rows of the table, converts them to
                 # float and adds them to the stimuli array if they are numbers
-                time = self.ui.stimuli_table.item(row, 0).text()
-                value = self.ui.stimuli_table.item(row,1).text()
+                value = ''
+                time = ''
+
+                if self.ui.stimuli_table.item(row, 0):
+                    time = self.ui.stimuli_table.item(row, 0).text()
+
+                if self.ui.stimuli_table.item(row, 1):
+                    value = self.ui.stimuli_table.item(row,1).text()
+
                 if self.is_number(time) and self.is_number(value):
                     stimuli.append([float(time), float(value)])
                 else:
@@ -68,16 +75,21 @@ class StimuliWindow(QDialog):
         
     def save_stimuli(self):
         """ Saves the values from the table to a .mat file."""
+        self.ui.stimuli_table.setDisabled(True)
+        self.ui.stimuli_table.setDisabled(False)
 
         stimuli = self.create_stimuli_array()
         if stimuli:
             # If the table is valid, eg is not empty, save it and load the created stimuli to the main window
             filename = QFileDialog.getSaveFileName(self, "Save stimuli", "", ".mat")
             if filename[0]:
-                self.close()
-                stimuli = np.array(stimuli)
-                sio.savemat(filename[0], {'visual_stimuli':stimuli})
-                self.parent().load_stimuli(filename[0] + filename[1])
+                if filename[0].split('.')[0].split('/')[-1]:
+                    self.close()
+                    stimuli = np.array(stimuli)
+                    sio.savemat(filename[0].split('.')[0], {'visual_stimuli':stimuli})
+                    self.parent().load_stimuli(filename[0].split('.')[0] + filename[1])
+                else:
+                    QMessageBox.warning(self, "Warning", "Invalid filename.")
                 
     def is_number(self, s):
         """
