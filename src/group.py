@@ -5,6 +5,7 @@ import nibabel as nib
 
 from src.brain import Brain
 from src.stimuli import Stimuli
+from src.mask import Mask
 
 
 class Group(object):
@@ -82,13 +83,25 @@ class Group(object):
         return max_amp, spline(x)[max_amp]
 
     def load_anatomy(self, path):
-        self.anatomy = Brain(path)
+        temp_anatomy = Brain(path)
+        if len(temp_anatomy.sequence.shape) != 3:
+            return "The data has " + str(len(temp_anatomy.sequence.shape)) + " dimensions instead of 3"
+        else:
+            self.anatomy = temp_anatomy
+            return None
 
     def load_stimuli(self, path, tr):
         self.stimuli = Stimuli(path, tr)
 
-    def load_mask(self, mask):
-        self.mask = mask
+    def load_mask(self, path):
+        temp_mask = Mask(path)
+        if len(temp_mask.data.shape) != 3:
+            return "The data has " + str(len(temp_mask.data.shape)) + " dimensions instead of 3"
+        elif self.brain and self.brain.sequence.shape[0:3] != temp_mask.data.shape:
+            return "The mask is not the same size as the EPI sequence"
+        else:
+            self.mask = temp_mask
+            return None
 
     def add_child(self, child):
         self.children.append(child)

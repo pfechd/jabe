@@ -2,7 +2,7 @@ import json
 import os
 
 from PyQt5 import QtWidgets, QtGui
-from PyQt5.QtWidgets import QMainWindow, QFileDialog, QSpacerItem, QSizePolicy
+from PyQt5.QtWidgets import QMainWindow, QFileDialog, QSpacerItem, QSizePolicy, QMessageBox
 
 from generated_ui.mainwindow import Ui_MainWindow
 from mask import Mask
@@ -40,6 +40,7 @@ class MainWindow(QMainWindow):
         self.ui.add_session_stimuli_btn.clicked.connect(self.stimuli_button_pressed)
         self.ui.create_session_stimuli_btn.clicked.connect(self.create_stimuli_button_pressed)
         self.ui.add_group_menu_btn.triggered.connect(self.add_group_pressed)
+        self.ui.add_group_btn.clicked.connect(self.add_group_pressed)
         self.ui.exit_menu_btn.triggered.connect(self.exit_button_pressed)
         self.ui.add_individual_btn.clicked.connect(self.add_item_clicked)
         self.ui.add_session_btn.clicked.connect(self.add_item_clicked)
@@ -233,19 +234,25 @@ class MainWindow(QMainWindow):
     def load_brain(self, path):
         if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
             session = self.ui.tree_widget.selectedItems()[0]
-            session.load_sequence(path)
+            error = session.load_sequence(path)
+            if error:
+                QMessageBox.warning(self, "File error", error)
             self.update_gui()
 
     def load_anatomy(self, path):
         if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
             session = self.ui.tree_widget.selectedItems()[0]
-            session.load_anatomy(path)
+            error = session.load_anatomy(path)
+            if error:
+                QMessageBox.warning(self, "File error", error)
             self.update_gui()
 
     def load_mask(self, path):
         if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
             session = self.ui.tree_widget.selectedItems()[0]
-            session.mask = Mask(path)
+            error = session.load_mask(path)
+            if error:
+                QMessageBox.warning(self, "File error", error)
             self.update_gui()
 
     def load_stimuli(self, path):
