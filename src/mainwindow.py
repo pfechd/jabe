@@ -99,7 +99,7 @@ class MainWindow(QMainWindow):
         config_filename = 'configuration.json'
 
         if hasattr(sys, 'frozen'):
-            dir_path = os.path.dirname(os.path.realpath(__file__))
+            dir_path = os.path.dirname(os.path.realpath(sys.argv[0]))
         else:
             dir_path = os.getcwd()
 
@@ -124,7 +124,7 @@ class MainWindow(QMainWindow):
         config_filename = 'configuration.json'
 
         if hasattr(sys, 'frozen'):
-            dir_path = os.path.dirname(os.path.realpath(__file__))
+            dir_path = os.path.dirname(os.path.realpath(sys.argv[0]))
         else:
             dir_path = os.getcwd()
 
