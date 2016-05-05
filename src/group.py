@@ -185,7 +185,7 @@ class Group(object):
                                                  self.global_normalization,
                                                  self.mask, self.stimuli)
         if settings_changed or not self.sem_responses:
-            self.sem_responses = self.calculate_mean()
+            self.sem_responses = self.calculate_sem()
         return self.sem_responses
 
     def calculate_sem(self):
