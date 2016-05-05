@@ -40,6 +40,7 @@ class MainWindow(QMainWindow):
         self.ui.add_session_stimuli_btn.clicked.connect(self.stimuli_button_pressed)
         self.ui.create_session_stimuli_btn.clicked.connect(self.create_stimuli_button_pressed)
         self.ui.add_group_menu_btn.triggered.connect(self.add_group_pressed)
+        self.ui.add_group_btn.clicked.connect(self.add_group_pressed)
         self.ui.exit_menu_btn.triggered.connect(self.exit_button_pressed)
         self.ui.add_individual_btn.clicked.connect(self.add_item_clicked)
         self.ui.add_session_btn.clicked.connect(self.add_item_clicked)
