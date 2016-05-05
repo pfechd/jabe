@@ -2,7 +2,7 @@ import json
 import os
 
 from PyQt5 import QtWidgets, QtGui
-from PyQt5.QtWidgets import QMainWindow, QFileDialog, QSpacerItem, QSizePolicy
+from PyQt5.QtWidgets import QMainWindow, QFileDialog, QSpacerItem, QSizePolicy, QMessageBox
 
 from generated_ui.mainwindow import Ui_MainWindow
 from mask import Mask
@@ -233,19 +233,25 @@ class MainWindow(QMainWindow):
     def load_brain(self, path):
         if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
             session = self.ui.tree_widget.selectedItems()[0]
-            session.load_sequence(path)
+            error = session.load_sequence(path)
+            if error:
+                QMessageBox.warning(self, "File error", error)
             self.update_gui()
 
     def load_anatomy(self, path):
         if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
             session = self.ui.tree_widget.selectedItems()[0]
-            session.load_anatomy(path)
+            error = session.load_anatomy(path)
+            if error:
+                QMessageBox.warning(self, "File error", error)
             self.update_gui()
 
     def load_mask(self, path):
         if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
             session = self.ui.tree_widget.selectedItems()[0]
-            session.mask = Mask(path)
+            error = session.load_mask(path)
+            if error:
+                QMessageBox.warning(self, "File error", error)
             self.update_gui()
 
     def load_stimuli(self, path):
