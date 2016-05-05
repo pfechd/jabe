@@ -26,6 +26,8 @@ class StimuliWindow(QDialog):
         self.ui.add_row.clicked.connect(self.add_row)
         self.ui.remove_row.clicked.connect(self.remove_row)
         self.ui.create_stimuli.clicked.connect(self.save_stimuli)
+
+        # Makes this window block the main window
         self.exec_()
 
     def add_row(self):
