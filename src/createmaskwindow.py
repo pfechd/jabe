@@ -7,10 +7,15 @@ from mask import Mask
 
 
 class CreateMaskWindow(QDialog):
-    """
-        Class used to create a mask window, for creating a mask
-    """
+    """ Class used to create a mask window, for creating a mask """
+
     def __init__(self, parent, brain_file):
+        """
+            Create mask window
+
+            :param parent: Parent window object
+            :param brain_file: The EPI-image
+        """
         super(CreateMaskWindow, self).__init__(parent)
 
         self.ui = Ui_CreateMask()
@@ -33,13 +38,12 @@ class CreateMaskWindow(QDialog):
         self.close()
 
     def add_shape_types(self):
-        """
-        Add all shape types that exists to a combobox
-        """
+        """ Add all shape types that exists to a combobox """
         self.ui.comboBox_shape.addItem("Box")
         self.ui.comboBox_shape.addItem("Sphere")
 
     def is_number(self, s):
+        """ Check if the input value is a number """
         if len(s):
             try:
                 float(s)
@@ -49,15 +53,17 @@ class CreateMaskWindow(QDialog):
         return False
 
     def update_buttons(self):
-        # if the contents > 0
+        """ Check if all textfields aren't empty and enables/disables the create mask button """
         if len(self.ui.lineEdit_radius_width.text()) and len(self.ui.lineEdit_x.text())\
                 and len(self.ui.lineEdit_y.text()) and len(self.ui.lineEdit_z.text()):
             self.ui.pushButton_create.setEnabled(True)
         else:
             self.ui.pushButton_create.setEnabled(False)
 
-    # If the coordinate and radius/width are numbers, then choose a path and create the mask
     def save_mask_window(self):
+        """ Creates and saves the mask """
+
+        # If the coordinate and radius/width are numbers, then choose a path and create the mask
         if self.is_number(self.ui.lineEdit_radius_width.text()) and self.is_number(self.ui.lineEdit_x.text())\
                 and self.is_number(self.ui.lineEdit_y.text()) and self.is_number(self.ui.lineEdit_z.text()):
 
