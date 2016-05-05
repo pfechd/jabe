@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import scipy.io as sio
 from PyQt5.QtWidgets import QFileDialog, QDialog, QMessageBox
@@ -9,7 +10,9 @@ from src.generated_ui.create_stimuli import Ui_Stimuli_window
 
 class StimuliWindow(QDialog):
     """
-    Window for creating a stimuli by manually putting in onset times and stimule values in a table.
+    Window for creating a stimuli by manually putting in onset times
+    and stimule values in a table.
+
     """
     
     def __init__(self, parent):
@@ -45,8 +48,10 @@ class StimuliWindow(QDialog):
         """
         Tries to create an array of the values in the table. 
 
-        :return: If successful, an array representing the table. If not, an empty array.
-        :return example: array = [[12.3, 60], [13.7, 90], [15.2, 40]]
+        :return: If successful, an array representing the table. If
+        not, an empty array.  
+        :return example: array = [[12.3, 60],[13.7, 90], [15.2, 40]]
+
         """
         
         stimuli = []
@@ -84,15 +89,17 @@ class StimuliWindow(QDialog):
 
         stimuli = self.create_stimuli_array()
         if stimuli:
-            # If the table is valid, eg is not empty, save it and load the created stimuli to the main window.
-            filename = QFileDialog.getSaveFileName(self, "Save stimuli", "", ".mat")
-            if filename[0]:
-                if filename[0].split('.')[0].split('/')[-1]:
+            # If the table is valid, eg is not empty, save it and load
+            # the created stimuli to the main window.
+            file_path = QFileDialog.getSaveFileName(self, "Save stimuli", "", ".mat")
+            if file_path[0]:
+                filename = file_path[0].split(os.path.sep)[-1].split('.')[0]
+                if filename:
                     # Checks if the filename is valid
                     self.close()
                     stimuli = np.array(stimuli)
-                    sio.savemat(filename[0].split('.')[0], {'visual_stimuli':stimuli})
-                    self.parent().load_stimuli(filename[0].split('.')[0] + filename[1])
+                    sio.savemat(filename, {'visual_stimuli':stimuli})
+                    self.parent().load_stimuli(filename +file_path[1])
                 else:
                     QMessageBox.warning(self, "Warning", "Invalid filename.")
                 
