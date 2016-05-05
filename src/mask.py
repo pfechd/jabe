@@ -1,6 +1,8 @@
 import nibabel as nib
 import numpy as np
 
+from session import Session
+
 
 class Mask:
     """ Representation of the mask data
@@ -10,14 +12,14 @@ class Mask:
     accessed through the member called data.
     """
 
-    def __init__(self, path=None, coordinates=None, size=None, voxel_size=None, shape=None, shape_size=None):
+    def __init__(self, path=None, shape=None, coordinate=None, radius_width=None, brainfile=None):
         """ Load a mask from a path or create a mask from the specified data
         :param path: path for the NIfTI file
-        :param coordinates: coordinates for the center point of the ROI
+        :param shape: the shape of the ROI, cube or sphere
+        :param coordinate: coordinates for the center point of the ROI
+        :param radius_width: the size of the ROI
         :param size: the size of the mask
         :param voxel_size: the size in mm for each voxel
-        :param shape: the shape of the ROI, cube or sphere
-        :param shape_size: the size of the ROI
         """
         # if we get a path then we load that path, otherwise we make a new mask with the specified data
         if path is not None:
@@ -25,18 +27,21 @@ class Mask:
             mask_file = nib.load(path)
             self.data = mask_file.get_data()
         else:
+            voxel_size = Session.get_voxel_size()
+            size = brainfile.get_data().shape[0:2]
+
             # create empty matrix of correct size
             self.data = np.zeros(size)
 
             # Convert coordinates and shape_size to mm
-            shape_size /= voxel_size
-            coordinates = (coordinates[0] / voxel_size, coordinates[1] / voxel_size, coordinates[2] / voxel_size)
+            radius_width /= voxel_size
+            coordinate = (coordinate[0] / voxel_size, coordinate[1] / voxel_size, coordinate[2] / voxel_size)
 
             # set ones in a volume of a cube around the specified coordinate
             if shape == "cube":
-                for z in range(coordinates[2] - shape_size / 2, coordinates[2] + shape_size / 2 + 1):
-                    for y in range(coordinates[1] - shape_size / 2, coordinates[1] + shape_size / 2 + 1):
-                        for x in range(coordinates[0] - shape_size / 2, coordinates[0] + shape_size / 2 + 1):
+                for z in range(coordinate[2] - radius_width / 2, coordinate[2] + radius_width / 2 + 1):
+                    for y in range(coordinate[1] - radius_width / 2, coordinate[1] + radius_width / 2 + 1):
+                        for x in range(coordinate[0] - radius_width / 2, coordinate[0] + radius_width / 2 + 1):
                             self.data[z, y, x] = 1
 
             # set ones in every coordinate within the distance shape_size around he coordinate, making it a sphere
@@ -44,8 +49,8 @@ class Mask:
                 for z in range(0, size[2]):
                     for y in range(0, size[1]):
                         for x in range(0, size[0]):
-                            if (coordinates[2] - z) ** 2 + (coordinates[1] - y) ** 2 + (
-                                        coordinates[0] - x) ** 2 <= shape_size ** 2:
+                            if (coordinate[2] - z) ** 2 + (coordinate[1] - y) ** 2 + (
+                                        coordinate[0] - x) ** 2 <= radius_width ** 2:
                                 self.data[z, y, x] = 1
 
     def get_configuration(self):
