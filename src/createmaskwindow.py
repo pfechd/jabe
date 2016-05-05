@@ -56,18 +56,22 @@ class CreateMaskWindow(QDialog):
         else:
             self.ui.pushButton_create.setEnabled(False)
 
-    # Remember: to check coordinate and radius_width, so it doesn't contain strange data,
-    # eg. bigger radius than size-dimension
+    # If the coordinate and radius/width are numbers, then choose a path and create the mask
     def save_mask_window(self):
         if self.is_number(self.ui.lineEdit_radius_width.text()) and self.is_number(self.ui.lineEdit_x.text())\
                 and self.is_number(self.ui.lineEdit_y.text()) and self.is_number(self.ui.lineEdit_z.text()):
+
+            # TODO: if the coordinates and radius/width are valid (not bigger than size dimensions) do everything below,
+            # else show a QMessageBox.warning that describes the problem
+
             file_name = QFileDialog.getSaveFileName(self, "Save file as nii", "", ".nii")
-            if len(file_name[0]):
-                path = file_name[0]+file_name[1]
-                coordinate = [self.ui.lineEdit_x.text(), self.ui.lineEdit_y.text(), self.ui.lineEdit_z.text()]
-                Mask(path, self.ui.comboBox_shape.currentText(), coordinate, self.ui.lineEdit_radius_width, self.brain_file)
-                self.parent().load_mask(path)
-            else:
-                print 'Mask name not chosen'
+            path = file_name[0]+file_name[1]
+            shape = self.ui.comboBox_shape.currentText()
+            coordinate = [float(self.ui.lineEdit_x.text()), float(self.ui.lineEdit_y.text()), float(self.ui.lineEdit_z.text())]
+            radius_width = float(self.ui.lineEdit_radius_width.text())
+            radius_width = (radius_width, radius_width, radius_width)
+            Mask(path, shape, coordinate, radius_width, self.brain_file)
+            self.close()
+            self.parent().load_mask(path)
         else:
-            QMessageBox.warning(self, "Warning", "You have entered one or more invalid values. Please enter only numbers")
+            QMessageBox.warning(self, "Warning", "You have entered one or more invalid values. Please enter only numbers.")
