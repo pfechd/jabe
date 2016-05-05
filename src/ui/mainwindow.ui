@@ -425,7 +425,7 @@
                      <item>
                       <widget class="QCheckBox" name="checkbox_amplitude_group">
                        <property name="enabled">
-                        <bool>false</bool>
+                        <bool>true</bool>
                        </property>
                        <property name="text">
                         <string>Amplitude</string>
@@ -435,7 +435,7 @@
                      <item>
                       <widget class="QCheckBox" name="checkbox_peak_group">
                        <property name="enabled">
-                        <bool>false</bool>
+                        <bool>true</bool>
                        </property>
                        <property name="text">
                         <string>Peak time</string>
@@ -445,7 +445,7 @@
                      <item>
                       <widget class="QCheckBox" name="checkbox_sem_group">
                        <property name="enabled">
-                        <bool>false</bool>
+                        <bool>true</bool>
                        </property>
                        <property name="text">
                         <string>SEM</string>
@@ -455,7 +455,7 @@
                      <item>
                       <widget class="QCheckBox" name="checkbox_fwhm_group">
                        <property name="enabled">
-                        <bool>false</bool>
+                        <bool>true</bool>
                        </property>
                        <property name="text">
                         <string>FWHM</string>
@@ -499,7 +499,7 @@
                         <x>0</x>
                         <y>0</y>
                         <width>148</width>
-                        <height>294</height>
+                        <height>290</height>
                        </rect>
                       </property>
                       <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -901,7 +901,7 @@
                      <item>
                       <widget class="QCheckBox" name="checkbox_amplitude_individual">
                        <property name="enabled">
-                        <bool>false</bool>
+                        <bool>true</bool>
                        </property>
                        <property name="text">
                         <string>Amplitude</string>
@@ -911,7 +911,7 @@
                      <item>
                       <widget class="QCheckBox" name="checkbox_peak_individual">
                        <property name="enabled">
-                        <bool>false</bool>
+                        <bool>true</bool>
                        </property>
                        <property name="text">
                         <string>Peak time</string>
@@ -921,7 +921,7 @@
                      <item>
                       <widget class="QCheckBox" name="checkbox_sem_individual">
                        <property name="enabled">
-                        <bool>false</bool>
+                        <bool>true</bool>
                        </property>
                        <property name="text">
                         <string>SEM</string>
@@ -931,7 +931,7 @@
                      <item>
                       <widget class="QCheckBox" name="checkbox_fwhm_individual">
                        <property name="enabled">
-                        <bool>false</bool>
+                        <bool>true</bool>
                        </property>
                        <property name="text">
                         <string>FWHM</string>
@@ -975,7 +975,7 @@
                         <x>0</x>
                         <y>0</y>
                         <width>148</width>
-                        <height>294</height>
+                        <height>290</height>
                        </rect>
                       </property>
                       <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -1416,7 +1416,7 @@
      <x>0</x>
      <y>0</y>
      <width>1100</width>
-     <height>20</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

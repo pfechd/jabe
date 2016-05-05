@@ -51,21 +51,31 @@ class MainWindow(QMainWindow):
         self.ui.session_name.returnPressed.connect(self.ui.session_name.clearFocus)
         self.ui.group_name.returnPressed.connect(self.ui.group_name.clearFocus)
         self.ui.individual_name.returnPressed.connect(self.ui.individual_name.clearFocus)
+
         self.ui.session_description.textChanged.connect(self.description_changed)
         self.ui.group_description.textChanged.connect(self.description_changed)
         self.ui.individual_description.textChanged.connect(self.description_changed)
+
         self.ui.global_normalization_individual_btn.clicked.connect(self.plot_settings_changed)
         self.ui.percent_individual_btn.clicked.connect(self.plot_settings_changed)
         self.ui.checkbox_amplitude_individual.clicked.connect(self.plot_settings_changed)
         self.ui.checkbox_peak_individual.clicked.connect(self.plot_settings_changed)
         self.ui.checkbox_sem_individual.clicked.connect(self.plot_settings_changed)
         self.ui.checkbox_fwhm_individual.clicked.connect(self.plot_settings_changed)
+
         self.ui.global_normalization_session_btn.clicked.connect(self.plot_settings_changed)
         self.ui.percent_session_btn.clicked.connect(self.plot_settings_changed)
         self.ui.checkbox_amplitude_session.clicked.connect(self.plot_settings_changed)
         self.ui.checkbox_peak_session.clicked.connect(self.plot_settings_changed)
         self.ui.checkbox_sem_session.clicked.connect(self.plot_settings_changed)
         self.ui.checkbox_fwhm_session.clicked.connect(self.plot_settings_changed)
+
+        self.ui.global_normalization_group_btn.clicked.connect(self.plot_settings_changed)
+        self.ui.percent_group_btn.clicked.connect(self.plot_settings_changed)
+        self.ui.checkbox_amplitude_group.clicked.connect(self.plot_settings_changed)
+        self.ui.checkbox_peak_group.clicked.connect(self.plot_settings_changed)
+        self.ui.checkbox_sem_group.clicked.connect(self.plot_settings_changed)
+        self.ui.checkbox_fwhm_group.clicked.connect(self.plot_settings_changed)
         self.ui.stackedWidget.setCurrentIndex(1)
         self.show()
 
@@ -304,16 +314,24 @@ class MainWindow(QMainWindow):
                 self.ui.checkbox_fwhm_session.setChecked(session.get_setting('fwhm'))
             else:
                 self.ui.stackedWidget.setCurrentIndex(0)
-                self.ui.group_name.setText(self.ui.tree_widget.selectedItems()[0].text(0))
-                self.ui.group_description.setText(self.ui.tree_widget.selectedItems()[0].description)
+                group = self.ui.tree_widget.selectedItems()[0]
+                self.ui.group_name.setText(group.text(0))
+                self.ui.group_description.setText(group.description)
+
+                self.ui.global_normalization_group_btn.setChecked(group.get_setting('global'))
+                self.ui.percent_group_btn.setChecked(group.get_setting('percent'))
+                self.ui.checkbox_amplitude_group.setChecked(group.get_setting('amplitude'))
+                self.ui.checkbox_peak_group.setChecked(group.get_setting('peak'))
+                self.ui.checkbox_sem_group.setChecked(group.get_setting('sem'))
+                self.ui.checkbox_fwhm_group.setChecked(group.get_setting('fwhm'))
 
                 # Add overview tree in group panel
                 self.ui.individual_overview_tree.clear()
-                self.ui.individual_overview_tree.addTopLevelItems(self.ui.tree_widget.selectedItems()[0].get_overview_tree())
+                self.ui.individual_overview_tree.addTopLevelItems(group.get_overview_tree())
 
                 # Add checkboxes for individuals in group panel
                 self.clear_layout(self.ui.individuals_plot)
-                self.ui.tree_widget.selectedItems()[0].add_individuals_boxes(self.ui.individuals_plot)
+                group.add_individuals_boxes(self.ui.individuals_plot)
                 self.ui.individuals_plot.insertSpacerItem(-1, QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
     def update_text(self):
@@ -385,7 +403,13 @@ class MainWindow(QMainWindow):
                 session.plot_settings['sem'] = self.ui.checkbox_sem_session.isChecked()
                 session.plot_settings['fwhm'] = self.ui.checkbox_fwhm_session.isChecked()
             else:
-                text = self.ui.group_description.toPlainText()
+                group = self.ui.tree_widget.selectedItems()[0]
+                group.plot_settings['global'] = self.ui.global_normalization_group_btn.isChecked()
+                group.plot_settings['percent'] = self.ui.percent_group_btn.isChecked()
+                group.plot_settings['amplitude'] = self.ui.checkbox_amplitude_group.isChecked()
+                group.plot_settings['peak'] = self.ui.checkbox_peak_group.isChecked()
+                group.plot_settings['sem'] = self.ui.checkbox_sem_group.isChecked()
+                group.plot_settings['fwhm'] = self.ui.checkbox_fwhm_group.isChecked()
 
     def clear_layout(self, layout):
         while layout.count():
