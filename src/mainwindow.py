@@ -189,7 +189,6 @@ class MainWindow(QMainWindow):
             group.global_normalization = self.ui.global_normalization_group_btn.isChecked()
             CustomPlot(self, group)
 
-
     def brain_button_pressed(self):
         """ Callback function, run when the choose brain button is pressed."""
         file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii*)")
