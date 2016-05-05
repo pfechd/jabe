@@ -13,11 +13,11 @@ class Mask:
 
     def __init__(self, path=None, shape=None, coordinate=None, radius_width=None, brain_file=None):
         """ Load a mask from a path or create a mask from the specified data
-        :param path: path for the NIfTI file
-        :param shape: the shape of the ROI, cube or sphere
-        :param coordinate: coordinates for the center point of the ROI
-        :param radius_width: the size of the ROI
-        :param brain_file: the brain file
+        :param path: Path for the NIfTI file
+        :param shape: The shape of the ROI, cube or sphere
+        :param coordinate: Coordinates for the center point of the ROI
+        :param radius_width: The size of the ROI
+        :param brain_file: The EPI-image
         """
         # if we get a path then we load that path, otherwise we make a new mask with the specified data
         if radius_width == None:
