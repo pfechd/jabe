@@ -95,7 +95,6 @@ class Group(object):
 
     def load_mask(self, path):
         temp_mask = Mask(path)
-        print temp_mask.data.shape
         if len(temp_mask.data.shape) != 3:
             return "The data has " + str(len(temp_mask.data.shape)) + " dimensions instead of 3"
         elif self.brain and self.brain.sequence.shape[0:3] != temp_mask.data.shape:
