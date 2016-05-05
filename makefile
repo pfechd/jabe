@@ -5,6 +5,11 @@ RC_FILES := $(addprefix src/generated_ui/,$(notdir $(QRC_FILES:.qrc=.py)))
 
 all: $(PY_FILES) $(RC_FILES)
 
+dist: dist/main
+
+dist/main: all
+	pyinstaller --onefile --windowed main.py
+
 src/generated_ui/%.py: src/ui/%.ui
 	pyuic5 $< -o $@
 
@@ -14,3 +19,4 @@ src/generated_ui/%.py: src/ui/%.qrc
 clean:
 	rm -f $(PY_FILES)
 	rm -f $(RC_FILES)
+	rm -rf dist/ build/
