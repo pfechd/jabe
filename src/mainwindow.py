@@ -224,7 +224,7 @@ class MainWindow(QMainWindow):
         self.update_gui()
 
     def create_stimuli_button_pressed(self):
-        """ Callback function, run when the chreate simuli button is pressed."""
+        """ Callback function, run when the create simuli button is pressed."""
         
         self.stimuli_window = StimuliWindow(self)
         
