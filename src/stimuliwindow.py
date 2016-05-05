@@ -75,15 +75,18 @@ class StimuliWindow(QDialog):
         
     def save_stimuli(self):
         """ Saves the values from the table to a .mat file."""
+
+        # Refreshes the table
         self.ui.stimuli_table.setDisabled(True)
         self.ui.stimuli_table.setDisabled(False)
 
         stimuli = self.create_stimuli_array()
         if stimuli:
-            # If the table is valid, eg is not empty, save it and load the created stimuli to the main window
+            # If the table is valid, eg is not empty, save it and load the created stimuli to the main window.
             filename = QFileDialog.getSaveFileName(self, "Save stimuli", "", ".mat")
             if filename[0]:
                 if filename[0].split('.')[0].split('/')[-1]:
+                    # Checks if the filename is valid
                     self.close()
                     stimuli = np.array(stimuli)
                     sio.savemat(filename[0].split('.')[0], {'visual_stimuli':stimuli})
