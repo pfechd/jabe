@@ -4,7 +4,7 @@ from scipy.stats import sem
 import nibabel as nib
 
 from src.brain import Brain
-from src.stimulionset import StimuliOnset
+from src.stimuli import Stimuli
 
 
 class Group(object):
@@ -14,6 +14,7 @@ class Group(object):
     """
     def __init__(self, configuration=None):
         self.name = ""
+        self.description = ""
 
         self.mask = None
         self.stimuli = None
@@ -84,7 +85,7 @@ class Group(object):
         self.anatomy = Brain(path)
 
     def load_stimuli(self, path, tr):
-        self.stimuli = StimuliOnset(path, tr)
+        self.stimuli = Stimuli(path, tr)
 
     def load_mask(self, mask):
         self.mask = mask
@@ -176,6 +177,7 @@ class Group(object):
     def get_configuration(self):
         return {
             'name': self.name,
+            'description': self.description,
             'individuals': [individual.get_configuration() for individual in self.children],
             'sessions': [session.get_configuration() for session in self.sessions]
         }
@@ -183,6 +185,8 @@ class Group(object):
     def load_configuration(self, configuration):
         if 'name' in configuration:
             self.name = configuration['name']
+        if 'description' in configuration:
+            self.description = configuration['description']
 
     def add_session(self, session):
         self.sessions.append(session)

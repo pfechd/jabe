@@ -495,8 +495,8 @@
                        <rect>
                         <x>0</x>
                         <y>0</y>
-                        <width>146</width>
-                        <height>264</height>
+                        <width>148</width>
+                        <height>28</height>
                        </rect>
                       </property>
                       <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -971,8 +971,8 @@
                        <rect>
                         <x>0</x>
                         <y>0</y>
-                        <width>146</width>
-                        <height>264</height>
+                        <width>148</width>
+                        <height>28</height>
                        </rect>
                       </property>
                       <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -1257,12 +1257,15 @@
                     <property name="text">
                      <string>No anatomy chosen</string>
                     </property>
+                    <property name="wordWrap">
+                     <bool>true</bool>
+                    </property>
                    </widget>
                   </item>
                   <item row="0" column="1">
                    <widget class="QPushButton" name="add_session_anatomy_btn">
                     <property name="enabled">
-                     <bool>false</bool>
+                     <bool>true</bool>
                     </property>
                     <property name="text">
                      <string>Choose anatomy</string>
@@ -1413,7 +1416,7 @@
      <x>0</x>
      <y>0</y>
      <width>1100</width>
-     <height>19</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

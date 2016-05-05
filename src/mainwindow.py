@@ -9,6 +9,7 @@ from mask import Mask
 from plotwindow import CustomPlot
 from stimuliwindow import StimuliWindow
 from stimulionset import StimuliOnset
+from stimuli import Stimuli
 from tree_items.grouptreeitem import GroupTreeItem
 from tree_items.individualtreeitem import IndividualTreeItem
 from tree_items.sessiontreeitem import SessionTreeItem
@@ -53,6 +54,9 @@ class MainWindow(QMainWindow):
         self.ui.session_name.returnPressed.connect(self.ui.session_name.clearFocus)
         self.ui.group_name.returnPressed.connect(self.ui.group_name.clearFocus)
         self.ui.individual_name.returnPressed.connect(self.ui.individual_name.clearFocus)
+        self.ui.session_description.textChanged.connect(self.description_changed)
+        self.ui.group_description.textChanged.connect(self.description_changed)
+        self.ui.individual_description.textChanged.connect(self.description_changed)
         self.ui.stackedWidget.setCurrentIndex(1)
         self.show()
 
@@ -189,7 +193,7 @@ class MainWindow(QMainWindow):
 
     def brain_button_pressed(self):
         """ Callback function, run when the choose brain button is pressed."""
-        file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii *.nii.gz)")
+        file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii*)")
         if file_name[0]:
             self.load_brain(file_name[0])
         else:
@@ -198,7 +202,7 @@ class MainWindow(QMainWindow):
 
     def anatomy_button_pressed(self):
         """ Callback function, run when the choose anatomy button is pressed."""
-        file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii *.nii.gz)")
+        file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii*)")
         if file_name[0]:
             self.load_anatomy(file_name[0])
         else:
@@ -207,7 +211,7 @@ class MainWindow(QMainWindow):
 
     def mask_button_pressed(self):
         """ Callback function, run when the choose mask button is pressed."""
-        file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii *.nii.gz)")
+        file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii*)")
         if file_name[0]:
             self.load_mask(file_name[0])
         else:
@@ -231,7 +235,7 @@ class MainWindow(QMainWindow):
     def load_brain(self, path):
         if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
             session = self.ui.tree_widget.selectedItems()[0]
-            session.load_data(path)
+            session.load_sequence(path)
             self.update_gui()
 
     def load_anatomy(self, path):
@@ -249,7 +253,7 @@ class MainWindow(QMainWindow):
     def load_stimuli(self, path):
         if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
             session = self.ui.tree_widget.selectedItems()[0]
-            session.stimuli = StimuliOnset(path, 0.5)
+            session.stimuli = Stimuli(path, 0.5)
             self.update_gui()
 
     def update_gui(self):
@@ -263,6 +267,7 @@ class MainWindow(QMainWindow):
             if isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
                 self.ui.stackedWidget.setCurrentIndex(2)
                 self.ui.individual_name.setText(self.ui.tree_widget.selectedItems()[0].text(0))
+                self.ui.individual_description.setText(self.ui.tree_widget.selectedItems()[0].description)
 
                 # Add overview tree in individual panel
                 self.ui.sessions_overview_tree.clear()
@@ -276,9 +281,11 @@ class MainWindow(QMainWindow):
             elif isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
                 self.ui.stackedWidget.setCurrentIndex(3)
                 self.ui.session_name.setText(self.ui.tree_widget.selectedItems()[0].text(0))
+                self.ui.session_description.setText(self.ui.tree_widget.selectedItems()[0].description)
             else:
                 self.ui.stackedWidget.setCurrentIndex(0)
                 self.ui.group_name.setText(self.ui.tree_widget.selectedItems()[0].text(0))
+                self.ui.group_description.setText(self.ui.tree_widget.selectedItems()[0].description)
 
                 # Add overview tree in group panel
                 self.ui.individual_overview_tree.clear()
@@ -327,6 +334,17 @@ class MainWindow(QMainWindow):
                 text = self.ui.group_name.text()
 
             self.ui.tree_widget.selectedItems()[0].update_name(text)
+
+    def description_changed(self):
+        if self.ui.tree_widget.selectedItems():
+            if isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
+                text = self.ui.individual_description.toPlainText()
+            elif isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
+                text = self.ui.session_description.toPlainText()
+            else:
+                text = self.ui.group_description.toPlainText()
+
+            self.ui.tree_widget.selectedItems()[0].description = text
 
     def clear_layout(self, layout):
         while layout.count():

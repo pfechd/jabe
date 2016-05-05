@@ -1,7 +1,9 @@
 import numpy as np
 import random
+from nibabel.affines import apply_affine
 
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 from PyQt5.QtWidgets import QDialog
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
@@ -10,6 +12,7 @@ from scipy.interpolate import UnivariateSpline
 from exportwindow import ExportWindow
 from src.generated_ui.custom_plot import Ui_Dialog
 from session import Session
+from anatomywindow import AnatomyWindow
 
 
 class CustomPlot(QDialog):
@@ -19,6 +22,12 @@ class CustomPlot(QDialog):
     Data is read from session object
     """
 
+    _colors = ['#0000FF', '#FF0000', '#00FF00', '#00002C', '#FF1AB9',
+               '#FFD300', '#005800', '#8484FF', '#9E4F46', '#00FFC1',
+               '#008495', '#00007B', '#95D34F', '#F69EDC', '#D312FF',
+               '#7B1A6A', '#F61261', '#FFC184', '#232309', '#8DA77B',
+               '#F68409', '#847200', '#72F6FF', '#9EC1FF', '#72617B']
+
     def __init__(self, parent, session):
         """
         Create plot window
@@ -26,18 +35,27 @@ class CustomPlot(QDialog):
         :param parent: Parent window object
         :param session: Session object to plot data from
         """
+
         super(CustomPlot, self).__init__(parent)
         self.amp = None
         self.fwhm = None
         self.regular = []
         self.smooth = []
         self.sem = None
+        self.scroll = 3
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
+        self.color_index = 0
 
         self.session = session
         self.fig = plt.figure()
+
         self.ax = self.fig.add_subplot(111)
+        self.ui.toolButton_anatomy.hide()
+
+        if isinstance(self.session, Session) and session.anatomy is not None:
+            self.ui.toolButton_anatomy.show()
+
         self.canvas = FigureCanvas(self.fig)
         self.toolbar = NavigationToolbar(self.canvas, self, coordinates=True)
         self.toolbar.hide()
@@ -60,6 +78,7 @@ class CustomPlot(QDialog):
         self.ui.toolButton_export.clicked.connect(self.tool_export)
         self.ui.toolButton_pan.clicked.connect(self.toolbar.pan)
         self.ui.toolButton_zoom.clicked.connect(self.toolbar.zoom)
+        self.ui.toolButton_anatomy.clicked.connect(self.tool_anatomy)
 
         self.ui.peak_label.hide()
         self.ui.amp_label.hide()
@@ -86,6 +105,9 @@ class CustomPlot(QDialog):
          #   self.ui.sem_checkbox_2.setChecked(True)
 
         self.show()
+
+    def tool_anatomy(self):
+         self.anatomy_window = AnatomyWindow(self, self.session)
 
     def tool_export(self):
         """
@@ -139,12 +161,12 @@ class CustomPlot(QDialog):
                 for stimuli_type,stimuli_data in before_smooth.iteritems():
                     x = np.arange(stimuli_data.shape[0])*self.session.get_tr()
                     curr = UnivariateSpline(x, stimuli_data, s=self.ui.spinBox.value())
-                    axis, = self.ax.plot(x,curr(x), color=self.generate_random_color())
+                    axis, = self.ax.plot(x, curr(x), color=self.get_color())
                     self.smooth.append(axis)
             else:
                 x = np.arange(before_smooth[self.ui.stimuliBox.currentText()].shape[0])*self.session.get_tr()
                 curr = UnivariateSpline(x, before_smooth[self.ui.stimuliBox.currentText()], s=self.ui.spinBox.value())
-                axis, = self.ax.plot(x,curr(x), color=self.generate_random_color())
+                axis, = self.ax.plot(x, curr(x), color=self.get_color())
                 self.smooth.append(axis)
 
             self.canvas.draw()
@@ -210,7 +232,7 @@ class CustomPlot(QDialog):
             y = self.ax.lines[0].get_ydata()
             x = np.arange(len(y))
             max_amp = self.session.calculate_amplitude(x, y, 0)
-            self.amp = self.ax.axhline(max_amp[1], color=self.generate_random_color())
+            self.amp = self.ax.axhline(max_amp[1], color=self.get_color())
             self.ui.amp_label.setText("Amplitude: %.2f" % max_amp[1])
             self.ui.amp_label.show()
             self.canvas.draw()
@@ -228,7 +250,7 @@ class CustomPlot(QDialog):
             y = self.ax.lines[0].get_ydata()
             x = np.arange(len(y))
             max_peak = self.session.calculate_amplitude(x, y, 0)
-            self.peak_time = self.ax.axvline(max_peak[0] * self.session.get_tr(), color=self.generate_random_color())
+            self.peak_time = self.ax.axvline(max_peak[0] * self.session.get_tr(), color=self.get_color())
             self.ui.peak_label.setText("Peak: " + str(max_peak[0] * self.session.get_tr()))
             self.ui.peak_label.show()
             self.canvas.draw()
@@ -253,18 +275,17 @@ class CustomPlot(QDialog):
                     axis.set_marker('')
                 self.canvas.draw()
 
-    @staticmethod
-    def generate_random_color():
+    def get_color(self):
         """
         Generate random color for graph
 
         :return: RGB hex string
         """
 
-        def r():
-            return random.randint(0, 255)
+        color = CustomPlot._colors[self.color_index]
+        self.color_index = (self.color_index + 1) % len(CustomPlot._colors)
 
-        return '#%02X%02X%02X' % (r(), r(), r())
+        return color
 
     def add_stimuli_types(self):
         """
@@ -300,12 +321,12 @@ class CustomPlot(QDialog):
         if self.ui.stimuliBox.currentText() == "All":
             for stimuli_type, stimuli_data in data_dict.iteritems():
                 x = np.arange(len(stimuli_data))*self.session.get_tr()
-                axis, = self.ax.plot(x, stimuli_data, color=self.generate_random_color())
+                axis, = self.ax.plot(x, stimuli_data, color=self.get_color())
                 self.regular.append(axis)
         elif self.ui.stimuliBox.currentText() in data_dict:
             data = data_dict[self.ui.stimuliBox.currentText()]
             x = np.arange(len(data))*self.session.get_tr()
-            axis, = self.ax.plot(x, data, color=self.generate_random_color())
+            axis, = self.ax.plot(x, data, color=self.get_color())
             self.regular.append(axis)
 
     def plot_regular(self):

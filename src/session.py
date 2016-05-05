@@ -4,7 +4,7 @@ import numpy as np
 import nibabel as nib
 from mask import Mask
 from src.brain import Brain
-from stimulionset import StimuliOnset
+from stimuli import Stimuli
 from group import Group
 
 
@@ -32,8 +32,11 @@ class Session(Group):
     def load_configuration(self, configuration):
         self.name = configuration['name']
 
+        if 'description' in configuration:
+            self.description = configuration['description']
+
         if 'path' in configuration:
-            self.load_data(configuration['path'])
+            self.load_sequence(configuration['path'])
 
         if 'anatomy_path' in configuration:
             self.load_anatomy(configuration['anatomy_path'])
@@ -42,8 +45,8 @@ class Session(Group):
             self.mask = Mask(configuration['mask']['path'])
 
         if 'stimuli' in configuration:
-            self.stimuli = StimuliOnset(configuration['stimuli']['path'],
-                                        configuration['stimuli']['tr'])
+            self.stimuli = Stimuli(configuration['stimuli']['path'],
+                                   configuration['stimuli']['tr'])
 
     def get_configuration(self):
         configuration = {}
@@ -63,31 +66,14 @@ class Session(Group):
         if self.name:
             configuration['name'] = self.name
 
+        if self.description:
+            configuration['description'] = self.description
+
         return configuration
-
-    def calculate_std(self):
-        """ Calculate the standard deviation of the response """
-        responses_std = {}
-
-        for stimuli_type, stimuli_data in self.responses.iteritems():
-            response_std = np.zeros(stimuli_data.shape[1])
-
-            for i in range(stimuli_data.shape[1]):
-                rm1 = np.nonzero(stimuli_data[:, i])
-                if rm1[0].any():
-                    response_std[i] = np.std(stimuli_data[rm1[0], i], ddof=1)
-
-            responses_std[stimuli_type] = response_std
-
-        return responses_std
 
     def ready_for_calculation(self, stimuli=None, mask=None):
         return self.brain is not None and \
                super(Session, self).ready_for_calculation(stimuli, mask)
-
-    def get_voxel_size(self):
-        """ Returns the size of one voxel in the image. """
-        return self.brain.brain_file._header.get_zooms()
 
     def settings_changed(self, percentage, global_, mask, stimuli):
         """
@@ -187,6 +173,6 @@ class Session(Group):
         else:
             return response - ref
 
-    def load_data(self, path):
+    def load_sequence(self, path):
         self.brain = Brain(path)
 
