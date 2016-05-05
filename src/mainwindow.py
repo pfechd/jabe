@@ -2,7 +2,7 @@ import json
 import os
 
 from PyQt5 import QtWidgets, QtGui
-from PyQt5.QtWidgets import QMainWindow, QFileDialog, QSpacerItem, QSizePolicy
+from PyQt5.QtWidgets import QMainWindow, QFileDialog, QSpacerItem, QSizePolicy, QMessageBox
 
 from generated_ui.mainwindow import Ui_MainWindow
 from group import Group
@@ -220,7 +220,10 @@ class MainWindow(QMainWindow):
 
     def create_mask_button_pressed(self):
         """ Callback function, run when the create mask button is pressed."""
-        CreateMaskWindow(self, self.ui.tree_widget.selectedItems()[0].brain_file)
+        if self.ui.tree_widget.selectedItems()[0].brain_file:
+            CreateMaskWindow(self, self.ui.tree_widget.selectedItems()[0].brain_file)
+        else:
+            QMessageBox.warning(self, "Warning", "You have not chosen an EPI-image. Please choose an EPI-image.")
         self.update_gui()
 
     def stimuli_button_pressed(self):
