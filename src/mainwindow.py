@@ -196,24 +196,7 @@ class MainWindow(QMainWindow):
 
     def calculate_button_pressed(self):
         """ Callback function, run when the calculate button is pressed."""
-
-        if self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
-            session = self.ui.tree_widget.selectedItems()[0]
-            session.percent_normalization = self.ui.percent_session_btn.isChecked()
-            session.global_normalization = self.ui.global_normalization_session_btn.isChecked()
-            CustomPlot(self, session)
-
-        if self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
-            individual = self.ui.tree_widget.selectedItems()[0]
-            individual.percent_normalization = self.ui.percent_individual_btn.isChecked()
-            individual.global_normalization = self.ui.global_normalization_individual_btn.isChecked()
-            CustomPlot(self, individual)
-
-        if self.ui.tree_widget.selectedItems() and isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
-            group = self.ui.tree_widget.selectedItems()[0]
-            group.percent_normalization = self.ui.percent_group_btn.isChecked()
-            group.global_normalization = self.ui.global_normalization_group_btn.isChecked()
-            CustomPlot(self, group)
+        CustomPlot(self, self.ui.tree_widget.selectedItems()[0])
 
 
     def brain_button_pressed(self):

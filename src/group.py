@@ -25,10 +25,6 @@ class Group(object):
         # TODO: Remove this
         self.sessions = []
 
-        # Normalization settings
-        self.global_normalization = False
-        self.percent_normalization = False
-
         # Result of calculations are kept here
         self.responses = {}
 
@@ -143,7 +139,7 @@ class Group(object):
                  is the vector containing the mean value for the given time
                  frame.
         """
-        responses = self.aggregate(self.percent_normalization, self.global_normalization)
+        responses = self.aggregate(self.plot_settings['percent'], self.plot_settings['global'])
         mean_responses = {}
 
         for stimuli_type, stimuli_data in responses.iteritems():
@@ -160,7 +156,7 @@ class Group(object):
 
     def calculate_sem(self):
         """ Calculate the standard error of the mean (SEM) of the response """
-        responses = self.aggregate(self.percent_normalization, self.global_normalization)
+        responses = self.aggregate(self.plot_settings['percent'], self.plot_settings['global'])
         responses_sem = {}
 
         for stimuli_type, stimuli_data in responses.iteritems():

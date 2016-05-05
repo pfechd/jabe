@@ -73,17 +73,17 @@ class CustomPlot(QDialog):
         if children and len(children) > 1:
             self.ui.several_responses_btn.setEnabled(True)
 
-        if parent.ui.checkbox_peak_session.isChecked():
+        if self.session.get_setting('peak'):
             self.ui.checkBox_peak.setChecked(True)
 
-        if parent.ui.checkbox_fwhm_session.isChecked():
+        if self.session.get_setting('fwhm'):
             self.ui.checkBox_fwhm.setChecked(True)
 
-        if parent.ui.checkbox_amplitude_session.isChecked():
+        if self.session.get_setting('amplitude'):
             self.ui.checkBox_amp.setChecked(True)
             
-        #if parent.ui.sem_checkbox_2.isChecked():
-         #   self.ui.sem_checkbox_2.setChecked(True)
+        if self.session.get_setting('sem'):
+            self.ui.checkBox_sem.setChecked(True)
 
         self.show()
 
