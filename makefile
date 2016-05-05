@@ -9,6 +9,7 @@ dist: dist/main
 
 dist/main: all
 	pyinstaller --onefile --windowed main.py
+	python scripts/fix_retina.py
 
 src/generated_ui/%.py: src/ui/%.ui
 	pyuic5 $< -o $@
