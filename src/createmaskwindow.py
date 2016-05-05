@@ -10,7 +10,7 @@ class CreateMaskWindow(QDialog):
     """
         Class used to create a mask window, for creating a mask
     """
-    def __init__(self, parent):
+    def __init__(self, parent, brain_file):
         super(CreateMaskWindow, self).__init__(parent)
 
         self.ui = Ui_CreateMask()
@@ -18,6 +18,7 @@ class CreateMaskWindow(QDialog):
         self.setWindowTitle('Create mask')
         self.add_shape_types()
         self.mask_name = None
+        self.brain_file = brain_file
 
         self.ui.lineEdit_x.textChanged.connect(self.update_buttons)
         self.ui.lineEdit_y.textChanged.connect(self.update_buttons)
@@ -55,6 +56,8 @@ class CreateMaskWindow(QDialog):
         else:
             self.ui.pushButton_create.setEnabled(False)
 
+    # Remember: to check coordinate and radius_width, so it doesn't contain strange data,
+    # eg. bigger radius than size-dimension
     def save_mask_window(self):
         if self.is_number(self.ui.lineEdit_radius_width.text()) and self.is_number(self.ui.lineEdit_x.text())\
                 and self.is_number(self.ui.lineEdit_y.text()) and self.is_number(self.ui.lineEdit_z.text()):

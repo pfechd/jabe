@@ -220,7 +220,7 @@ class MainWindow(QMainWindow):
 
     def create_mask_button_pressed(self):
         """ Callback function, run when the create mask button is pressed."""
-        CreateMaskWindow(self)
+        CreateMaskWindow(self, self.ui.tree_widget.selectedItems()[0].brain_file)
         self.update_gui()
 
     def stimuli_button_pressed(self):
