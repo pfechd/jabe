@@ -1,9 +1,6 @@
 import numpy as np
-import random
-from nibabel.affines import apply_affine
 
 import matplotlib.pyplot as plt
-import matplotlib as mpl
 from PyQt5.QtWidgets import QDialog
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
