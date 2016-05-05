@@ -115,6 +115,9 @@ class MainWindow(QMainWindow):
                 config_path = os.path.join(dir_path, config_filename)
 
         elif _platform == "win32":
+            if hasattr(sys, 'frozen'):
+                dir_path = os.path.dirname(os.path.realpath(__file__))
+
             config_path = os.path.join(dir_path, config_filename)
 
         with open(config_path, 'w') as f:
@@ -140,6 +143,9 @@ class MainWindow(QMainWindow):
                 config_path = os.path.join(dir_path, config_filename)
 
         elif _platform == "win32":
+            if hasattr(sys, 'frozen'):
+                dir_path = os.path.dirname(os.path.realpath(__file__))
+
             config_path = os.path.join(dir_path, config_filename)
 
         if os.path.exists(config_path):
