@@ -83,7 +83,10 @@ class Group(object):
         return max_amp, spline(x)[max_amp]
 
     def load_anatomy(self, path):
-        temp_anatomy = Brain(path)
+        try:
+            temp_anatomy = Mask(path)
+        except IOError:
+            return path + " does not exist"
         if len(temp_anatomy.sequence.shape) != 3:
             return "The data has " + str(len(temp_anatomy.sequence.shape)) + " dimensions instead of 3"
         else:
@@ -94,7 +97,10 @@ class Group(object):
         self.stimuli = Stimuli(path, tr)
 
     def load_mask(self, path):
-        temp_mask = Mask(path)
+        try:
+            temp_mask = Mask(path)
+        except IOError:
+            return path + " does not exist"
         if len(temp_mask.data.shape) != 3:
             return "The data has " + str(len(temp_mask.data.shape)) + " dimensions instead of 3"
         elif self.brain and self.brain.sequence.shape[0:3] != temp_mask.data.shape:
