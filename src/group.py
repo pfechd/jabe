@@ -31,6 +31,8 @@ class Group(object):
 
         # Result of calculations are kept here
         self.responses = {}
+        self.mean_responses = {}
+        self.sem_responses = {}
 
         if configuration:
             self.load_configuration(configuration)
@@ -147,6 +149,14 @@ class Group(object):
         else:
             return self._aggregate(percentage, global_, mask, stimuli)
 
+    def get_mean(self):
+        settings_changed = self.settings_changed(self.percent_normalization,
+                                                 self.global_normalization,
+                                                 self.mask, self.stimuli)
+        if settings_changed or not self.mean_responses:
+            self.mean_responses = self.calculate_mean()
+        return self.mean_responses
+
     def calculate_mean(self):
         """
         Calculate the mean of every response grouped by stimuli type
@@ -169,6 +179,14 @@ class Group(object):
 
             mean_responses[stimuli_type] = response_mean
         return mean_responses
+
+    def get_sem(self):
+        settings_changed = self.settings_changed(self.percent_normalization,
+                                                 self.global_normalization,
+                                                 self.mask, self.stimuli)
+        if settings_changed or not self.sem_responses:
+            self.sem_responses = self.calculate_mean()
+        return self.sem_responses
 
     def calculate_sem(self):
         """ Calculate the standard error of the mean (SEM) of the response """
