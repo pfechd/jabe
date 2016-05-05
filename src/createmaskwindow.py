@@ -3,7 +3,7 @@ import random
 
 from PyQt5.QtWidgets import QDialog, QFileDialog, QMessageBox
 from src.generated_ui.create_mask import Ui_CreateMask
-
+from mask import Mask
 
 
 class CreateMaskWindow(QDialog):
@@ -61,8 +61,9 @@ class CreateMaskWindow(QDialog):
             file_name = QFileDialog.getSaveFileName(self, "Save file as nii", "", ".nii")
             if len(file_name[0]):
                 path = file_name[0]+file_name[1]
-                #self.parent().save_mask(path)
-                #self.parent().load_mask(path)
+                coordinate = [self.ui.lineEdit_x.text(), self.ui.lineEdit_y.text(), self.ui.lineEdit_z.text()]
+                Mask(path, self.ui.comboBox_shape.currentText(), coordinate, self.ui.lineEdit_radius_width, self.brain_file)
+                self.parent().load_mask(path)
             else:
                 print 'Mask name not chosen'
         else:
