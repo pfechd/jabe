@@ -57,21 +57,27 @@ class MainWindow(QMainWindow):
         self.ui.individual_description.textChanged.connect(self.description_changed)
 
         self.ui.global_normalization_individual_btn.clicked.connect(self.plot_settings_changed)
+        self.ui.local_normalization_individual_btn.clicked.connect(self.plot_settings_changed)
         self.ui.percent_individual_btn.clicked.connect(self.plot_settings_changed)
+        self.ui.subtract_individual_btn.clicked.connect(self.plot_settings_changed)
         self.ui.checkbox_amplitude_individual.clicked.connect(self.plot_settings_changed)
         self.ui.checkbox_peak_individual.clicked.connect(self.plot_settings_changed)
         self.ui.checkbox_sem_individual.clicked.connect(self.plot_settings_changed)
         self.ui.checkbox_fwhm_individual.clicked.connect(self.plot_settings_changed)
 
         self.ui.global_normalization_session_btn.clicked.connect(self.plot_settings_changed)
+        self.ui.local_normalization_session_btn.clicked.connect(self.plot_settings_changed)
         self.ui.percent_session_btn.clicked.connect(self.plot_settings_changed)
+        self.ui.subtract_session_btn.clicked.connect(self.plot_settings_changed)
         self.ui.checkbox_amplitude_session.clicked.connect(self.plot_settings_changed)
         self.ui.checkbox_peak_session.clicked.connect(self.plot_settings_changed)
         self.ui.checkbox_sem_session.clicked.connect(self.plot_settings_changed)
         self.ui.checkbox_fwhm_session.clicked.connect(self.plot_settings_changed)
 
         self.ui.global_normalization_group_btn.clicked.connect(self.plot_settings_changed)
+        self.ui.local_normalization_group_btn.clicked.connect(self.plot_settings_changed)
         self.ui.percent_group_btn.clicked.connect(self.plot_settings_changed)
+        self.ui.subtract_group_btn.clicked.connect(self.plot_settings_changed)
         self.ui.checkbox_amplitude_group.clicked.connect(self.plot_settings_changed)
         self.ui.checkbox_peak_group.clicked.connect(self.plot_settings_changed)
         self.ui.checkbox_sem_group.clicked.connect(self.plot_settings_changed)
@@ -284,8 +290,14 @@ class MainWindow(QMainWindow):
                 self.ui.individual_name.setText(individual.text(0))
                 self.ui.individual_description.setText(individual.description)
 
-                self.ui.global_normalization_individual_btn.setChecked(individual.get_setting('global'))
-                self.ui.percent_individual_btn.setChecked(individual.get_setting('percent'))
+                if individual.get_setting('global'):
+                    self.ui.global_normalization_individual_btn.setChecked(True)
+                else:
+                    self.ui.local_normalization_individual_btn.setChecked(True)
+                if individual.get_setting('percent'):
+                    self.ui.percent_individual_btn.setChecked(True)
+                else:
+                    self.ui.subtract_individual_btn.setChecked(True)
                 self.ui.checkbox_amplitude_individual.setChecked(individual.get_setting('amplitude'))
                 self.ui.checkbox_peak_individual.setChecked(individual.get_setting('peak'))
                 self.ui.checkbox_sem_individual.setChecked(individual.get_setting('sem'))
@@ -306,8 +318,14 @@ class MainWindow(QMainWindow):
                 self.ui.session_name.setText(session.text(0))
                 self.ui.session_description.setText(session.description)
 
-                self.ui.global_normalization_session_btn.setChecked(session.get_setting('global'))
-                self.ui.percent_session_btn.setChecked(session.get_setting('percent'))
+                if session.get_setting('global'):
+                    self.ui.global_normalization_session_btn.setChecked(True)
+                else:
+                    self.ui.local_normalization_session_btn.setChecked(True)
+                if session.get_setting('percent'):
+                    self.ui.percent_session_btn.setChecked(True)
+                else:
+                    self.ui.subtract_session_btn.setChecked(True)
                 self.ui.checkbox_amplitude_session.setChecked(session.get_setting('amplitude'))
                 self.ui.checkbox_peak_session.setChecked(session.get_setting('peak'))
                 self.ui.checkbox_sem_session.setChecked(session.get_setting('sem'))
@@ -318,8 +336,14 @@ class MainWindow(QMainWindow):
                 self.ui.group_name.setText(group.text(0))
                 self.ui.group_description.setText(group.description)
 
-                self.ui.global_normalization_group_btn.setChecked(group.get_setting('global'))
-                self.ui.percent_group_btn.setChecked(group.get_setting('percent'))
+                if group.get_setting('global'):
+                    self.ui.global_normalization_group_btn.setChecked(True)
+                else:
+                    self.ui.local_normalization_group_btn.setChecked(True)
+                if group.get_setting('percent'):
+                    self.ui.percent_group_btn.setChecked(True)
+                else:
+                    self.ui.subtract_group_btn.setChecked(True)
                 self.ui.checkbox_amplitude_group.setChecked(group.get_setting('amplitude'))
                 self.ui.checkbox_peak_group.setChecked(group.get_setting('peak'))
                 self.ui.checkbox_sem_group.setChecked(group.get_setting('sem'))

@@ -87,7 +87,7 @@
     <item>
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="group_page">
        <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -353,7 +353,7 @@
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_15">
                      <item>
-                      <widget class="QRadioButton" name="radioButton_6">
+                      <widget class="QRadioButton" name="local_normalization_group_btn">
                        <property name="enabled">
                         <bool>true</bool>
                        </property>
@@ -388,7 +388,7 @@
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_16">
                      <item>
-                      <widget class="QRadioButton" name="radioButton_8">
+                      <widget class="QRadioButton" name="subtract_group_btn">
                        <property name="enabled">
                         <bool>true</bool>
                        </property>
@@ -829,7 +829,7 @@
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_49">
                      <item>
-                      <widget class="QRadioButton" name="radioButton_26">
+                      <widget class="QRadioButton" name="local_normalization_individual_btn">
                        <property name="enabled">
                         <bool>true</bool>
                        </property>
@@ -864,7 +864,7 @@
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_50">
                      <item>
-                      <widget class="QRadioButton" name="radioButton_28">
+                      <widget class="QRadioButton" name="subtract_individual_btn">
                        <property name="enabled">
                         <bool>true</bool>
                        </property>
@@ -1093,7 +1093,7 @@
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_23">
                      <item>
-                      <widget class="QRadioButton" name="sub_baseline_btn">
+                      <widget class="QRadioButton" name="subtract_session_btn">
                        <property name="text">
                         <string>Subtract baseline</string>
                        </property>
