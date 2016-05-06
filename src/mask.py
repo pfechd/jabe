@@ -32,8 +32,6 @@ class Mask:
             # Create empty matrix of correct size
             self.data = np.zeros(size)
 
-            # Convert coordinates and shape_size to mm
-            coordinate = (coordinate[0] / voxel_size[0], coordinate[1] / voxel_size[1], coordinate[2] / voxel_size[2])
 
             # Set ones in a volume of a cube around the specified coordinate
             if shape == "cube":
