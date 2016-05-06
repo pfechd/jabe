@@ -28,7 +28,7 @@ class CreateMaskWindow(QDialog):
         self.ui.lineEdit_x.textChanged.connect(self.update_buttons)
         self.ui.lineEdit_y.textChanged.connect(self.update_buttons)
         self.ui.lineEdit_z.textChanged.connect(self.update_buttons)
-        self.ui.lineEdit_radius_width.textChanged.connect(self.update_buttons)
+        self.ui.lineEdit_width.textChanged.connect(self.update_buttons)
 
         self.ui.pushButton_cancel.clicked.connect(self.close_window)
         self.ui.pushButton_create.clicked.connect(self.save_mask_window)
@@ -53,8 +53,8 @@ class CreateMaskWindow(QDialog):
         return False
 
     def update_buttons(self):
-        """ Check if all textfields aren't empty and enables/disables the create mask button """
-        if len(self.ui.lineEdit_radius_width.text()) and len(self.ui.lineEdit_x.text())\
+        """ Check if all text fields are not empty and enables/disables the create mask button """
+        if len(self.ui.lineEdit_width.text()) and len(self.ui.lineEdit_x.text())\
                 and len(self.ui.lineEdit_y.text()) and len(self.ui.lineEdit_z.text()):
             self.ui.pushButton_create.setEnabled(True)
         else:
@@ -63,21 +63,38 @@ class CreateMaskWindow(QDialog):
     def save_mask_window(self):
         """ Creates and saves the mask """
 
-        # If the coordinate and radius/width are numbers, then choose a path and create the mask
-        if self.is_number(self.ui.lineEdit_radius_width.text()) and self.is_number(self.ui.lineEdit_x.text())\
+        # If the coordinates and radius_width are numbers, then choose a given path and create the mask
+        if self.is_number(self.ui.lineEdit_width.text()) and self.is_number(self.ui.lineEdit_x.text())\
                 and self.is_number(self.ui.lineEdit_y.text()) and self.is_number(self.ui.lineEdit_z.text()):
 
-            # TODO: if the coordinates and radius/width are valid (not bigger than size dimensions) do everything below,
-            # else show a QMessageBox.warning that describes the problem
+            # If the coordinates together with radius_width are valid create a mask
+            # If not valid send an error message
+            voxel_x = (float(self.ui.lineEdit_x.text())*self.brain_file._header.get_zooms())
+            voxel_y = (float(self.ui.lineEdit_y.text())*self.brain_file._header.get_zooms())
+            voxel_z = (float(self.ui.lineEdit_z.text())*self.brain_file._header.get_zooms())
+            voxel_radius_width = (float(self.ui.lineEdit_width.text())*self.brain_file._header.get_zooms())
 
-            file_name = QFileDialog.getSaveFileName(self, "Save file as nii", "", ".nii")
-            path = file_name[0]+file_name[1]
-            shape = self.ui.comboBox_shape.currentText()
-            coordinate = [float(self.ui.lineEdit_x.text()), float(self.ui.lineEdit_y.text()), float(self.ui.lineEdit_z.text())]
-            radius_width = float(self.ui.lineEdit_radius_width.text())
-            radius_width = (radius_width, radius_width, radius_width)
-            Mask(path, shape, coordinate, radius_width, self.brain_file)
-            self.close()
-            self.parent().load_mask(path)
+            if voxel_x <= self.brain_file.brain_file.get_data().shape[0]\
+                and voxel_y <= self.brain_file.brain_file.get_data().shape[1]\
+                    and voxel_z <= self.brain_file.brain_file.get_data().shape[2]:
+                if (voxel_x + voxel_radius_width) <= self.brain_file.brain_file.get_data().shape[0]\
+                        and (voxel_y + voxel_radius_width) <= self.brain_file.brain_file.get_data().shape[1]\
+                    and (voxel_z + voxel_radius_width) <= self.brain_file.brain_file.get_data().shape[2]\
+                    and (voxel_x - voxel_radius_width) <= 0 and (voxel_y - voxel_radius_width) <= 0\
+                        and (voxel_z - voxel_radius_width) <= 0:
+                    file_name = QFileDialog.getSaveFileName(self, "Save file as nii", "", ".nii")
+                    path = file_name[0]+file_name[1]
+                    shape = self.ui.comboBox_shape.currentText()
+                    coordinate = [float(self.ui.lineEdit_x.text()), float(self.ui.lineEdit_y.text()),
+                                  float(self.ui.lineEdit_z.text())]
+                    width = (float(self.ui.lineEdit_width.text()), float(self.ui.lineEdit_width.text()),
+                             float(self.ui.lineEdit_width.text()))
+                    Mask(path, shape, coordinate, width, self.brain_file)
+                    self.close()
+                    self.parent().load_mask(path)
+                else:
+                    QMessageBox.warning(self, "Warning", "You have entered invalid values in width. Please enter a value within the dimentions")
+            else:
+                QMessageBox.warning(self, "Warning", "You have entered invalid values in coordinate. Please enter values within the dimentions")
         else:
             QMessageBox.warning(self, "Warning", "You have entered one or more invalid values. Please enter only numbers.")
