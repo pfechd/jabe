@@ -303,11 +303,11 @@ class CustomPlot(QDialog):
         if self.ui.checkBox_regular.isChecked():
             self.remove_smoothed_plots()
             self.ax.relim()
-            sessions = self.session.responses
             children = self.session.sessions + self.session.children
             for child in children:
-                child_mean = child.calculate_mean()
-                self.plot_data(child_mean)
+                if child.ready_for_calculation():
+                    child_mean = child.calculate_mean()
+                    self.plot_data(child_mean)
 
         else:
             self.remove_regular_plots()
