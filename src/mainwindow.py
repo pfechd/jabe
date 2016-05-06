@@ -269,6 +269,7 @@ class MainWindow(QMainWindow):
             error = session.load_sequence(path)
             if error:
                 QMessageBox.warning(self, "File error", error)
+                self.brain_button_pressed()
             self.update_gui()
 
     def load_anatomy(self, path):
@@ -277,6 +278,7 @@ class MainWindow(QMainWindow):
             error = session.load_anatomy(path)
             if error:
                 QMessageBox.warning(self, "File error", error)
+                self.anatomy_button_pressed()
             self.update_gui()
 
     def load_mask(self, path):
@@ -285,6 +287,7 @@ class MainWindow(QMainWindow):
             error = session.load_mask(path)
             if error:
                 QMessageBox.warning(self, "File error", error)
+                self.mask_button_pressed()
             self.update_gui()
 
     def load_stimuli(self, path):
@@ -293,6 +296,7 @@ class MainWindow(QMainWindow):
             error = session.load_stimuli(path, 0.5)
             if error:
                 QMessageBox.warning(self, "File error", error)
+                self.stimuli_button_pressed()
             self.update_gui()
 
     def update_gui(self):
