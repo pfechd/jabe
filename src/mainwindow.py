@@ -258,7 +258,9 @@ class MainWindow(QMainWindow):
     def load_stimuli(self, path):
         if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
             session = self.ui.tree_widget.selectedItems()[0]
-            session.stimuli = Stimuli(path, 0.5)
+            error = session.load_stimuli(path, 0.5)
+            if error:
+                QMessageBox.warning(self, "File error", error)
             self.update_gui()
 
     def update_gui(self):

@@ -180,6 +180,8 @@ class Session(Group):
             return "The data has " + str(len(temp_brain.sequence.shape)) + " dimensions instead of 4"
         elif self.mask and self.mask.data.shape != temp_brain.sequence.shape[0:3]:
             return "The EPI sequence is not the same size as the mask"
+        elif self.stimuli and self.stimuli.data[-1,0] > temp_brain.images:
+            return "The EPI sequence is too short compared to the times in the stimuli file"
         else:
             self.brain = temp_brain
             return None

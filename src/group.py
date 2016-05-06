@@ -91,7 +91,12 @@ class Group(object):
             return None
 
     def load_stimuli(self, path, tr):
-        self.stimuli = Stimuli(path, tr)
+        temp_stimuli = Stimuli(path, tr)
+        if self.brain and temp_stimuli.data[-1, 0] > self.brain.images:
+            return "The times in the stimuli file are too long compared to the length of the EPI sequence"
+        else:
+            self.stimuli = temp_stimuli
+            return None
 
     def load_mask(self, path):
         temp_mask = Mask(path)
