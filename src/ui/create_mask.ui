@@ -115,7 +115,7 @@
     </rect>
    </property>
    <property name="title">
-    <string>Width [mm]:</string>
+    <string>Width/Radius [mm]:</string>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_2">
     <item>
