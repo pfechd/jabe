@@ -34,7 +34,7 @@ class Mask:
 
 
             # Set ones in a volume of a cube around the specified coordinate
-            if shape == "cube":
+            if shape == "Box":
                 for z in range(coordinate[2] - width[2] / 2*voxel_size[2],
                                coordinate[2] + width[2] / 2*voxel_size[2] + 1):
                     for y in range(coordinate[1] - width[1] / 2*voxel_size[1],
@@ -44,7 +44,7 @@ class Mask:
                             self.data[z, y, x] = 1
 
             # Set ones in every coordinate within the distance radius_width around the coordinate, making it a sphere
-            if shape == "sphere":
+            if shape == "Sphere":
                 for z in range(0, size[2]):
                     for y in range(0, size[1]):
                         for x in range(0, size[0]):
