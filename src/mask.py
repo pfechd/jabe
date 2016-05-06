@@ -11,16 +11,17 @@ class Mask:
     accessed through the member called data.
     """
 
-    def __init__(self, path=None, shape=None, coordinate=None, radius_width=None, brain_file=None):
+    def __init__(self, path=None, shape=None, coordinate=None, width=None, brain_file=None):
         """ Load a mask from a path or create a mask from the specified data
         :param path: Path for the NIfTI file
         :param shape: The shape of the ROI, cube or sphere
         :param coordinate: Coordinates for the center point of the ROI
-        :param radius_width: The size of the ROI
+        :param width: The size of the ROI
         :param brain_file: The EPI-image
         """
-        # if we get a path then we load that path, otherwise we make a new mask with the specified data
-        if radius_width == None:
+        # If we do not get a width,then we load a path.
+        # Otherwise we make a new mask with the specified data.
+        if width == None:
             self.path = path
             mask_file = nib.load(path)
             self.data = mask_file.get_data()
@@ -28,29 +29,29 @@ class Mask:
             voxel_size = brain_file._header.get_zooms()
             size = brain_file.get_data().shape[0:3]
 
-            # create empty matrix of correct size
+            # Create empty matrix of correct size
             self.data = np.zeros(size)
 
             # Convert coordinates and shape_size to mm
             coordinate = (coordinate[0] / voxel_size[0], coordinate[1] / voxel_size[1], coordinate[2] / voxel_size[2])
 
-            # set ones in a volume of a cube around the specified coordinate
+            # Set ones in a volume of a cube around the specified coordinate
             if shape == "cube":
-                for z in range(coordinate[2] - radius_width[2] / 2*voxel_size[2],
-                               coordinate[2] + radius_width[2] / 2*voxel_size[2] + 1):
-                    for y in range(coordinate[1] - radius_width[1] / 2*voxel_size[1],
-                                   coordinate[1] + radius_width[1] / 2*voxel_size[1] + 1):
-                        for x in range(coordinate[0] - radius_width[0] / 2*voxel_size[0],
-                                       coordinate[0] + radius_width[0] / 2*voxel_size[0] + 1):
+                for z in range(coordinate[2] - width[2] / 2*voxel_size[2],
+                               coordinate[2] + width[2] / 2*voxel_size[2] + 1):
+                    for y in range(coordinate[1] - width[1] / 2*voxel_size[1],
+                                   coordinate[1] + width[1] / 2*voxel_size[1] + 1):
+                        for x in range(coordinate[0] - width[0] / 2*voxel_size[0],
+                                       coordinate[0] + width[0] / 2*voxel_size[0] + 1):
                             self.data[z, y, x] = 1
 
-            # set ones in every coordinate within the distance radius_width around the coordinate, making it a sphere
+            # Set ones in every coordinate within the distance radius_width around the coordinate, making it a sphere
             if shape == "sphere":
                 for z in range(0, size[2]):
                     for y in range(0, size[1]):
                         for x in range(0, size[0]):
                             if (coordinate[2] - z) ** 2 + (coordinate[1] - y) ** 2 + (
-                                        coordinate[0] - x) ** 2 <= radius_width[0] ** 2:
+                                        coordinate[0] - x) ** 2 <= width[0] ** 2:
                                 self.data[z, y, x] = 1
 
             # Create a nifti file containing the data and save it to path
