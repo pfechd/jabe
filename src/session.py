@@ -42,10 +42,10 @@ class Session(Group):
             self.load_anatomy(configuration['anatomy_path'])
 
         if 'mask' in configuration:
-            self.mask = Mask(configuration['mask']['path'])
+            self.load_mask(configuration['mask']['path'])
 
         if 'stimuli' in configuration:
-            self.stimuli = Stimuli(configuration['stimuli']['path'],
+            self.load_stimuli(configuration['stimuli']['path'],
                                    configuration['stimuli']['tr'])
 
     def get_configuration(self):
@@ -175,7 +175,10 @@ class Session(Group):
 
     def load_sequence(self, path):
         """ Load the sequence from the path. Returns an error message if something went wrong, otherwise None """
-        temp_brain = Brain(path)
+        try:
+            temp_brain = Brain(path)
+        except IOError:
+            return path + " does not exist"
         if len(temp_brain.sequence.shape) != 4:
             return "The data has " + str(len(temp_brain.sequence.shape)) + " dimensions instead of 4"
         elif self.mask and self.mask.data.shape != temp_brain.sequence.shape[0:3]:

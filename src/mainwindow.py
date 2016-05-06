@@ -1,5 +1,6 @@
 import json
 import os
+from collections import Iterable
 
 from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QSpacerItem, QSizePolicy, QMessageBox
@@ -68,6 +69,31 @@ class MainWindow(QMainWindow):
         self.load_configuration()
         self.update_gui()
 
+    def check_paths(self, configuration, type = None):
+        missing_paths = []
+        for group in configuration['groups']:
+            missing_paths += (self.check_paths_in_object(group))
+            for individual in group['individuals']:
+                missing_paths += (self.check_paths_in_object(individual))
+                for session in individual['sessions']:
+                    missing_paths += (self.check_paths_in_object(session))
+
+        return missing_paths
+
+    def check_paths_in_object(self, config_obj):
+        missing_paths = []
+        if 'path' in config_obj and not os.path.exists(config_obj['path']):
+            missing_paths.append(config_obj['path'])
+        if 'anatomy_path' in config_obj and not os.path.exists(config_obj['anatomy_path']):
+            missing_paths.append(config_obj['anatomy_path'])
+        if 'mask' in config_obj and 'path' in config_obj['mask'] and not os.path.exists(config_obj['mask']['path']):
+            missing_paths.append(config_obj['mask']['path'] )
+        if 'stimuli' in config_obj and 'path' in config_obj['stimuli'] and \
+                not os.path.exists(config_obj['stimuli']['path']):
+            missing_paths.append(config_obj['stimuli']['path'])
+
+        return missing_paths
+
     def closeEvent(self, event):
         self.save_configuration()
 
@@ -98,6 +124,12 @@ class MainWindow(QMainWindow):
         if os.path.exists('configuration.json'):
             with open('configuration.json', 'r') as f:
                 configuration = json.load(f)
+
+            missing_paths = self.check_paths(configuration)
+            if missing_paths:
+                QMessageBox.warning(self, "File error", "The following files are missing and will not be loaded:\n" +
+                                    "\n".join(missing_paths))
+
 
             for group_configuration in configuration['groups']:
                 group_tree_item = GroupTreeItem()
