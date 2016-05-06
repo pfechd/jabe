@@ -56,32 +56,20 @@ class MainWindow(QMainWindow):
         self.ui.group_description.textChanged.connect(self.description_changed)
         self.ui.individual_description.textChanged.connect(self.description_changed)
 
-        self.ui.global_normalization_individual_btn.clicked.connect(self.plot_settings_changed)
-        self.ui.local_normalization_individual_btn.clicked.connect(self.plot_settings_changed)
-        self.ui.percent_individual_btn.clicked.connect(self.plot_settings_changed)
-        self.ui.subtract_individual_btn.clicked.connect(self.plot_settings_changed)
-        self.ui.checkbox_amplitude_individual.clicked.connect(self.plot_settings_changed)
-        self.ui.checkbox_peak_individual.clicked.connect(self.plot_settings_changed)
-        self.ui.checkbox_sem_individual.clicked.connect(self.plot_settings_changed)
-        self.ui.checkbox_fwhm_individual.clicked.connect(self.plot_settings_changed)
+        plot_buttons = [self.ui.global_normalization_individual_btn, self.ui.local_normalization_individual_btn,
+                   self.ui.percent_individual_btn, self.ui.subtract_individual_btn,
+                   self.ui.checkbox_amplitude_individual, self.ui.checkbox_peak_individual,
+                   self.ui.checkbox_sem_individual, self.ui.checkbox_fwhm_individual,
+                   self.ui.global_normalization_session_btn, self.ui.local_normalization_session_btn,
+                   self.ui.percent_session_btn, self.ui.subtract_session_btn, self.ui.checkbox_amplitude_session,
+                   self.ui.checkbox_peak_session, self.ui.checkbox_sem_session, self.ui.checkbox_fwhm_session,
+                   self.ui.global_normalization_group_btn, self.ui.local_normalization_group_btn,
+                   self.ui.percent_group_btn, self.ui.subtract_group_btn, self.ui.checkbox_amplitude_group,
+                   self.ui.checkbox_peak_group, self.ui.checkbox_sem_group, self.ui.checkbox_fwhm_group]
 
-        self.ui.global_normalization_session_btn.clicked.connect(self.plot_settings_changed)
-        self.ui.local_normalization_session_btn.clicked.connect(self.plot_settings_changed)
-        self.ui.percent_session_btn.clicked.connect(self.plot_settings_changed)
-        self.ui.subtract_session_btn.clicked.connect(self.plot_settings_changed)
-        self.ui.checkbox_amplitude_session.clicked.connect(self.plot_settings_changed)
-        self.ui.checkbox_peak_session.clicked.connect(self.plot_settings_changed)
-        self.ui.checkbox_sem_session.clicked.connect(self.plot_settings_changed)
-        self.ui.checkbox_fwhm_session.clicked.connect(self.plot_settings_changed)
+        for button in plot_buttons:
+            button.clicked.connect(self.plot_settings_changed)
 
-        self.ui.global_normalization_group_btn.clicked.connect(self.plot_settings_changed)
-        self.ui.local_normalization_group_btn.clicked.connect(self.plot_settings_changed)
-        self.ui.percent_group_btn.clicked.connect(self.plot_settings_changed)
-        self.ui.subtract_group_btn.clicked.connect(self.plot_settings_changed)
-        self.ui.checkbox_amplitude_group.clicked.connect(self.plot_settings_changed)
-        self.ui.checkbox_peak_group.clicked.connect(self.plot_settings_changed)
-        self.ui.checkbox_sem_group.clicked.connect(self.plot_settings_changed)
-        self.ui.checkbox_fwhm_group.clicked.connect(self.plot_settings_changed)
         self.ui.stackedWidget.setCurrentIndex(1)
         self.show()
 
@@ -196,6 +184,8 @@ class MainWindow(QMainWindow):
 
     def calculate_button_pressed(self):
         """ Callback function, run when the calculate button is pressed."""
+        # Make sure to update plot settings at least once before running
+        self.plot_settings_changed()
         CustomPlot(self, self.ui.tree_widget.selectedItems()[0])
 
     def brain_button_pressed(self):
