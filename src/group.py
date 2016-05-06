@@ -94,7 +94,10 @@ class Group(object):
             return None
 
     def load_stimuli(self, path, tr):
-        temp_stimuli = Stimuli(path, tr)
+        try:
+            temp_stimuli = Stimuli(path, tr)
+        except KeyError:
+            return "The file is not a proper stimuli file"
         if self.brain and temp_stimuli.data[-1, 0] > self.brain.images:
             return "The times in the stimuli file are too long compared to the length of the EPI sequence"
         else:
