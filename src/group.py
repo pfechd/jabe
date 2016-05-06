@@ -84,7 +84,7 @@ class Group(object):
 
     def load_anatomy(self, path):
         try:
-            temp_anatomy = Mask(path)
+            temp_anatomy = Brain(path)
         except IOError:
             return path + " does not exist"
         if len(temp_anatomy.sequence.shape) != 3:
