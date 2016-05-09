@@ -255,7 +255,10 @@ class Group(object):
         return self.responses
 
     def get_setting(self, setting):
-        """ Return the specified plot setting. To simplify the code, it is assumed as False if it does not exist """
+        """ 
+        Return the specified plot setting. 
+        To simplify the code, it is assumed as False if it does not exist 
+        """
         if setting in self.plot_settings:
             return self.plot_settings[setting]
         else:
