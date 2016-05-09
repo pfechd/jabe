@@ -2,7 +2,7 @@ import numpy as np
 import scipy
 
 
-class StimuliOnset:
+class Stimuli:
     """
     Class used for representing Stimuli Onset data
 

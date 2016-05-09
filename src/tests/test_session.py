@@ -8,7 +8,7 @@ class TestSession(unittest.TestCase):
     def setUp(self):
         self.session = session.Session(name='test')
         self.mask = mask.Mask(path='src/python/tests/test-data/mask.nii')
-        self.session.load_data('src/python/tests/test-data/brain.nii')
+        self.session.load_sequence('src/python/tests/test-data/brain.nii')
         self.session.load_stimuli('src/python/tests/test-data/stimuli.mat', 0.5)
         self.session.load_mask(self.mask)
 

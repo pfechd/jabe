@@ -1,13 +1,15 @@
 import json
 import os
+from collections import Iterable
 
 from PyQt5 import QtWidgets, QtGui
-from PyQt5.QtWidgets import QMainWindow, QFileDialog, QSpacerItem, QSizePolicy
+from PyQt5.QtWidgets import QMainWindow, QFileDialog, QSpacerItem, QSizePolicy, QMessageBox
 
 from generated_ui.mainwindow import Ui_MainWindow
 from mask import Mask
 from plotwindow import CustomPlot
-from stimulionset import StimuliOnset
+from stimuliwindow import StimuliWindow
+from stimuli import Stimuli
 from tree_items.grouptreeitem import GroupTreeItem
 from tree_items.individualtreeitem import IndividualTreeItem
 from tree_items.sessiontreeitem import SessionTreeItem
@@ -37,7 +39,9 @@ class MainWindow(QMainWindow):
         self.ui.add_session_epi_btn.clicked.connect(self.brain_button_pressed)
         self.ui.add_session_mask_btn.clicked.connect(self.mask_button_pressed)
         self.ui.add_session_stimuli_btn.clicked.connect(self.stimuli_button_pressed)
+        self.ui.create_session_stimuli_btn.clicked.connect(self.create_stimuli_button_pressed)
         self.ui.add_group_menu_btn.triggered.connect(self.add_group_pressed)
+        self.ui.add_group_btn.clicked.connect(self.add_group_pressed)
         self.ui.exit_menu_btn.triggered.connect(self.exit_button_pressed)
         self.ui.add_individual_btn.clicked.connect(self.add_item_clicked)
         self.ui.add_session_btn.clicked.connect(self.add_item_clicked)
@@ -51,6 +55,9 @@ class MainWindow(QMainWindow):
         self.ui.session_name.returnPressed.connect(self.ui.session_name.clearFocus)
         self.ui.group_name.returnPressed.connect(self.ui.group_name.clearFocus)
         self.ui.individual_name.returnPressed.connect(self.ui.individual_name.clearFocus)
+        self.ui.session_description.textChanged.connect(self.description_changed)
+        self.ui.group_description.textChanged.connect(self.description_changed)
+        self.ui.individual_description.textChanged.connect(self.description_changed)
         self.ui.stackedWidget.setCurrentIndex(1)
         self.show()
 
@@ -61,6 +68,31 @@ class MainWindow(QMainWindow):
         self.groups = []
         self.load_configuration()
         self.update_gui()
+
+    def check_paths(self, configuration, type = None):
+        missing_paths = []
+        for group in configuration['groups']:
+            missing_paths += (self.check_paths_in_object(group))
+            for individual in group['individuals']:
+                missing_paths += (self.check_paths_in_object(individual))
+                for session in individual['sessions']:
+                    missing_paths += (self.check_paths_in_object(session))
+
+        return missing_paths
+
+    def check_paths_in_object(self, config_obj):
+        missing_paths = []
+        if 'path' in config_obj and not os.path.exists(config_obj['path']):
+            missing_paths.append(config_obj['path'])
+        if 'anatomy_path' in config_obj and not os.path.exists(config_obj['anatomy_path']):
+            missing_paths.append(config_obj['anatomy_path'])
+        if 'mask' in config_obj and 'path' in config_obj['mask'] and not os.path.exists(config_obj['mask']['path']):
+            missing_paths.append(config_obj['mask']['path'] )
+        if 'stimuli' in config_obj and 'path' in config_obj['stimuli'] and \
+                not os.path.exists(config_obj['stimuli']['path']):
+            missing_paths.append(config_obj['stimuli']['path'])
+
+        return missing_paths
 
     def closeEvent(self, event):
         self.save_configuration()
@@ -92,6 +124,12 @@ class MainWindow(QMainWindow):
         if os.path.exists('configuration.json'):
             with open('configuration.json', 'r') as f:
                 configuration = json.load(f)
+
+            missing_paths = self.check_paths(configuration)
+            if missing_paths:
+                QMessageBox.warning(self, "File error", "The following files are missing and will not be loaded:\n" +
+                                    "\n".join(missing_paths))
+
 
             for group_configuration in configuration['groups']:
                 group_tree_item = GroupTreeItem()
@@ -184,10 +222,9 @@ class MainWindow(QMainWindow):
             group.global_normalization = self.ui.global_normalization_group_btn.isChecked()
             CustomPlot(self, group)
 
-
     def brain_button_pressed(self):
         """ Callback function, run when the choose brain button is pressed."""
-        file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii *.nii.gz)")
+        file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii*)")
         if file_name[0]:
             self.load_brain(file_name[0])
         else:
@@ -196,7 +233,7 @@ class MainWindow(QMainWindow):
 
     def anatomy_button_pressed(self):
         """ Callback function, run when the choose anatomy button is pressed."""
-        file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii *.nii.gz)")
+        file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii*)")
         if file_name[0]:
             self.load_anatomy(file_name[0])
         else:
@@ -205,7 +242,7 @@ class MainWindow(QMainWindow):
 
     def mask_button_pressed(self):
         """ Callback function, run when the choose mask button is pressed."""
-        file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii *.nii.gz)")
+        file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii*)")
         if file_name[0]:
             self.load_mask(file_name[0])
         else:
@@ -221,28 +258,41 @@ class MainWindow(QMainWindow):
             print 'Stimuli not chosen'
         self.update_gui()
 
+    def create_stimuli_button_pressed(self):
+        """ Callback function, run when the create simuli button is pressed."""
+        
+        self.stimuli_window = StimuliWindow(self)
+        
     def load_brain(self, path):
         if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
             session = self.ui.tree_widget.selectedItems()[0]
-            session.load_data(path)
+            error = session.load_sequence(path)
+            if error:
+                QMessageBox.warning(self, "File error", error)
             self.update_gui()
 
     def load_anatomy(self, path):
         if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
             session = self.ui.tree_widget.selectedItems()[0]
-            session.load_anatomy(path)
+            error = session.load_anatomy(path)
+            if error:
+                QMessageBox.warning(self, "File error", error)
             self.update_gui()
 
     def load_mask(self, path):
         if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
             session = self.ui.tree_widget.selectedItems()[0]
-            session.mask = Mask(path)
+            error = session.load_mask(path)
+            if error:
+                QMessageBox.warning(self, "File error", error)
             self.update_gui()
 
     def load_stimuli(self, path):
         if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
             session = self.ui.tree_widget.selectedItems()[0]
-            session.stimuli = StimuliOnset(path, 0.5)
+            error = session.load_stimuli(path, 0.5)
+            if error:
+                QMessageBox.warning(self, "File error", error)
             self.update_gui()
 
     def update_gui(self):
@@ -256,6 +306,7 @@ class MainWindow(QMainWindow):
             if isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
                 self.ui.stackedWidget.setCurrentIndex(2)
                 self.ui.individual_name.setText(self.ui.tree_widget.selectedItems()[0].text(0))
+                self.ui.individual_description.setText(self.ui.tree_widget.selectedItems()[0].description)
 
                 # Add overview tree in individual panel
                 self.ui.sessions_overview_tree.clear()
@@ -269,9 +320,11 @@ class MainWindow(QMainWindow):
             elif isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
                 self.ui.stackedWidget.setCurrentIndex(3)
                 self.ui.session_name.setText(self.ui.tree_widget.selectedItems()[0].text(0))
+                self.ui.session_description.setText(self.ui.tree_widget.selectedItems()[0].description)
             else:
                 self.ui.stackedWidget.setCurrentIndex(0)
                 self.ui.group_name.setText(self.ui.tree_widget.selectedItems()[0].text(0))
+                self.ui.group_description.setText(self.ui.tree_widget.selectedItems()[0].description)
 
                 # Add overview tree in group panel
                 self.ui.individual_overview_tree.clear()
@@ -320,6 +373,17 @@ class MainWindow(QMainWindow):
                 text = self.ui.group_name.text()
 
             self.ui.tree_widget.selectedItems()[0].update_name(text)
+
+    def description_changed(self):
+        if self.ui.tree_widget.selectedItems():
+            if isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
+                text = self.ui.individual_description.toPlainText()
+            elif isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
+                text = self.ui.session_description.toPlainText()
+            else:
+                text = self.ui.group_description.toPlainText()
+
+            self.ui.tree_widget.selectedItems()[0].description = text
 
     def clear_layout(self, layout):
         while layout.count():

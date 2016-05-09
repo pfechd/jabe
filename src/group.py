@@ -4,7 +4,8 @@ from scipy.stats import sem
 import nibabel as nib
 
 from src.brain import Brain
-from src.stimulionset import StimuliOnset
+from src.stimuli import Stimuli
+from src.mask import Mask
 
 
 class Group(object):
@@ -14,6 +15,7 @@ class Group(object):
     """
     def __init__(self, configuration=None):
         self.name = ""
+        self.description = ""
 
         self.mask = None
         self.stimuli = None
@@ -81,13 +83,36 @@ class Group(object):
         return max_amp, spline(x)[max_amp]
 
     def load_anatomy(self, path):
-        self.anatomy = Brain(path)
+        try:
+            temp_anatomy = Brain(path)
+        except IOError:
+            return path + " does not exist"
+        if len(temp_anatomy.sequence.shape) != 3:
+            return "The data has " + str(len(temp_anatomy.sequence.shape)) + " dimensions instead of 3"
+        else:
+            self.anatomy = temp_anatomy
+            return None
 
     def load_stimuli(self, path, tr):
-        self.stimuli = StimuliOnset(path, tr)
+        temp_stimuli = Stimuli(path, tr)
+        if self.brain and temp_stimuli.data[-1, 0] > self.brain.images:
+            return "The times in the stimuli file are too long compared to the length of the EPI sequence"
+        else:
+            self.stimuli = temp_stimuli
+            return None
 
-    def load_mask(self, mask):
-        self.mask = mask
+    def load_mask(self, path):
+        try:
+            temp_mask = Mask(path)
+        except IOError:
+            return path + " does not exist"
+        if len(temp_mask.data.shape) != 3:
+            return "The data has " + str(len(temp_mask.data.shape)) + " dimensions instead of 3"
+        elif self.brain and self.brain.sequence.shape[0:3] != temp_mask.data.shape:
+            return "The mask is not the same size as the EPI sequence"
+        else:
+            self.mask = temp_mask
+            return None
 
     def add_child(self, child):
         self.children.append(child)
@@ -176,6 +201,7 @@ class Group(object):
     def get_configuration(self):
         return {
             'name': self.name,
+            'description': self.description,
             'individuals': [individual.get_configuration() for individual in self.children],
             'sessions': [session.get_configuration() for session in self.sessions]
         }
@@ -183,6 +209,8 @@ class Group(object):
     def load_configuration(self, configuration):
         if 'name' in configuration:
             self.name = configuration['name']
+        if 'description' in configuration:
+            self.description = configuration['description']
 
     def add_session(self, session):
         self.sessions.append(session)
