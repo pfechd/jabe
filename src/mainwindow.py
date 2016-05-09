@@ -1,17 +1,27 @@
 import json
 import os
+from collections import Iterable
+import sys
+from sys import platform as _platform
 
 from PyQt5 import QtWidgets, QtGui
-from PyQt5.QtWidgets import QMainWindow, QFileDialog, QSpacerItem, QSizePolicy
+from PyQt5.QtWidgets import QMainWindow, QFileDialog, QSpacerItem, QSizePolicy, QMessageBox
 
 from generated_ui.mainwindow import Ui_MainWindow
 from mask import Mask
 from plotwindow import CustomPlot
-from stimulionset import StimuliOnset
+from stimuliwindow import StimuliWindow
+from stimuli import Stimuli
 from tree_items.grouptreeitem import GroupTreeItem
 from tree_items.individualtreeitem import IndividualTreeItem
 from tree_items.sessiontreeitem import SessionTreeItem
-from namedialog import NameDialog
+
+
+try:
+    import Cocoa    # Only used on Mac OS when building .app
+    COCOA_AVAILABLE = True
+except ImportError:
+    COCOA_AVAILABLE = False
 
 
 class MainWindow(QMainWindow):
@@ -37,7 +47,9 @@ class MainWindow(QMainWindow):
         self.ui.add_session_epi_btn.clicked.connect(self.brain_button_pressed)
         self.ui.add_session_mask_btn.clicked.connect(self.mask_button_pressed)
         self.ui.add_session_stimuli_btn.clicked.connect(self.stimuli_button_pressed)
+        self.ui.create_session_stimuli_btn.clicked.connect(self.create_stimuli_button_pressed)
         self.ui.add_group_menu_btn.triggered.connect(self.add_group_pressed)
+        self.ui.add_group_btn.clicked.connect(self.add_group_pressed)
         self.ui.exit_menu_btn.triggered.connect(self.exit_button_pressed)
         self.ui.add_individual_btn.clicked.connect(self.add_item_clicked)
         self.ui.add_session_btn.clicked.connect(self.add_item_clicked)
@@ -81,10 +93,39 @@ class MainWindow(QMainWindow):
         self.load_configuration()
         self.update_gui()
 
+    def check_paths(self, configuration, type = None):
+        missing_paths = []
+        for group in configuration['groups']:
+            missing_paths += (self.check_paths_in_object(group))
+            for individual in group['individuals']:
+                missing_paths += (self.check_paths_in_object(individual))
+                for session in individual['sessions']:
+                    missing_paths += (self.check_paths_in_object(session))
+
+        return missing_paths
+
+    def check_paths_in_object(self, config_obj):
+        missing_paths = []
+        if 'path' in config_obj and not os.path.exists(config_obj['path']):
+            missing_paths.append(config_obj['path'])
+        if 'anatomy_path' in config_obj and not os.path.exists(config_obj['anatomy_path']):
+            missing_paths.append(config_obj['anatomy_path'])
+        if 'mask' in config_obj and 'path' in config_obj['mask'] and not os.path.exists(config_obj['mask']['path']):
+            missing_paths.append(config_obj['mask']['path'] )
+        if 'stimuli' in config_obj and 'path' in config_obj['stimuli'] and \
+                not os.path.exists(config_obj['stimuli']['path']):
+            missing_paths.append(config_obj['stimuli']['path'])
+
+        return missing_paths
+
     def closeEvent(self, event):
         self.save_configuration()
 
     def save_configuration(self):
+        """
+        Save configuration file (configuration.json).
+        """
+
         if self.ui.tree_widget.selectedItems():
             selected = self.ui.tree_widget.selectedItems()[0]
             current = []
@@ -104,13 +145,73 @@ class MainWindow(QMainWindow):
             'current': current
         }
 
-        with open('configuration.json', 'w') as f:
+        config_filename = 'configuration.json'
+
+        if hasattr(sys, 'frozen'):
+            dir_path = os.path.dirname(os.path.realpath(sys.argv[0]))
+        else:
+            dir_path = os.getcwd()
+
+        # Set OS specific path to configuration file
+        if _platform == "linux" or _platform == "linux2":
+            config_path = os.path.join(dir_path, config_filename)
+        elif _platform == "darwin":
+            if COCOA_AVAILABLE:
+                path = Cocoa.NSBundle.mainBundle().bundlePath()     # Get path to .app bundle (Mac only)
+
+            if hasattr(sys, 'frozen') and path.endswith('.app'):
+                config_path = os.path.join(path, 'Contents', config_filename)
+            else:
+                config_path = os.path.join(dir_path, config_filename)
+
+        elif _platform == "win32":
+            if hasattr(sys, 'frozen'):
+                dir_path = os.path.dirname(os.path.realpath(__file__))
+
+            config_path = os.path.join(dir_path, config_filename)
+
+        with open(config_path, 'w') as f:
             json.dump(configuration, f, indent=4)
 
     def load_configuration(self):
-        if os.path.exists('configuration.json'):
-            with open('configuration.json', 'r') as f:
+        """
+        Load configuration file (configuration.json).
+        """
+
+        config_filename = 'configuration.json'
+
+        if hasattr(sys, 'frozen'):
+            dir_path = os.path.dirname(os.path.realpath(sys.argv[0]))
+        else:
+            dir_path = os.getcwd()
+
+        # Set OS specific path to configuration file
+        if _platform == "linux" or _platform == "linux2":
+            config_path = os.path.join(dir_path, config_filename)
+        elif _platform == "darwin":
+            if COCOA_AVAILABLE:
+                path = Cocoa.NSBundle.mainBundle().bundlePath()     # Get path to .app bundle (Mac only)
+
+            if hasattr(sys, 'frozen') and path.endswith('.app'):
+                config_path = os.path.join(path, 'Contents', config_filename)
+            else:
+                config_path = os.path.join(dir_path, config_filename)
+
+        elif _platform == "win32":
+            if hasattr(sys, 'frozen'):
+                dir_path = os.path.dirname(os.path.realpath(__file__))
+
+            config_path = os.path.join(dir_path, config_filename)
+
+        if os.path.exists(config_path):
+            with open(config_path, 'r') as f:
                 configuration = json.load(f)
+
+            missing_paths = self.check_paths(configuration)
+            if missing_paths:
+                QMessageBox.warning(self, "File error", "The following files are missing and will not be loaded:\n" +
+                                    "\n".join(missing_paths))
+
 
             for group_configuration in configuration['groups']:
                 group_tree_item = GroupTreeItem()
@@ -190,7 +291,7 @@ class MainWindow(QMainWindow):
 
     def brain_button_pressed(self):
         """ Callback function, run when the choose brain button is pressed."""
-        file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii *.nii.gz)")
+        file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii*)")
         if file_name[0]:
             self.load_brain(file_name[0])
         else:
@@ -199,7 +300,7 @@ class MainWindow(QMainWindow):
 
     def anatomy_button_pressed(self):
         """ Callback function, run when the choose anatomy button is pressed."""
-        file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii *.nii.gz)")
+        file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii*)")
         if file_name[0]:
             self.load_anatomy(file_name[0])
         else:
@@ -208,7 +309,7 @@ class MainWindow(QMainWindow):
 
     def mask_button_pressed(self):
         """ Callback function, run when the choose mask button is pressed."""
-        file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii *.nii.gz)")
+        file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii*)")
         if file_name[0]:
             self.load_mask(file_name[0])
         else:
@@ -224,28 +325,41 @@ class MainWindow(QMainWindow):
             print 'Stimuli not chosen'
         self.update_gui()
 
+    def create_stimuli_button_pressed(self):
+        """ Callback function, run when the create simuli button is pressed."""
+        
+        self.stimuli_window = StimuliWindow(self)
+        
     def load_brain(self, path):
         if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
             session = self.ui.tree_widget.selectedItems()[0]
-            session.load_data(path)
+            error = session.load_sequence(path)
+            if error:
+                QMessageBox.warning(self, "File error", error)
             self.update_gui()
 
     def load_anatomy(self, path):
         if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
             session = self.ui.tree_widget.selectedItems()[0]
-            session.load_anatomy(path)
+            error = session.load_anatomy(path)
+            if error:
+                QMessageBox.warning(self, "File error", error)
             self.update_gui()
 
     def load_mask(self, path):
         if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
             session = self.ui.tree_widget.selectedItems()[0]
-            session.mask = Mask(path)
+            error = session.load_mask(path)
+            if error:
+                QMessageBox.warning(self, "File error", error)
             self.update_gui()
 
     def load_stimuli(self, path):
         if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
             session = self.ui.tree_widget.selectedItems()[0]
-            session.stimuli = StimuliOnset(path, 0.5)
+            error = session.load_stimuli(path, 0.5)
+            if error:
+                QMessageBox.warning(self, "File error", error)
             self.update_gui()
 
     def update_gui(self):
