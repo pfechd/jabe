@@ -131,7 +131,7 @@ class Group(object):
         else:
             return self._aggregate(percentage, global_, mask, stimuli)
 
-    def calculate_mean(self):
+    def calculate_mean(self, percentage = None, global_ = None):
         """
         Calculate the mean of every response grouped by stimuli type
 
@@ -139,7 +139,12 @@ class Group(object):
                  is the vector containing the mean value for the given time
                  frame.
         """
-        responses = self.aggregate(self.plot_settings['percent'], self.plot_settings['global'])
+        if percentage is None:
+            percentage = self.get_setting('percent')
+        if global_ is None:
+            global_ = self.get_setting('global')
+
+        responses = self.aggregate(percentage, global_)
         mean_responses = {}
 
         for stimuli_type, stimuli_data in responses.iteritems():
@@ -154,9 +159,14 @@ class Group(object):
             mean_responses[stimuli_type] = response_mean
         return mean_responses
 
-    def calculate_sem(self):
+    def calculate_sem(self, percentage = None, global_ = None):
         """ Calculate the standard error of the mean (SEM) of the response """
-        responses = self.aggregate(self.plot_settings['percent'], self.plot_settings['global'])
+        if percentage is None:
+            percentage = self.get_setting('percent')
+        if global_ is None:
+            global_ = self.get_setting('global')
+
+        responses = self.aggregate(percentage, global_)
         responses_sem = {}
 
         for stimuli_type, stimuli_data in responses.iteritems():

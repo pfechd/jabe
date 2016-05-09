@@ -299,7 +299,8 @@ class CustomPlot(QDialog):
             sessions = self.session.responses
             children = self.session.sessions + self.session.children
             for child in children:
-                child_mean = child.calculate_mean()
+                child_mean = child.calculate_mean(self.session.get_setting('percent'),
+                                                  self.session.get_setting('global'))
                 self.plot_data(child_mean)
 
         else:
