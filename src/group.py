@@ -16,6 +16,7 @@ class Group(object):
     def __init__(self, configuration=None):
         self.name = ""
         self.description = ""
+        self.plot_settings = {}
 
         self.mask = None
         self.stimuli = None
@@ -24,10 +25,6 @@ class Group(object):
         self.children = []
         # TODO: Remove this
         self.sessions = []
-
-        # Normalization settings
-        self.global_normalization = False
-        self.percent_normalization = False
 
         # Result of calculations are kept here
         self.responses = {}
@@ -161,7 +158,7 @@ class Group(object):
         else:
             return self._aggregate(percentage, global_, mask, stimuli)
 
-    def calculate_mean(self):
+    def calculate_mean(self, percentage = None, global_ = None):
         """
         Calculate the mean of every response grouped by stimuli type
 
@@ -169,7 +166,12 @@ class Group(object):
                  is the vector containing the mean value for the given time
                  frame.
         """
-        responses = self.aggregate(self.percent_normalization, self.global_normalization)
+        if percentage is None:
+            percentage = self.get_setting('percent')
+        if global_ is None:
+            global_ = self.get_setting('global')
+
+        responses = self.aggregate(percentage, global_)
         mean_responses = {}
 
         for stimuli_type, stimuli_data in responses.iteritems():
@@ -184,9 +186,14 @@ class Group(object):
             mean_responses[stimuli_type] = response_mean
         return mean_responses
 
-    def calculate_sem(self):
+    def calculate_sem(self, percentage = None, global_ = None):
         """ Calculate the standard error of the mean (SEM) of the response """
-        responses = self.aggregate(self.percent_normalization, self.global_normalization)
+        if percentage is None:
+            percentage = self.get_setting('percent')
+        if global_ is None:
+            global_ = self.get_setting('global')
+
+        responses = self.aggregate(percentage, global_)
         responses_sem = {}
 
         for stimuli_type, stimuli_data in responses.iteritems():
@@ -205,6 +212,7 @@ class Group(object):
         return {
             'name': self.name,
             'description': self.description,
+            'plot_settings': self.plot_settings,
             'individuals': [individual.get_configuration() for individual in self.children],
             'sessions': [session.get_configuration() for session in self.sessions]
         }
@@ -214,6 +222,8 @@ class Group(object):
             self.name = configuration['name']
         if 'description' in configuration:
             self.description = configuration['description']
+        if 'plot_settings' in configuration:
+            self.plot_settings = configuration['plot_settings']
 
     def add_session(self, session):
         self.sessions.append(session)
@@ -246,3 +256,13 @@ class Group(object):
             self.responses[intensity] = data[:, 0:min_width]
 
         return self.responses
+
+    def get_setting(self, setting):
+        """ 
+        Return the specified plot setting. 
+        To simplify the code, it is assumed as False if it does not exist 
+        """
+        if setting in self.plot_settings:
+            return self.plot_settings[setting]
+        else:
+            return False

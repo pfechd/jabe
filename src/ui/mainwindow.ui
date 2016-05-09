@@ -111,7 +111,7 @@
     <item>
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>3</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="group_page">
        <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -377,7 +377,7 @@
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_15">
                      <item>
-                      <widget class="QRadioButton" name="radioButton_6">
+                      <widget class="QRadioButton" name="local_normalization_group_btn">
                        <property name="enabled">
                         <bool>true</bool>
                        </property>
@@ -412,7 +412,7 @@
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_16">
                      <item>
-                      <widget class="QRadioButton" name="radioButton_8">
+                      <widget class="QRadioButton" name="subtract_group_btn">
                        <property name="enabled">
                         <bool>true</bool>
                        </property>
@@ -449,7 +449,7 @@
                      <item>
                       <widget class="QCheckBox" name="checkbox_amplitude_group">
                        <property name="enabled">
-                        <bool>false</bool>
+                        <bool>true</bool>
                        </property>
                        <property name="text">
                         <string>Amplitude</string>
@@ -459,7 +459,7 @@
                      <item>
                       <widget class="QCheckBox" name="checkbox_peak_group">
                        <property name="enabled">
-                        <bool>false</bool>
+                        <bool>true</bool>
                        </property>
                        <property name="text">
                         <string>Peak time</string>
@@ -469,7 +469,7 @@
                      <item>
                       <widget class="QCheckBox" name="checkbox_sem_group">
                        <property name="enabled">
-                        <bool>false</bool>
+                        <bool>true</bool>
                        </property>
                        <property name="text">
                         <string>SEM</string>
@@ -479,7 +479,7 @@
                      <item>
                       <widget class="QCheckBox" name="checkbox_fwhm_group">
                        <property name="enabled">
-                        <bool>false</bool>
+                        <bool>true</bool>
                        </property>
                        <property name="text">
                         <string>FWHM</string>
@@ -523,7 +523,7 @@
                         <x>0</x>
                         <y>0</y>
                         <width>148</width>
-                        <height>26</height>
+                        <height>290</height>
                        </rect>
                       </property>
                       <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -853,7 +853,7 @@
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_49">
                      <item>
-                      <widget class="QRadioButton" name="radioButton_26">
+                      <widget class="QRadioButton" name="local_normalization_individual_btn">
                        <property name="enabled">
                         <bool>true</bool>
                        </property>
@@ -888,7 +888,7 @@
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_50">
                      <item>
-                      <widget class="QRadioButton" name="radioButton_28">
+                      <widget class="QRadioButton" name="subtract_individual_btn">
                        <property name="enabled">
                         <bool>true</bool>
                        </property>
@@ -925,7 +925,7 @@
                      <item>
                       <widget class="QCheckBox" name="checkbox_amplitude_individual">
                        <property name="enabled">
-                        <bool>false</bool>
+                        <bool>true</bool>
                        </property>
                        <property name="text">
                         <string>Amplitude</string>
@@ -935,7 +935,7 @@
                      <item>
                       <widget class="QCheckBox" name="checkbox_peak_individual">
                        <property name="enabled">
-                        <bool>false</bool>
+                        <bool>true</bool>
                        </property>
                        <property name="text">
                         <string>Peak time</string>
@@ -945,7 +945,7 @@
                      <item>
                       <widget class="QCheckBox" name="checkbox_sem_individual">
                        <property name="enabled">
-                        <bool>false</bool>
+                        <bool>true</bool>
                        </property>
                        <property name="text">
                         <string>SEM</string>
@@ -955,7 +955,7 @@
                      <item>
                       <widget class="QCheckBox" name="checkbox_fwhm_individual">
                        <property name="enabled">
-                        <bool>false</bool>
+                        <bool>true</bool>
                        </property>
                        <property name="text">
                         <string>FWHM</string>
@@ -999,7 +999,7 @@
                         <x>0</x>
                         <y>0</y>
                         <width>148</width>
-                        <height>26</height>
+                        <height>290</height>
                        </rect>
                       </property>
                       <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -1117,7 +1117,7 @@
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_23">
                      <item>
-                      <widget class="QRadioButton" name="sub_baseline_btn">
+                      <widget class="QRadioButton" name="subtract_session_btn">
                        <property name="text">
                         <string>Subtract baseline</string>
                        </property>
@@ -1443,7 +1443,7 @@
      <x>0</x>
      <y>0</y>
      <width>1100</width>
-     <height>22</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
