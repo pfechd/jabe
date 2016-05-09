@@ -1,9 +1,6 @@
 import numpy as np
-import random
-from nibabel.affines import apply_affine
 
 import matplotlib.pyplot as plt
-import matplotlib as mpl
 from PyQt5.QtWidgets import QDialog
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
@@ -22,11 +19,9 @@ class CustomPlot(QDialog):
     Data is read from session object
     """
 
-    _colors = ['#0000FF', '#FF0000', '#00FF00', '#00002C', '#FF1AB9',
-               '#FFD300', '#005800', '#8484FF', '#9E4F46', '#00FFC1',
-               '#008495', '#00007B', '#95D34F', '#F69EDC', '#D312FF',
-               '#7B1A6A', '#F61261', '#FFC184', '#232309', '#8DA77B',
-               '#F68409', '#847200', '#72F6FF', '#9EC1FF', '#72617B']
+    _colors = ['#FF0000', '#0000FF', '#00FF00', '#00002C', '#FF1AB9',
+                '#FFD300', '#005800', '#8484FF', '#9E4F46', '#00FFC1',
+                '#008495', '#00007B', '#95D34F', '#F69EDC', '#D312FF']
 
     def __init__(self, parent, session):
         """
@@ -80,9 +75,6 @@ class CustomPlot(QDialog):
         self.ui.toolButton_zoom.clicked.connect(self.toolbar.zoom)
         self.ui.toolButton_anatomy.clicked.connect(self.tool_anatomy)
 
-        self.ui.peak_label.hide()
-        self.ui.amp_label.hide()
-
         self.setWindowTitle('Plot - ' + session.name)
         self.export_window = None
         self.add_stimuli_types()
@@ -100,7 +92,10 @@ class CustomPlot(QDialog):
 
         if parent.ui.checkbox_amplitude_session.isChecked():
             self.ui.checkBox_amp.setChecked(True)
-            
+
+        # Move the subplot to make space for the legend
+        self.fig.subplots_adjust(right=0.8)
+
         #if parent.ui.sem_checkbox_2.isChecked():
          #   self.ui.sem_checkbox_2.setChecked(True)
 
@@ -161,18 +156,19 @@ class CustomPlot(QDialog):
                 for stimuli_type,stimuli_data in before_smooth.iteritems():
                     x = np.arange(stimuli_data.shape[0])*self.session.get_tr()
                     curr = UnivariateSpline(x, stimuli_data, s=self.ui.spinBox.value())
-                    axis, = self.ax.plot(x, curr(x), color=self.get_color())
+                    axis, = self.ax.plot(x,curr(x), color=self.get_color(), label=stimuli_type + ", smoothed")
                     self.smooth.append(axis)
             else:
                 x = np.arange(before_smooth[self.ui.stimuliBox.currentText()].shape[0])*self.session.get_tr()
                 curr = UnivariateSpline(x, before_smooth[self.ui.stimuliBox.currentText()], s=self.ui.spinBox.value())
-                axis, = self.ax.plot(x, curr(x), color=self.get_color())
+                axis, = self.ax.plot(x,curr(x), color=self.get_color(), label=self.ui.stimuliBox.currentText() + ", smoothed")
                 self.smooth.append(axis)
 
-            self.canvas.draw()
         else:
             self.remove_smoothed_plots()
-            self.canvas.draw()
+
+        plt.legend(bbox_to_anchor=(1.01, 1), loc=2, borderaxespad=0., prop={'size':11})
+        self.canvas.draw()
 
     def remove_smoothed_plots(self):
         if self.smooth:
@@ -194,11 +190,11 @@ class CustomPlot(QDialog):
             mean = self.session.calculate_mean()
             self.plot_data(mean)
 
-            self.canvas.draw()
-
         else:
             self.remove_regular_plots()
-            self.canvas.draw()
+
+        plt.legend(bbox_to_anchor=(1.01, 1), loc=2, borderaxespad=0., prop={'size':11})
+        self.canvas.draw()
 
     def plot_sem(self):
         """
@@ -227,7 +223,7 @@ class CustomPlot(QDialog):
         """
         Amplitude checkbox callback. Annotate amplitude in graph with a horizontal line
         """
-        
+
         if self.ui.checkBox_amp.isChecked() and (self.regular or self.smooth):
             y = self.ax.lines[0].get_ydata()
             x = np.arange(len(y))
@@ -240,7 +236,6 @@ class CustomPlot(QDialog):
             self.amp.remove()
             self.amp = None
             self.canvas.draw()
-            self.ui.amp_label.hide()
 
     def plot_peak(self):
         """
@@ -259,8 +254,7 @@ class CustomPlot(QDialog):
                 self.peak_time.remove()
                 self.peak_time = None
                 self.canvas.draw()
-            self.ui.peak_label.hide()
-            
+
     def show_points(self):
         """
         Points checkbox callback. Show data points in graph
@@ -281,6 +275,9 @@ class CustomPlot(QDialog):
 
         :return: RGB hex string
         """
+
+        if len(self.ax.lines) == 0:
+            self.color_index = 0
 
         color = CustomPlot._colors[self.color_index]
         self.color_index = (self.color_index + 1) % len(CustomPlot._colors)
@@ -303,30 +300,35 @@ class CustomPlot(QDialog):
         if self.ui.checkBox_regular.isChecked():
             self.remove_smoothed_plots()
             self.ax.relim()
-            sessions = self.session.responses
             children = self.session.sessions + self.session.children
             for child in children:
-                child_mean = child.calculate_mean()
-                self.plot_data(child_mean)
+                if child.ready_for_calculation():
+                    child_mean = child.calculate_mean()
+                    self.plot_data(child_mean, child.name)
 
         else:
             self.remove_regular_plots()
 
         self.canvas.draw()
 
-    def plot_data(self, data_dict):
+    def plot_data(self, data_dict, name = None):
         """
         Plots the data that exists in the dictionary data_dict, depending on stimuli selected
         """
         if self.ui.stimuliBox.currentText() == "All":
             for stimuli_type, stimuli_data in data_dict.iteritems():
                 x = np.arange(len(stimuli_data))*self.session.get_tr()
-                axis, = self.ax.plot(x, stimuli_data, color=self.get_color())
+                if name:
+                    stimuli_type = name + "\n" + stimuli_type
+                axis, = self.ax.plot(x, stimuli_data, color=self.get_color(), label=stimuli_type)
                 self.regular.append(axis)
-        elif self.ui.stimuliBox.currentText() in data_dict:
-            data = data_dict[self.ui.stimuliBox.currentText()]
+        else:
+            type = self.ui.stimuliBox.currentText()
+            data = data_dict[type]
             x = np.arange(len(data))*self.session.get_tr()
-            axis, = self.ax.plot(x, data, color=self.get_color())
+            if name:
+                type = name + "\n" + type
+            axis, = self.ax.plot(x, data, color=self.get_color(), label=type)
             self.regular.append(axis)
 
     def plot_regular(self):

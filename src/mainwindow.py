@@ -1,6 +1,8 @@
 import json
 import os
 from collections import Iterable
+import sys
+from sys import platform as _platform
 
 from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QSpacerItem, QSizePolicy, QMessageBox
@@ -13,7 +15,13 @@ from stimuli import Stimuli
 from tree_items.grouptreeitem import GroupTreeItem
 from tree_items.individualtreeitem import IndividualTreeItem
 from tree_items.sessiontreeitem import SessionTreeItem
-from namedialog import NameDialog
+
+
+try:
+    import Cocoa    # Only used on Mac OS when building .app
+    COCOA_AVAILABLE = True
+except ImportError:
+    COCOA_AVAILABLE = False
 
 
 class MainWindow(QMainWindow):
@@ -98,6 +106,10 @@ class MainWindow(QMainWindow):
         self.save_configuration()
 
     def save_configuration(self):
+        """
+        Save configuration file (configuration.json).
+        """
+
         if self.ui.tree_widget.selectedItems():
             selected = self.ui.tree_widget.selectedItems()[0]
             current = []
@@ -117,12 +129,66 @@ class MainWindow(QMainWindow):
             'current': current
         }
 
-        with open('configuration.json', 'w') as f:
+        config_filename = 'configuration.json'
+
+        if hasattr(sys, 'frozen'):
+            dir_path = os.path.dirname(os.path.realpath(sys.argv[0]))
+        else:
+            dir_path = os.getcwd()
+
+        # Set OS specific path to configuration file
+        if _platform == "linux" or _platform == "linux2":
+            config_path = os.path.join(dir_path, config_filename)
+        elif _platform == "darwin":
+            if COCOA_AVAILABLE:
+                path = Cocoa.NSBundle.mainBundle().bundlePath()     # Get path to .app bundle (Mac only)
+
+            if hasattr(sys, 'frozen') and path.endswith('.app'):
+                config_path = os.path.join(path, 'Contents', config_filename)
+            else:
+                config_path = os.path.join(dir_path, config_filename)
+
+        elif _platform == "win32":
+            if hasattr(sys, 'frozen'):
+                dir_path = os.path.dirname(os.path.realpath(__file__))
+
+            config_path = os.path.join(dir_path, config_filename)
+
+        with open(config_path, 'w') as f:
             json.dump(configuration, f, indent=4)
 
     def load_configuration(self):
-        if os.path.exists('configuration.json'):
-            with open('configuration.json', 'r') as f:
+        """
+        Load configuration file (configuration.json).
+        """
+
+        config_filename = 'configuration.json'
+
+        if hasattr(sys, 'frozen'):
+            dir_path = os.path.dirname(os.path.realpath(sys.argv[0]))
+        else:
+            dir_path = os.getcwd()
+
+        # Set OS specific path to configuration file
+        if _platform == "linux" or _platform == "linux2":
+            config_path = os.path.join(dir_path, config_filename)
+        elif _platform == "darwin":
+            if COCOA_AVAILABLE:
+                path = Cocoa.NSBundle.mainBundle().bundlePath()     # Get path to .app bundle (Mac only)
+
+            if hasattr(sys, 'frozen') and path.endswith('.app'):
+                config_path = os.path.join(path, 'Contents', config_filename)
+            else:
+                config_path = os.path.join(dir_path, config_filename)
+
+        elif _platform == "win32":
+            if hasattr(sys, 'frozen'):
+                dir_path = os.path.dirname(os.path.realpath(__file__))
+
+            config_path = os.path.join(dir_path, config_filename)
+
+        if os.path.exists(config_path):
+            with open(config_path, 'r') as f:
                 configuration = json.load(f)
 
             missing_paths = self.check_paths(configuration)
