@@ -28,6 +28,7 @@ class CustomPlot(QDialog):
         """
         super(CustomPlot, self).__init__(parent)
         self.amp = None
+        self.peak_time = None
         self.fwhm = None
         self.regular = []
         self.smooth = []
@@ -103,19 +104,53 @@ class CustomPlot(QDialog):
                 self.fwhm = self.ax.axvspan(r1, r2, facecolor='g', alpha=0.3)
                 self.canvas.draw()
         else:
-            if self.fwhm is not None:
-                self.fwhm.remove()
+            self.remove_fwhm()
             self.canvas.draw()
 
     def replot(self):
         """
         Replot regular and smoothed curve. Used when changing the data to plot
         """
+        self.remove_peak_time()
+        self.remove_amplitude()
+        self.remove_fwhm()
+        self.remove_sem()
+
         self.remove_regular_plots()
         self.plot_regular()
         self.remove_smoothed_plots()
         self.plot_smooth()
+        
+        self.plot_amplitude()
+        self.plot_peak()
+        self.apply_fwhm()
+        self.plot_sem()
         self.set_allowed_buttons()
+
+    def remove_peak_time(self):
+        if self.peak_time:
+            self.peak_time.remove()
+            self.peak_time = None
+            self.canvas.draw()
+
+    def remove_sem(self):
+        if self.sem:
+            self.sem[0].remove()
+            for line in self.sem[1]:
+                line.remove()
+            for line in self.sem[2]:
+                line.remove()
+            self.sem = None
+
+    def remove_amplitude(self):
+        if self.amp:
+            self.amp.remove()
+            self.amp = None
+
+    def remove_fwhm(self):
+        if self.fwhm is not None:
+            self.fwhm.remove()
+            self.fwhm = None
 
     def remove_regular_plots(self):
         if self.regular:
@@ -160,11 +195,6 @@ class CustomPlot(QDialog):
         """
         if self.ui.checkBox_regular.isChecked():
             self.ax.relim()
-            #self.ui.checkBox_points.setChecked(False)
-            self.ui.checkBox_fwhm.setChecked(False)
-            self.ui.checkBox_amp.setChecked(False)
-            self.ui.checkBox_peak.setChecked(False)
-            self.ui.checkBox_sem.setChecked(False)
             mean = self.session.calculate_mean()
             self.plot_data(mean)
 
@@ -187,14 +217,7 @@ class CustomPlot(QDialog):
             self.sem =self.ax.errorbar(x, mean, yerr=sem[self.ui.stimuliBox.currentText()])
             self.canvas.draw()
         else:
-            if self.sem:
-                self.sem[0].remove()
-                for line in self.sem[1]:
-                    line.remove()
-                for line in self.sem[2]:
-                    line.remove()
-                self.sem = None
-
+            self.remove_sem()
             self.canvas.draw()
 
     def plot_amplitude(self):
@@ -211,9 +234,7 @@ class CustomPlot(QDialog):
             self.ui.amp_label.show()
             self.canvas.draw()
         else:
-            self.amp.remove()
-            self.amp = None
-            self.canvas.draw()
+            self.remove_amplitude()
             self.ui.amp_label.hide()
 
     def plot_peak(self):
@@ -229,10 +250,7 @@ class CustomPlot(QDialog):
             self.ui.peak_label.show()
             self.canvas.draw()
         else:
-            if self.peak_time:
-                self.peak_time.remove()
-                self.peak_time = None
-                self.canvas.draw()
+            self.remove_peak_time()
             self.ui.peak_label.hide()
             
     def show_points(self):
@@ -326,9 +344,13 @@ class CustomPlot(QDialog):
             self.ui.checkBox_sem.setEnabled(True)
         else:
             self.ui.checkBox_amp.setEnabled(False)
+            self.remove_amplitude()
             self.ui.checkBox_fwhm.setEnabled(False)
+            self.remove_fwhm()
             self.ui.checkBox_peak.setEnabled(False)
+            self.remove_peak_time()
             self.ui.checkBox_sem.setEnabled(False)
+            self.remove_sem()
         # Only allow smooth if we are plotting mean
         if self.ui.mean_response_btn.isChecked():
             self.ui.checkBox_smooth.setEnabled(True)
