@@ -1,9 +1,6 @@
 import numpy as np
-import random
-from nibabel.affines import apply_affine
 
 import matplotlib.pyplot as plt
-import matplotlib as mpl
 from PyQt5.QtWidgets import QDialog
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
@@ -22,11 +19,9 @@ class CustomPlot(QDialog):
     Data is read from session object
     """
 
-    _colors = ['#0000FF', '#FF0000', '#00FF00', '#00002C', '#FF1AB9',
-               '#FFD300', '#005800', '#8484FF', '#9E4F46', '#00FFC1',
-               '#008495', '#00007B', '#95D34F', '#F69EDC', '#D312FF',
-               '#7B1A6A', '#F61261', '#FFC184', '#232309', '#8DA77B',
-               '#F68409', '#847200', '#72F6FF', '#9EC1FF', '#72617B']
+    _colors = ['#FF0000', '#0000FF', '#00FF00', '#00002C', '#FF1AB9',
+                '#FFD300', '#005800', '#8484FF', '#9E4F46', '#00FFC1',
+                '#008495', '#00007B', '#95D34F', '#F69EDC', '#D312FF']
 
     def __init__(self, parent, session):
         """
@@ -280,6 +275,9 @@ class CustomPlot(QDialog):
 
         :return: RGB hex string
         """
+
+        if len(self.ax.lines) == 0:
+            self.color_index = 0
 
         color = CustomPlot._colors[self.color_index]
         self.color_index = (self.color_index + 1) % len(CustomPlot._colors)

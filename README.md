@@ -33,3 +33,17 @@ Then run the main python file with the following command:
 ~~~
 python main.py
 ~~~
+
+# Build standalone application
+
+Specific libraries required:
+
+* pyinstaller
+* pyobjc-framework-Cocoa (Mac Only)
+
+To build the application run:
+
+~~~
+make dist
+~~~
+
