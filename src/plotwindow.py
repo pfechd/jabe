@@ -311,6 +311,7 @@ class CustomPlot(QDialog):
         else:
             self.remove_regular_plots()
 
+        plt.legend(bbox_to_anchor=(1.01, 1), loc=2, borderaxespad=0., prop={'size':11})
         self.canvas.draw()
 
     def plot_data(self, data_dict, name = None):
