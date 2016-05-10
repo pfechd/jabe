@@ -1,22 +1,19 @@
 import unittest
-import numpy as np
-import scipy.io as sio
-from src.python import mask
+import mock
+import nibabel
+from src.mask import Mask
 
 
-class TestBrain(unittest.TestCase):
+class TestMask(unittest.TestCase):
 
-    @classmethod
-    def setUpClass(cls):
-        cls.mask = mask.Mask('src/python/tests/test-data/mask.nii')
+    @mock.patch('src.mask.nib')
+    def test_mask(self, mock_nib):
+        Mask('src/tests/test-data/mask.nii')
+        mock_nib.load.assert_called_once_with('src/tests/test-data/mask.nii')
 
-    def test_mask_loaded_correctly(self):
-        expected_mask = sio.loadmat('src/python/tests/test-data/expectedMask.mat')['mask']
-        self.assertEqual(np.array_equal(self.mask.data, expected_mask), True)
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.mask = None
+    def test_get_configuration(self):
+        ref = Mask('src/tests/test-data/mask.nii')
+        self.assertEqual({'path': 'src/tests/test-data/mask.nii'}, ref.get_configuration())
 
 
 if __name__ == '__main__':
