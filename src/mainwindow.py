@@ -320,7 +320,7 @@ class MainWindow(QMainWindow):
 
     def create_mask_button_pressed(self):
         """ Callback function, run when the create mask button is pressed."""
-        if self.ui.tree_widget.selectedItems()[0].brain.brain_file:
+        if self.ui.tree_widget.selectedItems()[0].brain:
             CreateMaskWindow(self, self.ui.tree_widget.selectedItems()[0].brain.brain_file)
         else:
             QMessageBox.warning(self, "Warning", "You have not chosen an EPI-image. Please choose an EPI-image.")
