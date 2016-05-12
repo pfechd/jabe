@@ -84,7 +84,7 @@ class Group(object):
             temp_anatomy = Brain(path)
         except IOError:
             return path + " does not exist"
-        except nib.wrapstruct.WrapStructError:
+        except:
             return path + " could not be opened. It might be corrupted"
         if len(temp_anatomy.sequence.shape) != 3:
             return "The data has " + str(len(temp_anatomy.sequence.shape)) + " dimensions instead of 3"
@@ -95,8 +95,8 @@ class Group(object):
     def load_stimuli(self, path, tr):
         try:
             temp_stimuli = Stimuli(path, tr)
-        except (KeyError, TypeError):
-            return "The file is not a proper stimuli file"
+        except:
+            return "The file is not a proper stimuli file. It might be corrupted or in the wrong format"
         if self.brain and temp_stimuli.data[-1, 0] > self.brain.images:
             return "The times in the stimuli file are too long compared to the length of the EPI sequence"
         else:
@@ -108,7 +108,7 @@ class Group(object):
             temp_mask = Mask(path)
         except IOError:
             return path + " does not exist"
-        except nib.wrapstruct.WrapStructError:
+        except:
             return path + " could not be opened. It might be corrupted"
         if len(temp_mask.data.shape) != 3:
             return "The data has " + str(len(temp_mask.data.shape)) + " dimensions instead of 3"
