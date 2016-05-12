@@ -58,3 +58,28 @@ class Mask:
 
     def get_configuration(self):
         return {'path': self.path}
+
+    def get_index_of_roi(self):
+        most_ones = np.array([[0,0,0]])
+        ones_amount = 0
+        for i in range(self.data.shape[0]):
+            ones = np.count_nonzero(self.data[i,:,:])
+            if ones > ones_amount:
+                ones_amount = ones
+                most_ones[0][0] = i
+
+        ones_amount = 0
+        for i in range(self.data.shape[1]):
+            ones = np.count_nonzero(self.data[:,i,:])
+            if ones > ones_amount:
+                ones_amount = ones
+                most_ones[0][1] = i
+
+        ones_amount = 0
+        for i in range(self.data.shape[2]):
+            ones = np.count_nonzero(self.data[:,:,i])
+            if ones > ones_amount:
+                ones_amount = ones
+                most_ones[0][2] = i
+
+        return most_ones

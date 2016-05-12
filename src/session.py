@@ -2,13 +2,13 @@
 
 import numpy as np
 import nibabel as nib
-from scipy.stats import sem
 from mask import Mask
-from stimulionset import StimuliOnset
-from data import Data
+from src.brain import Brain
+from stimuli import Stimuli
+from group import Group
 
 
-class Session(Data):
+class Session(Group):
     """
     Class used for representing and doing calculations with brain data
 
@@ -16,38 +16,50 @@ class Session(Data):
     data is stored in the member data
     """
 
-    def __init__(self, name=None, configuration=None):
+    def __init__(self, configuration=None):
         super(Session, self).__init__()
+
+        self.brain = None
+        self.masked_data = None
+        self.did_global_normalization = False
+        self.did_percent_normalization = False
+        self.used_mask = None
+        self.used_stimuli = None
 
         if configuration:
             self.load_configuration(configuration)
-        elif name:
-            self.name = name
 
     def load_configuration(self, configuration):
-        self.name = configuration['name']
+        if 'name' in configuration:
+            self.name = configuration['name']
+
+        if 'description' in configuration:
+            self.description = configuration['description']
+
+        if 'plot_settings' in configuration:
+            self.plot_settings = configuration['plot_settings']
 
         if 'path' in configuration:
-            self.load_data(configuration['path'])
+            self.load_sequence(configuration['path'])
 
         if 'anatomy_path' in configuration:
             self.load_anatomy(configuration['anatomy_path'])
 
         if 'mask' in configuration:
-            self.mask = Mask(configuration['mask']['path'])
+            self.load_mask(configuration['mask']['path'])
 
         if 'stimuli' in configuration:
-            self.stimuli = StimuliOnset(configuration['stimuli']['path'],
-                                        configuration['stimuli']['tr'])
+            self.load_stimuli(configuration['stimuli']['path'],
+                                   configuration['stimuli']['tr'])
 
     def get_configuration(self):
         configuration = {}
 
-        if self.path:
-            configuration['path'] = self.path
+        if self.brain:
+            configuration['path'] = self.brain.path
 
-        if self.anatomy_path:
-            configuration['anatomy_path'] = self.anatomy_path
+        if self.anatomy:
+            configuration['anatomy_path'] = self.anatomy.path
 
         if self.mask:
             configuration['mask'] = self.mask.get_configuration()
@@ -58,63 +70,130 @@ class Session(Data):
         if self.name:
             configuration['name'] = self.name
 
+        if self.description:
+            configuration['description'] = self.description
+
+        if self.plot_settings:
+            configuration['plot_settings'] = self.plot_settings
+
         return configuration
 
-    def calculate_mean(self):
+    def ready_for_calculation(self, stimuli=None, mask=None):
+        return self.brain is not None and \
+               super(Session, self).ready_for_calculation(stimuli, mask)
+
+    def settings_changed(self, percentage, global_, mask, stimuli):
         """
-        Calculate the mean of every response grouped by stimuli type
-
-        :return: A dictionary where the key is the stimuli type and the value
-                 is the vector containing the mean value for the given time
-                 frame.
+        Given the settings the method returns whether the same settings was
+        run in the previous aggregation.
         """
-        mean_responses = {}
+        if not mask:
+            mask = self.mask
+        if not stimuli:
+            stimuli = self.stimuli
 
-        for stimuli_type, stimuli_data in self.responses.iteritems():
-            response_mean = np.zeros(stimuli_data.shape[1])
+        return any([self.did_percent_normalization != percentage,
+                    self.did_global_normalization != global_,
+                    self.used_mask != mask,
+                    self.used_stimuli != stimuli])
 
-            for i in range(stimuli_data.shape[1]):
-                rm1 = np.nonzero(stimuli_data[:, i])
-                if rm1[0].any():
-                    response_mean[i] = np.mean(stimuli_data[rm1[0], i])
+    def _aggregate(self, percentage, global_, mask, stimuli):
+        """
+        Aggregate response data from children with the given settings. Do not
+        call this method directly, instead use the `aggregate` method which
+        caches the results.
 
-            mean_responses[stimuli_type] = response_mean
+        :return: A dictionary stimuli-values as keys NxM matrices as values
+                 where N is the number of stimuli and M is the length of the
+                 shortest stimuli.
+        """
+        if not mask:
+            mask = self.mask
+        if not stimuli:
+            stimuli = self.stimuli
 
-        return mean_responses
+        # Save settings used
+        self.did_percent_normalization = percentage
+        self.did_global_normalization = global_
+        self.used_mask = mask
+        self.used_stimuli = stimuli
 
-    def calculate_std(self):
-        """ Calculate the standard deviation of the response """
-        responses_std = {}
+        self.apply_mask(mask)
+        self.separate_into_responses(stimuli, percentage, global_)
 
-        for stimuli_type, stimuli_data in self.responses.iteritems():
-            response_std = np.zeros(stimuli_data.shape[1])
+        return self.responses
 
-            for i in range(stimuli_data.shape[1]):
-                rm1 = np.nonzero(stimuli_data[:, i])
-                if rm1[0].any():
-                    response_std[i] = np.std(stimuli_data[rm1[0], i], ddof=1)
+    def separate_into_responses(self, stimuli, percentage, global_):
+        number_of_stimuli = stimuli.amount
 
-            responses_std[stimuli_type] = response_std
+        shortest_interval = min([j - i for i, j in zip(stimuli.data[:-1, 0], stimuli.data[1:, 0])])
 
-        return responses_std
+        self.responses = {}
 
-    def calculate_sem(self):
-        """ Calculate the standard error of the mean (SEM) of the response """
-        responses_sem = {}
+        # Ignore the images after the last time stamp
+        for i in range(number_of_stimuli - 1):
+            start = stimuli.data[i, 0]
+            end = start + shortest_interval
+            response = self.masked_data[:, (start - 1):(end - 1)]
+            response = self.normalize_sequence(start, end, response, percentage, global_)
+            intensity = str(stimuli.data[i, 1])
+            if intensity in self.responses:
+                self.responses[intensity] = np.concatenate((self.responses[intensity], response))
+            else:
+                self.responses[intensity] = response
 
-        for stimuli_type, stimuli_data in self.responses.iteritems():
-            response_sem = np.zeros(stimuli_data.shape[1])
+    def apply_mask(self, mask):
+        """
+        Apply the given mask to the brain and save the data for further
+        calculations in the member masked_data.
 
-            for i in range(stimuli_data.shape[1]):
-                rm1 = np.nonzero(stimuli_data[:, i])
-                if rm1[0].any():
-                    response_sem[i] = sem(stimuli_data[rm1[0], i], ddof=1)
+        :param mask: Mask object which should be applied
+        """
+        self.masked_data = np.zeros((1, self.brain.images))
 
-            responses_sem[stimuli_type] = response_sem
+        for i in range(self.brain.images):
+            visual_brain = mask.data * self.brain.sequence[:, :, :, i]
+            visual_brain_time = np.nonzero(visual_brain)
+            self.masked_data[:, i] = np.mean(visual_brain[visual_brain_time])
 
-        return responses_sem
+    def normalize_sequence(self, start, end, response, percentage, global_):
+        """
+        Applies normalization on the response data depending on type and reference point.
 
-    def get_voxel_size(self):
-        """ Returns the size of one voxel in the image. """
-        return self.brain_file._header.get_zooms()
+        :param start: the response sequence' start index in data.
+        :param end: the response sequence' last index in data.
+        :param response: the data sequence to be normalized
+        :param percentage: Whether percentual change from reference value should be shown.
+        If false, the response will be normalized by subtraction of the reference value.
+        :param global_: Whether reference value should be the global mean.
+        If false, reference value will be the start value of the response
+        """
+        if global_:
+            time_indexes = list(range(start, end))
+            ref = np.mean(self.brain.sequence[:, :, :, time_indexes], (0, 1, 2))     # Mean of spatial dimensions
+        else:
+            ref = np.ones(end - start) * response[0][0]
 
+        if percentage:
+            if ref.all():
+                return (response / ref - 1) * 100
+        else:
+            return response - ref
+
+    def load_sequence(self, path):
+        """ Load the sequence from the path. Returns an error message if something went wrong, otherwise None """
+        try:
+            temp_brain = Brain(path)
+        except IOError:
+            return path + " does not exist"
+        except nib.wrapstruct.WrapStructError:
+            return path + " could not be opened. It might be corrupted"
+        if len(temp_brain.sequence.shape) != 4:
+            return "The data has " + str(len(temp_brain.sequence.shape)) + " dimensions instead of 4"
+        elif self.mask and self.mask.data.shape != temp_brain.sequence.shape[0:3]:
+            return "The EPI sequence is not the same size as the mask"
+        elif self.stimuli and self.stimuli.data[-1,0] > temp_brain.images:
+            return "The EPI sequence is too short compared to the times in the stimuli file"
+        else:
+            self.brain = temp_brain
+            return None

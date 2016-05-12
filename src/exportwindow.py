@@ -47,9 +47,7 @@ class ExportWindow(QDialog):
                     else:
                         txtdata = np.concatenate((txtdata,stim_data.reshape(1, stim_data.shape[0])))
 
-                print txtdata
                 np.savetxt(filename[0] + filename[1], txtdata, "%.18f")
             else:
                 np.savetxt(filename[0] + filename[1], data[self.stimuli_type], "%.18f")
         self.close()
-

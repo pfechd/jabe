@@ -66,10 +66,10 @@ class IndividualTreeItem(QTreeWidgetItem, Group):
         :return: List of QTreeWidgetItems
         """
         top_tree_items = []
-        for session in self.children:
+        for session in self.sessions:
             tree_item = QTreeWidgetItem([session.name])
-            if session.path:
-                epi_path_item = QTreeWidgetItem(['EPI: ' + session.path.split('/')[-1]])
+            if session.brain:
+                epi_path_item = QTreeWidgetItem(['EPI: ' + session.brain.path.split('/')[-1]])
             else:
                 epi_path_item = QTreeWidgetItem(['EPI: None'])
 
@@ -94,7 +94,7 @@ class IndividualTreeItem(QTreeWidgetItem, Group):
 
         :param layout: QLayout
         """
-        for session in self.children:
+        for session in self.sessions:
             box = QtWidgets.QCheckBox(session.name)
             layout.addWidget(box)
 
