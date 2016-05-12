@@ -5,7 +5,7 @@ import sys
 from sys import platform as _platform
 
 from PyQt5 import QtWidgets, QtGui
-from PyQt5.QtWidgets import QMainWindow, QFileDialog, QSpacerItem, QSizePolicy, QMessageBox
+from PyQt5.QtWidgets import QMainWindow, QFileDialog, QSpacerItem, QSizePolicy, QMessageBox, QInputDialog
 
 from generated_ui.mainwindow import Ui_MainWindow
 from mask import Mask
@@ -318,12 +318,19 @@ class MainWindow(QMainWindow):
 
     def stimuli_button_pressed(self):
         """ Callback function, run when the choose stimuli button is pressed."""
-        file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.mat)")
-        if file_name[0]:
-            self.load_stimuli(file_name[0])
-        else:
-            print 'Stimuli not chosen'
-        self.update_gui()
+
+        tr = QInputDialog.getDouble(self, "Time interval", "Enter time interval between images (tr)", 0.0, 0.0)
+
+        if tr[0] > 0.0:
+            file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.mat)")
+            if file_name[0]:
+                self.load_stimuli(file_name[0], tr[0])
+            else:
+                print 'Stimuli not chosen'
+            self.update_gui()
+        elif tr[1]:
+            QMessageBox.warning(self, "Error", "Time interval has to be greater than 0")
+
 
     def create_stimuli_button_pressed(self):
         """ Callback function, run when the create simuli button is pressed."""
@@ -357,10 +364,10 @@ class MainWindow(QMainWindow):
                 self.mask_button_pressed()
             self.update_gui()
 
-    def load_stimuli(self, path):
+    def load_stimuli(self, path, tr):
         if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
             session = self.ui.tree_widget.selectedItems()[0]
-            error = session.load_stimuli(path, 0.5)
+            error = session.load_stimuli(path, tr)
             if error:
                 QMessageBox.warning(self, "File error", error)
                 self.stimuli_button_pressed()
