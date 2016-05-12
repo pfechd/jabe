@@ -75,6 +75,7 @@ class CreateMaskWindow(QDialog):
             coordinate[1] = round(coordinate[1])
             coordinate[2] = round(coordinate[2])
 
+            print "coordinate"
             print coordinate
 
             # If the coordinates together with radius_width are valid create a mask
@@ -87,7 +88,6 @@ class CreateMaskWindow(QDialog):
                 voxel_width = ((float(self.ui.lineEdit_width.text())/2)*self.brain_file._header.get_zooms()[0],
                                (float(self.ui.lineEdit_width.text())/2)*self.brain_file._header.get_zooms()[1],
                                 (float(self.ui.lineEdit_width.text())/2)*self.brain_file._header.get_zooms()[2])
-            print voxel_width
             print self.brain_file.get_data().shape
 
             if coordinate[0] <= self.brain_file.get_data().shape[0]\
@@ -99,6 +99,8 @@ class CreateMaskWindow(QDialog):
                     and (coordinate[0] - voxel_width[0]) >= 0 and (coordinate[1] - voxel_width[1]) >= 0\
                     and (coordinate[2] - voxel_width[2]) >= 0:
                     file_name = QFileDialog.getSaveFileName(self, "Save file as nii", "", ".nii")
+                    if file_name[0] == "":
+                        return
                     path = file_name[0]+file_name[1]
                     shape = self.ui.comboBox_shape.currentText()
                     width = (float(self.ui.lineEdit_width.text()), float(self.ui.lineEdit_width.text()),
