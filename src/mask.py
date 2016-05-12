@@ -35,13 +35,13 @@ class Mask:
 
             # Set ones in a volume of a cube around the specified coordinate
             if shape == "Box":
-                for z in range(coordinate[2] - width[2] / 2*voxel_size[2],
-                               coordinate[2] + width[2] / 2*voxel_size[2] + 1):
-                    for y in range(coordinate[1] - width[1] / 2*voxel_size[1],
-                                   coordinate[1] + width[1] / 2*voxel_size[1] + 1):
-                        for x in range(coordinate[0] - width[0] / 2*voxel_size[0],
-                                       coordinate[0] + width[0] / 2*voxel_size[0] + 1):
-                            self.data[z, y, x] = 1
+                for z in range(int(coordinate[2] - width[2] / (2*voxel_size[2])),
+                               int(coordinate[2] + width[2] / 2*voxel_size[2] + 1)):
+                    for y in range(int(coordinate[1] - width[1] / 2*voxel_size[1]),
+                                   int(coordinate[1] + width[1] / 2*voxel_size[1] + 1)):
+                        for x in range(int(coordinate[0] - width[0] / 2*voxel_size[0]),
+                                       int(coordinate[0] + width[0] / 2*voxel_size[0] + 1)):
+                            self.data[x, y, z] = 1
 
             # Set ones in every coordinate within the distance radius_width around the coordinate, making it a sphere
             if shape == "Sphere":
@@ -50,7 +50,7 @@ class Mask:
                         for x in range(0, size[0]):
                             if (coordinate[2] - z) ** 2 + (coordinate[1] - y) ** 2 + (
                                         coordinate[0] - x) ** 2 <= width[0] ** 2:
-                                self.data[z, y, x] = 1
+                                self.data[x, y, z] = 1
 
             # Create a nifti file containing the data and save it to path
             mask_file = nib.Nifti1Image(self.data, np.eye(4,4))
