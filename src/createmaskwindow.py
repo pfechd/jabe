@@ -64,53 +64,62 @@ class CreateMaskWindow(QDialog):
     def save_mask_window(self):
         """ Creates and saves the mask """
 
-        # If the coordinates and radius_width are numbers, then choose a given path and create the mask
-        if self.is_pos_number(self.ui.lineEdit_width.text()) and self.is_pos_number(self.ui.lineEdit_x.text())\
-                and self.is_pos_number(self.ui.lineEdit_y.text()) and self.is_pos_number(self.ui.lineEdit_z.text()):
+        width = self.ui.lineEdit_width.text().replace(",", ".")
+        x = self.ui.lineEdit_x.text().replace(",", ".")
+        y = self.ui.lineEdit_y.text().replace(",", ".")
+        z = self.ui.lineEdit_z.text().replace(",", ".")
 
-            # Convert coordinates and shape_size to voxels, using the affine matrix of the brain file
-            coordinate = np.array([float(self.ui.lineEdit_x.text()), float(self.ui.lineEdit_y.text()), float(self.ui.lineEdit_z.text())])
-            coordinate = apply_affine(np.linalg.inv(self.brain_file._affine), coordinate)
-            coordinate[0] = round(coordinate[0])
-            coordinate[1] = round(coordinate[1])
-            coordinate[2] = round(coordinate[2])
-
-            print "coordinate"
-            print coordinate
-
-            # If the coordinates together with radius_width are valid create a mask
-            # If not valid send an error message
-            if self.ui.comboBox_shape.currentText() == "Sphere":
-                voxel_width = (float(self.ui.lineEdit_width.text())*self.brain_file._header.get_zooms()[0],
-                               float(self.ui.lineEdit_width.text())*self.brain_file._header.get_zooms()[1],
-                               float(self.ui.lineEdit_width.text())*self.brain_file._header.get_zooms()[2],)
+        # If the coordinates and radius_width are valid numbers, then choose a given path and create the mask
+        if self.is_pos_number(width) and self.is_pos_number(x) and self.is_pos_number(y) and self.is_pos_number(z):
+            if float(width) == 0:
+                QMessageBox.warning(
+                self, "Warning", "You have entered invalid width/radius. Please enter numbers larger than zero.")
             else:
-                voxel_width = ((float(self.ui.lineEdit_width.text())/2)*self.brain_file._header.get_zooms()[0],
-                               (float(self.ui.lineEdit_width.text())/2)*self.brain_file._header.get_zooms()[1],
-                                (float(self.ui.lineEdit_width.text())/2)*self.brain_file._header.get_zooms()[2])
-            print self.brain_file.get_data().shape
+                # Convert coordinates and shape_size to voxels, using the affine matrix of the brain file
+                coordinate = np.array([float(self.ui.lineEdit_x.text()), float(self.ui.lineEdit_y.text()), float(self.ui.lineEdit_z.text())])
+                coordinate = apply_affine(np.linalg.inv(self.brain_file._affine), coordinate)
+                coordinate[0] = round(coordinate[0])
+                coordinate[1] = round(coordinate[1])
+                coordinate[2] = round(coordinate[2])
 
-            if coordinate[0] <= self.brain_file.get_data().shape[0]\
-                and coordinate[1] <= self.brain_file.get_data().shape[1]\
-                    and coordinate[2] <= self.brain_file.get_data().shape[2]:
-                if (coordinate[0] + voxel_width[0]) <= self.brain_file.get_data().shape[0]\
-                   and (coordinate[1] + voxel_width[1]) <= self.brain_file.get_data().shape[1]\
-                    and (coordinate[2] + voxel_width[2]) <= self.brain_file.get_data().shape[2]\
-                    and (coordinate[0] - voxel_width[0]) >= 0 and (coordinate[1] - voxel_width[1]) >= 0\
-                    and (coordinate[2] - voxel_width[2]) >= 0:
-                    file_name = QFileDialog.getSaveFileName(self, "Save file as nii", "", ".nii")
-                    if file_name[0] == "":
-                        return
-                    path = file_name[0]+file_name[1]
-                    shape = self.ui.comboBox_shape.currentText()
-                    width = (float(self.ui.lineEdit_width.text()), float(self.ui.lineEdit_width.text()),
-                             float(self.ui.lineEdit_width.text()))
-                    Mask(path, shape, coordinate, width, self.brain_file)
-                    self.close()
-                    self.parent().load_mask(path)
+                # If the coordinates together with radius_width are valid create a mask
+                # If not valid send an error message
+                if self.ui.comboBox_shape.currentText() == "Sphere":
+                    voxel_width = (float(width)*self.brain_file._header.get_zooms()[0],
+                                   float(width)*self.brain_file._header.get_zooms()[1],
+                                   float(width)*self.brain_file._header.get_zooms()[2],)
                 else:
-                    QMessageBox.warning(self, "Warning", "You have entered invalid values in width. Please enter a value within the dimensions.")
-            else:
-                QMessageBox.warning(self, "Warning", "You have entered invalid values in coordinate. Please enter values within the dimensions.")
+                    voxel_width = ((float(width)/2)*self.brain_file._header.get_zooms()[0],
+                                    (float(width)/2)*self.brain_file._header.get_zooms()[1],
+                                    (float(width)/2)*self.brain_file._header.get_zooms()[2])
+
+                # Check if coordinates is within brain data
+                # Generates parameters to and call Mask function
+                if coordinate[0] <= self.brain_file.get_data().shape[0]\
+                        and coordinate[1] <= self.brain_file.get_data().shape[1]\
+                        and coordinate[2] <= self.brain_file.get_data().shape[2]:
+                    if (coordinate[0] + voxel_width[0]) <= self.brain_file.get_data().shape[0]\
+                            and (coordinate[1] + voxel_width[1]) <= self.brain_file.get_data().shape[1]\
+                            and (coordinate[2] + voxel_width[2]) <= self.brain_file.get_data().shape[2]\
+                            and (coordinate[0] - voxel_width[0]) >= 0 and (coordinate[1] - voxel_width[1]) >= 0\
+                            and (coordinate[2] - voxel_width[2]) >= 0:
+                        file_name = QFileDialog.getSaveFileName(self, "Save file as nii", "", ".nii")
+                        if file_name[0] == "":
+                            return
+                        path = file_name[0]+file_name[1]
+                        shape = self.ui.comboBox_shape.currentText()
+                        width = (float(width), float(width), float(width))
+                        Mask(path, shape, coordinate, width, self.brain_file)
+                        self.close()
+                        self.parent().load_mask(path)
+                    else:
+                        QMessageBox.warning(
+                            self, "Warning",
+                            "You have entered invalid values in width. Please enter a value within the dimensions.")
+                else:
+                    QMessageBox.warning(
+                        self, "Warning",
+                        "You have entered invalid values in coordinate. Please enter values within the dimensions.")
         else:
-            QMessageBox.warning(self, "Warning", "You have entered one or more invalid values. Please enter only numbers.")
+            QMessageBox.warning(
+                self, "Warning", "You have entered one or more invalid values. Please enter only numbers.")
