@@ -170,7 +170,9 @@ class Session(Group):
         """
         if global_:
             time_indexes = list(range(start, end))
-            ref = np.mean(self.brain.sequence[:, :, :, time_indexes], (0, 1, 2))     # Mean of spatial dimensions
+            ref = np.sum(self.brain.sequence[:, :, :, time_indexes], (0, 1, 2))     # Mean of spatial dimensions
+            number_of_samples = np.array([np.nonzero(self.brain.sequence[:, :, :, i])[0].size for i in time_indexes]) 
+            ref = ref / number_of_samples
         else:
             ref = np.ones(end - start) * response[0][0]
 
