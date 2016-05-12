@@ -30,7 +30,8 @@ class Session(Group):
             self.load_configuration(configuration)
 
     def load_configuration(self, configuration):
-        self.name = configuration['name']
+        if 'name' in configuration:
+            self.name = configuration['name']
 
         if 'description' in configuration:
             self.description = configuration['description']
