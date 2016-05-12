@@ -74,6 +74,16 @@ class StimuliWindow(QDialog):
 
                 if self.is_number(time) and self.is_number(value):
                     stimuli.append([float(time), float(value)])
+                    if row == all_rows-1:
+                        # If the end of the table has been reached,
+                        # put the value from the end time box at the end of the array
+                        time = self.ui.end_time_box.text()
+
+                        if self.is_number(time):
+                            stimuli.append([float(time), 0])
+                        else:
+                            QMessageBox.warning(self, "Warning", "You have entered an inaccurate end time value. Please enter only a number.")
+                            return []
                 else:
                     QMessageBox.warning(self, "Warning", "You have entered one or more invalid values. Please enter only numbers.")
                     return []
