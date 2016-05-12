@@ -304,8 +304,9 @@ class CustomPlot(QDialog):
         """
         Add all stimuli types that exists in the data to a combobox
         """
-        self.ui.stimuliBox.addItem("All")
         data = self.session.calculate_mean()
+        if len(data) > 1:
+            self.ui.stimuliBox.addItem("All")
         for stimuli_type in data:
             self.ui.stimuliBox.addItem(stimuli_type)
 
