@@ -49,6 +49,10 @@ class MainWindow(QMainWindow):
         self.ui.add_session_stimuli_btn.clicked.connect(self.stimuli_button_pressed)
         self.ui.create_session_stimuli_btn.clicked.connect(self.create_stimuli_button_pressed)
         self.ui.add_group_menu_btn.triggered.connect(self.add_group_pressed)
+        self.ui.load_config_menu_btn.triggered.connect(self.load_configuration_button_pressed)
+        self.ui.save_config_menu_btn.triggered.connect(self.save_configuration)
+        self.ui.save_config_as_menu_btn.triggered.connect(self.save_configuration_as)
+        self.ui.new_config_menu_btn.triggered.connect(self.create_new_configuration)
         self.ui.add_group_btn.clicked.connect(self.add_group_pressed)
         self.ui.exit_menu_btn.triggered.connect(self.exit_button_pressed)
         self.ui.add_individual_btn.clicked.connect(self.add_item_clicked)
@@ -88,9 +92,9 @@ class MainWindow(QMainWindow):
         self.individual_buttons = [self.ui.extract_session_btn, self.ui.add_session_epi_btn,
                                    self.ui.add_session_mask_btn, self.ui.add_session_stimuli_btn]
 
+        self.current_config_path = ""
         self.ui.tree_widget.setColumnWidth(0, 200)
         self.groups = []
-        self.load_configuration()
         self.update_gui()
 
     def check_paths(self, configuration, type = None):
@@ -119,12 +123,25 @@ class MainWindow(QMainWindow):
         return missing_paths
 
     def closeEvent(self, event):
-        self.save_configuration()
+        button = QMessageBox.question(self,"Save","Do you want to save the current configuration before quitting?",QMessageBox.Yes | QMessageBox.No)
+        if (button == QMessageBox.Yes):
+            self.save_configuration()
+
+    def save_configuration_as(self):
+        config_file = QFileDialog.getSaveFileName(self,"","",".json")
+        if config_file[0]:
+            self.current_config_path = config_file[0] + config_file[1]
+            print self.current_config_path
+            self.save_configuration()
 
     def save_configuration(self):
         """
         Save configuration file (configuration.json).
         """
+        config_filename = self.current_config_path
+        if config_filename == "":
+            self.save_configuration_as()
+            return
 
         if self.ui.tree_widget.selectedItems():
             selected = self.ui.tree_widget.selectedItems()[0]
@@ -144,8 +161,6 @@ class MainWindow(QMainWindow):
             'groups': [group.get_configuration() for group in self.groups],
             'current': current
         }
-
-        config_filename = 'configuration.json'
 
         if hasattr(sys, 'frozen'):
             dir_path = os.path.dirname(os.path.realpath(sys.argv[0]))
@@ -173,12 +188,19 @@ class MainWindow(QMainWindow):
         with open(config_path, 'w') as f:
             json.dump(configuration, f, indent=4)
 
+    def load_configuration_button_pressed(self):
+        config_path = QFileDialog.getOpenFileName(self, 'Open file', "", "(*.json)")
+        if config_path[0]:
+            self.current_config_path = config_path[0]
+            print self.current_config_path
+            self.load_configuration()
+
     def load_configuration(self):
         """
         Load configuration file (configuration.json).
         """
 
-        config_filename = 'configuration.json'
+        config_filename = self.current_config_path
 
         if hasattr(sys, 'frozen'):
             dir_path = os.path.dirname(os.path.realpath(sys.argv[0]))
@@ -213,6 +235,9 @@ class MainWindow(QMainWindow):
                                     "\n".join(missing_paths))
 
 
+            self.ui.tree_widget.clear()
+            self.groups = []
+
             for group_configuration in configuration['groups']:
                 group_tree_item = GroupTreeItem()
                 self.ui.tree_widget.addTopLevelItem(group_tree_item)
@@ -239,6 +264,11 @@ class MainWindow(QMainWindow):
                                 mid_item.setSelected(False)
 
             self.update_gui()
+
+    def create_new_configuration(self):
+        self.current_config_path = ""
+        self.groups = []
+        self.ui.tree_widget.clear()
 
     def add_group_pressed(self):
         current_row = len(self.groups)

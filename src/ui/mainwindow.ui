@@ -111,7 +111,7 @@
     <item>
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="group_page">
        <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -998,8 +998,8 @@
                        <rect>
                         <x>0</x>
                         <y>0</y>
-                        <width>148</width>
-                        <height>290</height>
+                        <width>134</width>
+                        <height>20</height>
                        </rect>
                       </property>
                       <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -1450,6 +1450,11 @@
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="new_config_menu_btn"/>
+    <addaction name="save_config_menu_btn"/>
+    <addaction name="save_config_as_menu_btn"/>
+    <addaction name="load_config_menu_btn"/>
+    <addaction name="separator"/>
     <addaction name="add_group_menu_btn"/>
     <addaction name="separator"/>
     <addaction name="exit_menu_btn"/>
@@ -1477,6 +1482,26 @@
   <action name="actionManual">
    <property name="text">
     <string>Manual</string>
+   </property>
+  </action>
+  <action name="save_config_menu_btn">
+   <property name="text">
+    <string>Save configuration</string>
+   </property>
+  </action>
+  <action name="new_config_menu_btn">
+   <property name="text">
+    <string>New configuration</string>
+   </property>
+  </action>
+  <action name="load_config_menu_btn">
+   <property name="text">
+    <string>Load configuration</string>
+   </property>
+  </action>
+  <action name="save_config_as_menu_btn">
+   <property name="text">
+    <string>Save configuration as...</string>
    </property>
   </action>
  </widget>
