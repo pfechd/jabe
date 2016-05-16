@@ -29,7 +29,26 @@ class TestSession(unittest.TestCase):
 
         self.assertEqual(ref.get_configuration(), expected)
 
+    def test_settings_changed(self):
+        ref = Session()
 
+        self.assertFalse(ref.settings_changed(False, False, None, None))
+        self.assertTrue(ref.settings_changed(True, False, None, None))
+
+    @unittest.skip('Not finished')
+    def test_load_config(self):
+        # Crash if session has no name in config
+        ref = Session()
+
+        ref.load_configuration({'path': 'test_path',
+                                'anatomy_path': 'test_anatomy_path',
+                                'name': 'test_name',
+                                'description': 'test_desc',
+                                'plot_settings': 'test_settings'})
+
+        self.assertEqual(ref.name, 'test_name')
+        self.assertEqual(ref.description, 'test_desc')
+        self.assertEqual(ref.plot_settings, 'test_settings')
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,6 +1,5 @@
 import unittest
 import mock
-import nibabel
 from src.mask import Mask
 
 

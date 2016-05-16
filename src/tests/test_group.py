@@ -1,8 +1,8 @@
 import unittest
-import types
 import mock
 import numpy as np
 from src.group import Group
+from src.session import Session
 
 
 class TestGroup(unittest.TestCase):
@@ -34,6 +34,47 @@ class TestGroup(unittest.TestCase):
 
         mock_mask.assert_called_once_with('src/tests/test-data/mask.nii')
 
+    @mock.patch('src.group.Group._aggregate', autospec=True)
+    @mock.patch('src.group.Group.settings_changed', autospec=True)
+    def test_aggregate(self, mock_sett_change, mock_aggr):
+        ref = Group()
+        ref.aggregate()
+        mock_sett_change.assert_called_once_with(ref, None, None, None, None)
+        mock_aggr.assert_called_once_with(ref, None, None, None, None)
+
+    def test_add_children(self):
+        ref = Group()
+        child1 = Session()
+        child2 = Session()
+
+        ref.add_child(child1)
+        ref.add_child(child2)
+
+        self.assertEqual([child1, child2], ref.children)
+
+    def test_remove_children(self):
+        ref = Group()
+        child1 = Session()
+        child2 = Session()
+
+        ref.add_child(child1)
+        ref.add_child(child2)
+
+        ref.remove_child(child1)
+
+        self.assertEqual([child2], ref.children)
+
+    def test_load_config(self):
+        ref = Group()
+
+        ref.load_configuration({'name': 'test_name',
+                                'description': 'test_desc',
+                                'plot_settings': 'test_settings'})
+
+        self.assertEqual(ref.name, 'test_name')
+        self.assertEqual(ref.description, 'test_desc')
+        self.assertEqual(ref.plot_settings, 'test_settings')
+
     def test_calculate_amplitude(self):
         fn = lambda x: -x ** 2 + 20 * x
         test_y = [fn(x) for x in range(21)]
@@ -61,6 +102,7 @@ class TestGroup(unittest.TestCase):
         r1, r2 = Group.calculate_fwhm(test_x, test_y, 20)
 
         self.assertEqual((r1, r2), (0, 1))
+
 
 
 if __name__ == '__main__':
