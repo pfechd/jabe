@@ -74,7 +74,7 @@ class StimuliWindow(QDialog):
 
                 if self.is_number(time) and self.is_number(value):
                     stimuli.append([float(time), float(value)])
-                    if row == all_rows-1:
+                    if row == all_rows - 1:
                         # If the end of the table has been reached,
                         # put the value from the end time box at the end of the array
                         time = self.ui.end_time_box.text()
@@ -109,7 +109,7 @@ class StimuliWindow(QDialog):
                     self.close()
                     stimuli = np.array(stimuli)
                     sio.savemat(filename, {'visual_stimuli':stimuli})
-                    self.parent().load_stimuli(filename +file_path[1])
+                    self.parent().load_stimuli(filename + file_path[1])
                 else:
                     QMessageBox.warning(self, "Warning", "Invalid filename.")
                 
