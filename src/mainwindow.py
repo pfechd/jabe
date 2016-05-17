@@ -123,15 +123,15 @@ class MainWindow(QMainWindow):
         return missing_paths
 
     def closeEvent(self, event):
-        button = QMessageBox.question(self,"Save","Do you want to save the current configuration before quitting?",QMessageBox.Yes | QMessageBox.No)
+        button = QMessageBox.question(self, "Save", "Do you want to save the current configuration before quitting?",
+                                      QMessageBox.Yes | QMessageBox.No)
         if (button == QMessageBox.Yes):
             self.save_configuration()
 
     def save_configuration_as(self):
-        config_file = QFileDialog.getSaveFileName(self,"","",".json")
+        config_file = QFileDialog.getSaveFileName(self, "", "", ".json")
         if config_file[0]:
             self.current_config_path = config_file[0] + config_file[1]
-            print self.current_config_path
             self.save_configuration()
 
     def save_configuration(self):
@@ -192,7 +192,6 @@ class MainWindow(QMainWindow):
         config_path = QFileDialog.getOpenFileName(self, 'Open file', "", "(*.json)")
         if config_path[0]:
             self.current_config_path = config_path[0]
-            print self.current_config_path
             self.load_configuration()
 
     def load_configuration(self):
