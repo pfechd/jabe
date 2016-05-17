@@ -30,7 +30,8 @@ class Session(Group):
             self.load_configuration(configuration)
 
     def load_configuration(self, configuration):
-        self.name = configuration['name']
+        if 'name' in configuration:
+            self.name = configuration['name']
 
         if 'description' in configuration:
             self.description = configuration['description']
@@ -185,6 +186,8 @@ class Session(Group):
             temp_brain = Brain(path)
         except IOError:
             return path + " does not exist"
+        except:
+            return path + " could not be opened. It might be corrupted"
         if len(temp_brain.shape) != 4:
             return "The data has " + str(len(temp_brain.shape)) + " dimensions instead of 4"
         elif self.mask and self.mask.data.shape != temp_brain.shape[0:3]:
