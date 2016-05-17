@@ -229,6 +229,10 @@ class Group(object):
         self.responses = {}
         min_width = float('inf')
 
+        # Invalidate cached mean and sem
+        self.sem_responses = None
+        self.mean_responses = None
+
         for child in self.children + self.sessions:
             # If the child doesn't have the files loaded, skip it.
             if not child.ready_for_calculation():

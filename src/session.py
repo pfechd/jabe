@@ -111,6 +111,10 @@ class Session(Group):
         self.used_mask = mask
         self.used_stimuli = stimuli
 
+        # Invalidate cached mean and sem
+        self.sem_responses = None
+        self.mean_responses = None
+
         self.apply_mask(mask)
         self.separate_into_responses(stimuli, percentage, global_)
 
