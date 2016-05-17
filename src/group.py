@@ -84,8 +84,8 @@ class Group(object):
             temp_anatomy = Brain(path)
         except IOError:
             return path + " does not exist"
-        if len(temp_anatomy.sequence.shape) != 3:
-            return "The data has " + str(len(temp_anatomy.sequence.shape)) + " dimensions instead of 3"
+        if len(temp_anatomy.shape) != 3:
+            return "The data has " + str(len(temp_anatomy.shape)) + " dimensions instead of 3"
         else:
             self.anatomy = temp_anatomy
             return None
@@ -106,9 +106,9 @@ class Group(object):
             temp_mask = Mask(path)
         except IOError:
             return path + " does not exist"
-        if len(temp_mask.data.shape) != 3:
-            return "The data has " + str(len(temp_mask.data.shape)) + " dimensions instead of 3"
-        elif self.brain and self.brain.sequence.shape[0:3] != temp_mask.data.shape:
+        if len(temp_mask.shape) != 3:
+            return "The data has " + str(len(temp_mask.shape)) + " dimensions instead of 3"
+        elif self.brain and self.brain.shape[0:3] != temp_mask.shape:
             return "The mask is not the same size as the EPI sequence"
         else:
             self.mask = temp_mask
