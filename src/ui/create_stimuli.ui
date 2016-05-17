@@ -84,7 +84,7 @@
      </attribute>
      <column>
       <property name="text">
-       <string>Time</string>
+       <string>Time (sec)</string>
       </property>
      </column>
      <column>

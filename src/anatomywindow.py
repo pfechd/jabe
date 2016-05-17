@@ -3,7 +3,7 @@ from nibabel.affines import apply_affine
 
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-from PyQt5.QtWidgets import QDialog
+from PyQt5.QtWidgets import QDialog, QMessageBox
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
 from src.generated_ui.anatomy_window import Ui_Dialog
@@ -38,9 +38,9 @@ class AnatomyWindow(QDialog):
 
         self.setWindowTitle('Anatomy - ' + session.name)
 
-        self.show_brain()
-
         self.show()
+
+        self.show_brain()
 
     def convert_coord(self, coord):
         conversion_matrix = np.linalg.inv(self.session.anatomy.brain_file._affine).dot(self.session.brain.brain_file._affine)
@@ -55,7 +55,13 @@ class AnatomyWindow(QDialog):
         for z in range(int(most_ones[0][2]) - shape_size / 2, int(most_ones[0][2]) + shape_size / 2 + 1):
             for y in range(int(most_ones[0][1]) - shape_size / 2, int(most_ones[0][1]) + shape_size / 2 + 1):
                 for x in range(int(most_ones[0][0]) - shape_size / 2, int(most_ones[0][0]) + shape_size / 2 + 1):
-                    new_mask[x, y ,z] = 1
+                    try:
+                        new_mask[x, y ,z] = 1
+                    except IndexError:
+                        self.close()
+                        QMessageBox.warning(self, "Anatomy image error", "The mask's position is outside the bounds"
+                                                                         " of the anatomy image")
+                        return
 
         masked_array = np.ma.masked_where(new_mask == 0, new_mask)
         self.img1.imshow(self.session.anatomy.sequence[:,:,most_ones[0][2]], cmap=mpl.cm.gray)

@@ -16,6 +16,7 @@ class Group(object):
     def __init__(self, configuration=None):
         self.name = ""
         self.description = ""
+        self.plot_settings = {}
 
         self.mask = None
         self.stimuli = None
@@ -24,10 +25,6 @@ class Group(object):
         self.children = []
         # TODO: Remove this
         self.sessions = []
-
-        # Normalization settings
-        self.global_normalization = False
-        self.percent_normalization = False
 
         # Result of calculations are kept here
         self.responses = {}
@@ -85,7 +82,12 @@ class Group(object):
         return max_amp, spline(x)[max_amp]
 
     def load_anatomy(self, path):
-        temp_anatomy = Brain(path)
+        try:
+            temp_anatomy = Brain(path)
+        except IOError:
+            return path + " does not exist"
+        except:
+            return path + " could not be opened. It might be corrupted"
         if len(temp_anatomy.sequence.shape) != 3:
             return "The data has " + str(len(temp_anatomy.sequence.shape)) + " dimensions instead of 3"
         else:
@@ -93,10 +95,23 @@ class Group(object):
             return None
 
     def load_stimuli(self, path, tr):
-        self.stimuli = Stimuli(path, tr)
+        try:
+            temp_stimuli = Stimuli(path, tr)
+        except:
+            return "The file is not a proper stimuli file. It might be corrupted or in the wrong format"
+        if self.brain and temp_stimuli.data[-1, 0] > self.brain.images:
+            return "The times in the stimuli file are too long compared to the length of the EPI sequence"
+        else:
+            self.stimuli = temp_stimuli
+            return None
 
     def load_mask(self, path):
-        temp_mask = Mask(path)
+        try:
+            temp_mask = Mask(path)
+        except IOError:
+            return path + " does not exist"
+        except:
+            return path + " could not be opened. It might be corrupted"
         if len(temp_mask.data.shape) != 3:
             return "The data has " + str(len(temp_mask.data.shape)) + " dimensions instead of 3"
         elif self.brain and self.brain.sequence.shape[0:3] != temp_mask.data.shape:
@@ -149,15 +164,19 @@ class Group(object):
         else:
             return self._aggregate(percentage, global_, mask, stimuli)
 
-    def get_mean(self):
-        settings_changed = self.settings_changed(self.percent_normalization,
-                                                 self.global_normalization,
+    def get_mean(self, percentage=None, global_=None):
+        if percentage is None:
+            percentage = self.get_setting('percent')
+        if global_ is None:
+            global_ = self.get_setting('global')
+
+        settings_changed = self.settings_changed(percentage, global_,
                                                  self.mask, self.stimuli)
         if settings_changed or not self.mean_responses:
-            self.mean_responses = self.calculate_mean()
+            self.mean_responses = self.calculate_mean(percentage, global_)
         return self.mean_responses
 
-    def calculate_mean(self):
+    def calculate_mean(self, percentage, global_):
         """
         Calculate the mean of every response grouped by stimuli type
 
@@ -165,7 +184,8 @@ class Group(object):
                  is the vector containing the mean value for the given time
                  frame.
         """
-        responses = self.aggregate(self.percent_normalization, self.global_normalization)
+
+        responses = self.aggregate(percentage, global_)
         mean_responses = {}
 
         for stimuli_type, stimuli_data in responses.iteritems():
@@ -180,17 +200,22 @@ class Group(object):
             mean_responses[stimuli_type] = response_mean
         return mean_responses
 
-    def get_sem(self):
-        settings_changed = self.settings_changed(self.percent_normalization,
-                                                 self.global_normalization,
+    def get_sem(self, percantage=None, global_=None):
+        if percentage is None:
+            percentage = self.get_setting('percent')
+        if global_ is None:
+            global_ = self.get_setting('global')
+
+        settings_changed = self.settings_changed(percentage, global_,
                                                  self.mask, self.stimuli)
         if settings_changed or not self.sem_responses:
-            self.sem_responses = self.calculate_sem()
+            self.sem_responses = self.calculate_sem(percentage, global_)
         return self.sem_responses
 
-    def calculate_sem(self):
+    def calculate_sem(self, percentage, global_):
         """ Calculate the standard error of the mean (SEM) of the response """
-        responses = self.aggregate(self.percent_normalization, self.global_normalization)
+
+        responses = self.aggregate(percentage, global_)
         responses_sem = {}
 
         for stimuli_type, stimuli_data in responses.iteritems():
@@ -209,6 +234,7 @@ class Group(object):
         return {
             'name': self.name,
             'description': self.description,
+            'plot_settings': self.plot_settings,
             'individuals': [individual.get_configuration() for individual in self.children],
             'sessions': [session.get_configuration() for session in self.sessions]
         }
@@ -218,6 +244,8 @@ class Group(object):
             self.name = configuration['name']
         if 'description' in configuration:
             self.description = configuration['description']
+        if 'plot_settings' in configuration:
+            self.plot_settings = configuration['plot_settings']
 
     def add_session(self, session):
         self.sessions.append(session)
@@ -254,3 +282,13 @@ class Group(object):
             self.responses[intensity] = data[:, 0:min_width]
 
         return self.responses
+
+    def get_setting(self, setting):
+        """ 
+        Return the specified plot setting. 
+        To simplify the code, it is assumed as False if it does not exist 
+        """
+        if setting in self.plot_settings:
+            return self.plot_settings[setting]
+        else:
+            return False

@@ -30,10 +30,14 @@ class Session(Group):
             self.load_configuration(configuration)
 
     def load_configuration(self, configuration):
-        self.name = configuration['name']
+        if 'name' in configuration:
+            self.name = configuration['name']
 
         if 'description' in configuration:
             self.description = configuration['description']
+
+        if 'plot_settings' in configuration:
+            self.plot_settings = configuration['plot_settings']
 
         if 'path' in configuration:
             self.load_sequence(configuration['path'])
@@ -42,10 +46,10 @@ class Session(Group):
             self.load_anatomy(configuration['anatomy_path'])
 
         if 'mask' in configuration:
-            self.mask = Mask(configuration['mask']['path'])
+            self.load_mask(configuration['mask']['path'])
 
         if 'stimuli' in configuration:
-            self.stimuli = Stimuli(configuration['stimuli']['path'],
+            self.load_stimuli(configuration['stimuli']['path'],
                                    configuration['stimuli']['tr'])
 
     def get_configuration(self):
@@ -68,6 +72,9 @@ class Session(Group):
 
         if self.description:
             configuration['description'] = self.description
+
+        if self.plot_settings:
+            configuration['plot_settings'] = self.plot_settings
 
         return configuration
 
@@ -179,11 +186,18 @@ class Session(Group):
 
     def load_sequence(self, path):
         """ Load the sequence from the path. Returns an error message if something went wrong, otherwise None """
-        temp_brain = Brain(path)
+        try:
+            temp_brain = Brain(path)
+        except IOError:
+            return path + " does not exist"
+        except:
+            return path + " could not be opened. It might be corrupted"
         if len(temp_brain.sequence.shape) != 4:
             return "The data has " + str(len(temp_brain.sequence.shape)) + " dimensions instead of 4"
-        elif self.mask and self.mask.data.shape != temp_brain.sequence.shape[0:2]:
+        elif self.mask and self.mask.data.shape != temp_brain.sequence.shape[0:3]:
             return "The EPI sequence is not the same size as the mask"
+        elif self.stimuli and self.stimuli.data[-1,0] > temp_brain.images:
+            return "The EPI sequence is too short compared to the times in the stimuli file"
         else:
             self.brain = temp_brain
             return None
