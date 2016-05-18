@@ -85,13 +85,13 @@ class CreateMaskWindow(QDialog):
                 # If the coordinates together with radius_width are valid create a mask
                 # If not valid send an error message
                 if self.ui.comboBox_shape.currentText() == "Sphere":
-                    voxel_width = (float(width)*self.brain_file._header.get_zooms()[0],
-                                   float(width)*self.brain_file._header.get_zooms()[1],
-                                   float(width)*self.brain_file._header.get_zooms()[2],)
+                    voxel_width = (float(width)/self.brain_file._header.get_zooms()[0],
+                                   float(width)/self.brain_file._header.get_zooms()[1],
+                                   float(width)/self.brain_file._header.get_zooms()[2],)
                 else:
-                    voxel_width = ((float(width)/2)*self.brain_file._header.get_zooms()[0],
-                                    (float(width)/2)*self.brain_file._header.get_zooms()[1],
-                                    (float(width)/2)*self.brain_file._header.get_zooms()[2])
+                    voxel_width = ((float(width)/2)/self.brain_file._header.get_zooms()[0],
+                                    (float(width)/2)/self.brain_file._header.get_zooms()[1],
+                                    (float(width)/2)/self.brain_file._header.get_zooms()[2])
 
                 # Check if coordinates is within brain data
                 # Generates parameters to and call Mask function
