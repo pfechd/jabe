@@ -53,7 +53,7 @@ class Mask:
                                 self.data[x, y, z] = 1
 
             # Create a nifti file containing the data and save it to path
-            mask_file = nib.Nifti1Image(self.data, np.eye(4,4))
+            mask_file = nib.Nifti1Image(self.data, brain_file.affine)
             nib.save(mask_file, path)
 
     def get_configuration(self):
