@@ -200,6 +200,8 @@ class CustomPlot(QDialog):
 
         plt.legend(bbox_to_anchor=(1.01, 1), loc=2, borderaxespad=0., prop={'size':11})
         self.canvas.draw()
+        self.plot_amplitude()
+        self.plot_peak()
 
     def remove_smoothed_plots(self):
         if self.smooth:
@@ -221,6 +223,8 @@ class CustomPlot(QDialog):
 
         plt.legend(bbox_to_anchor=(1.01, 1), loc=2, borderaxespad=0., prop={'size':11})
         self.canvas.draw()
+        self.plot_amplitude()
+        self.plot_peak()
 
     def plot_sem(self):
         """
@@ -242,33 +246,39 @@ class CustomPlot(QDialog):
         """
         Amplitude checkbox callback. Annotate amplitude in graph with a horizontal line
         """
+        self.remove_amplitude()
+        if not (self.ui.checkBox_smooth.isChecked() or self.ui.mean_response_btn.isChecked()):
+            return
 
         if self.ui.checkBox_amp.isChecked() and (self.regular or self.smooth):
-            y = self.ax.lines[0].get_ydata()
-            x = np.arange(len(y))
-            max_amp = self.session.calculate_amplitude(x, y, 0)
+            max_amp = self.session.calculate_amplitude(
+                    self.ui.stimuliBox.currentText(),
+                    smooth=self.ui.checkBox_smooth.isChecked())
             self.amp = self.ax.axhline(max_amp[1], color=self.get_color())
             self.ui.amp_label.setText("Amplitude: %.2f" % max_amp[1])
             self.ui.amp_label.show()
             self.canvas.draw()
         else:
-            self.remove_amplitude()
             self.ui.amp_label.hide()
 
     def plot_peak(self):
         """
         Peak checkbox callback. Annotate time of peak in graph with a vertical line
         """
+        self.remove_peak_time()
+        if not (self.ui.checkBox_smooth.isChecked() or self.ui.mean_response_btn.isChecked()):
+            return
         if self.ui.checkBox_peak.isChecked() and (self.regular or self.smooth):
             y = self.ax.lines[0].get_ydata()
             x = np.arange(len(y))
-            max_peak = self.session.calculate_amplitude(x, y, 0)
-            self.peak_time = self.ax.axvline(max_peak[0] * self.session.get_tr(), color=self.get_color())
+            max_peak = self.session.calculate_amplitude(
+                    self.ui.stimuliBox.currentText(),
+                    smooth=self.ui.checkBox_smooth.isChecked())
+            self.peak_time = self.ax.axvline(max_peak[0], color=self.get_color())
             self.ui.peak_label.setText("Peak: " + str(max_peak[0] * self.session.get_tr()))
             self.ui.peak_label.show()
             self.canvas.draw()
         else:
-            self.remove_peak_time()
             self.ui.peak_label.hide()
             
     def show_points(self):

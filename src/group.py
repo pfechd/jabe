@@ -77,12 +77,29 @@ class Group(object):
         #plt.plot(x, spline(x) + half_maximum)
         return r1, r2
 
-    @staticmethod
-    def calculate_amplitude(x, y, smoothing):
+    def calculate_amplitude(self, stimuli, smooth=False):
 
-        spline = UnivariateSpline(x, y, s=smoothing)  # Remove spline if smoothing is unnecessary
-        max_amp = np.argmax(spline(x))
-        return max_amp, spline(x)[max_amp]
+        def calc_smooth_amplitude(curve):
+            smooth = self.smoothed_responses[stimuli]
+            roots = smooth.derivative().roots()
+            valid_roots = filter(lambda x: x > self.x_axis[0] and x < self.x_axis[-1], roots)
+            top_root = valid_roots[np.argmax(smooth(valid_roots))]
+            return top_root, smooth(top_root)
+
+        def calc_regular_amplitude(curve):
+            max = np.argmax(curve)
+            return max * self.get_tr(), curve[max]
+
+        if stimuli == 'all':
+            pass # not yet implemented
+            # res = []
+            # for stimuli_val, curve in self.smoothed_responses:
+            #     res.append(calc_smooth_curve(curve))
+            # return res
+        else:
+            if smooth:
+                return calc_smooth_amplitude(self.smoothed_responses[stimuli])
+            return calc_regular_amplitude(self.get_mean()[stimuli])
 
     def load_anatomy(self, path):
         try:
@@ -220,7 +237,7 @@ class Group(object):
         self.smoothed_responses = {}
         for key in responses.keys():
             response = responses[key]
-            self.smoothed_responses[key] = UnivariateSpline(self.x_axis, response, s=self.smoothing_factor)
+            self.smoothed_responses[key] = UnivariateSpline(self.x_axis, response, k=4, s=self.smoothing_factor)
 
     def get_x_axis(self):
         return self.x_axis
