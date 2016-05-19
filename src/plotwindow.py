@@ -119,8 +119,12 @@ class CustomPlot(QDialog):
                 smooth = self.ui.spinBox.value()
                 r1, r2 = self.session.calculate_fwhm(x, y, smooth)
                 self.fwhm = self.ax.axvspan(r1, r2, facecolor='g', alpha=0.3)
+                self.ui.fwhm_label.setText("FWHM begins at %.2f s\nFWHM ends at %.2f s\nDuration: %.2f s" %
+                                           (r1, r2, r2-r1))
+                self.ui.fwhm_label.show()
                 self.canvas.draw()
         else:
+            self.ui.fwhm_label.hide()
             self.remove_fwhm()
             self.canvas.draw()
 
