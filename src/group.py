@@ -200,7 +200,7 @@ class Group(object):
             mean_responses[stimuli_type] = response_mean
         return mean_responses
 
-    def get_sem(self, percantage=None, global_=None):
+    def get_sem(self, percentage=None, global_=None):
         if percentage is None:
             percentage = self.get_setting('percent')
         if global_ is None:
