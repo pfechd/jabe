@@ -29,15 +29,15 @@ class ExportWindow(QDialog):
         filename = QFileDialog.getSaveFileName(self, "Save file as mat", "", ".mat")
         if filename[0]:
             if self.stimuli_type == "All":
-                sio.savemat(filename[0] + filename[1], self.brain.calculate_mean())
+                sio.savemat(filename[0] + filename[1], self.brain.get_mean())
             else:
-                sio.savemat(filename[0] + filename[1], {'data': self.brain.calculate_mean()[self.stimuli_type]})
+                sio.savemat(filename[0] + filename[1], {'data': self.brain.get_mean()[self.stimuli_type]})
         self.close()
 
     def export_txt(self):
         filename = QFileDialog.getSaveFileName(self, "Save file as txt", "", ".txt")
         if filename[0]:
-            data = self.brain.calculate_mean()
+            data = self.brain.get_mean()
             if self.stimuli_type == "All":
                 txtdata = None
                 for type,stim_data in data.iteritems():

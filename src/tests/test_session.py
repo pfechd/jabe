@@ -60,7 +60,7 @@ class TestSession(unittest.TestCase):
         expected_result = {200: np.array([0.,  0.]), 40: np.array([0.,  0.]),
                            130: np.array([0.,  0.]), 60: np.array([0.,  0.]),
                            70: np.array([0.,  0.])}
-        actual_mean = self.session.calculate_mean()
+        actual_mean = self.session.get_mean()
 
         for type, value in actual_mean.iteritems():
             diff = value - expected_result[type]
@@ -80,7 +80,7 @@ class TestSession(unittest.TestCase):
     def test_calculate_sem(self):
         data = np.array([[1], [2], [3]])
         self.session.response = data
-        response_sem = self.session.calculate_sem()
+        response_sem = self.session.get_sem()
         self.assertEqual(response_sem, [1 / np.sqrt(3)])
 
     def test_calculate_fwhm(self):

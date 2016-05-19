@@ -28,6 +28,8 @@ class Group(object):
 
         # Result of calculations are kept here
         self.responses = {}
+        self.mean_responses = {}
+        self.sem_responses = {}
 
         if configuration:
             self.load_configuration(configuration)
@@ -162,7 +164,19 @@ class Group(object):
         else:
             return self._aggregate(percentage, global_, mask, stimuli)
 
-    def calculate_mean(self, percentage = None, global_ = None):
+    def get_mean(self, percentage=None, global_=None):
+        if percentage is None:
+            percentage = self.get_setting('percent')
+        if global_ is None:
+            global_ = self.get_setting('global')
+
+        settings_changed = self.settings_changed(percentage, global_,
+                                                 self.mask, self.stimuli)
+        if settings_changed or not self.mean_responses:
+            self.mean_responses = self.calculate_mean(percentage, global_)
+        return self.mean_responses
+
+    def calculate_mean(self, percentage, global_):
         """
         Calculate the mean of every response grouped by stimuli type
 
@@ -170,10 +184,6 @@ class Group(object):
                  is the vector containing the mean value for the given time
                  frame.
         """
-        if percentage is None:
-            percentage = self.get_setting('percent')
-        if global_ is None:
-            global_ = self.get_setting('global')
 
         responses = self.aggregate(percentage, global_)
         mean_responses = {}
@@ -190,12 +200,20 @@ class Group(object):
             mean_responses[stimuli_type] = response_mean
         return mean_responses
 
-    def calculate_sem(self, percentage = None, global_ = None):
-        """ Calculate the standard error of the mean (SEM) of the response """
+    def get_sem(self, percentage=None, global_=None):
         if percentage is None:
             percentage = self.get_setting('percent')
         if global_ is None:
             global_ = self.get_setting('global')
+
+        settings_changed = self.settings_changed(percentage, global_,
+                                                 self.mask, self.stimuli)
+        if settings_changed or not self.sem_responses:
+            self.sem_responses = self.calculate_sem(percentage, global_)
+        return self.sem_responses
+
+    def calculate_sem(self, percentage, global_):
+        """ Calculate the standard error of the mean (SEM) of the response """
 
         responses = self.aggregate(percentage, global_)
         responses_sem = {}
@@ -238,6 +256,10 @@ class Group(object):
     def _aggregate(self, percentage, global_, mask, stimuli):
         self.responses = {}
         min_width = float('inf')
+
+        # Invalidate cached mean and sem
+        self.sem_responses = None
+        self.mean_responses = None
 
         for child in self.children + self.sessions:
             # If the child doesn't have the files loaded, skip it.

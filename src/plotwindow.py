@@ -181,7 +181,7 @@ class CustomPlot(QDialog):
         """
         if self.ui.checkBox_smooth.isChecked() and self.ui.mean_response_btn.isChecked():
             self.ax.relim()
-            before_smooth = self.session.calculate_mean()
+            before_smooth = self.session.get_mean()
 
             if self.ui.stimuliBox.currentText() == "All":
                 for stimuli_type,stimuli_data in before_smooth.iteritems():
@@ -213,7 +213,7 @@ class CustomPlot(QDialog):
         """
         if self.ui.checkBox_regular.isChecked():
             self.ax.relim()
-            mean = self.session.calculate_mean()
+            mean = self.session.get_mean()
             self.plot_data(mean)
 
         else:
@@ -228,10 +228,10 @@ class CustomPlot(QDialog):
         """
 
         if self.ui.checkBox_sem.isChecked() and self.ui.stimuliBox.currentText() != "All":
-            mean = self.session.calculate_mean()[self.ui.stimuliBox.currentText()]
+            mean = self.session.get_mean()[self.ui.stimuliBox.currentText()]
             x = np.arange(mean.size)*self.session.get_tr()
             self.ax.relim()
-            sem = self.session.calculate_sem()
+            sem = self.session.get_sem()
             self.sem =self.ax.errorbar(x, mean, yerr=sem[self.ui.stimuliBox.currentText()])
             self.canvas.draw()
         else:
@@ -304,7 +304,7 @@ class CustomPlot(QDialog):
         """
         Add all stimuli types that exists in the data to a combobox
         """
-        data = self.session.calculate_mean()
+        data = self.session.get_mean()
         if len(data) > 1:
             self.ui.stimuliBox.addItem("All")
         for stimuli_type in data:
@@ -320,8 +320,8 @@ class CustomPlot(QDialog):
             children = self.session.sessions + self.session.children
             for child in children:
                 if child.ready_for_calculation():
-                    child_mean = child.calculate_mean(self.session.get_setting('percent'),
-                                                  self.session.get_setting('global'))
+                    child_mean = child.get_mean(self.session.get_setting('percent'),
+                                                self.session.get_setting('global'))
                     self.plot_data(child_mean, child.name)
 
         else:
