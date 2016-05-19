@@ -123,10 +123,13 @@ class MainWindow(QMainWindow):
         return missing_paths
 
     def closeEvent(self, event):
-        button = QMessageBox.question(self, "Save", "Do you want to save the current configuration before quitting?",
-                                      QMessageBox.Yes | QMessageBox.No)
-        if (button == QMessageBox.Yes):
-            self.save_configuration()
+        if self.groups != []:
+            button = QMessageBox.question(self, "Save", "Do you want to save the current configuration before quitting?",
+                                          QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
+            if button == QMessageBox.Cancel:
+                event.ignore()
+            if button == QMessageBox.Yes:
+                self.save_configuration()
 
     def save_configuration_as(self):
         config_file = QFileDialog.getSaveFileName(self, "", "", ".json")
@@ -265,6 +268,14 @@ class MainWindow(QMainWindow):
             self.update_gui()
 
     def create_new_configuration(self):
+        if self.groups != []:
+            button = QMessageBox.question(self, "Save", "Do you want to save the current configuration before creating"
+                                                        " a new one?",
+                                          QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
+            if button == QMessageBox.Cancel:
+                return
+            if button == QMessageBox.Yes:
+                self.save_configuration()
         self.current_config_path = ""
         self.groups = []
         self.ui.tree_widget.clear()
