@@ -126,9 +126,9 @@ class CustomPlot(QDialog):
                 self.ui.fwhm_label.show()
                 self.canvas.draw()
         else:
-            self.ui.fwhm_label.hide()
             self.remove_fwhm()
-            self.canvas.draw()
+
+        self.canvas.draw()
 
     def replot(self):
         """
@@ -258,10 +258,10 @@ class CustomPlot(QDialog):
             self.amp = self.ax.axhline(max_amp[1], color=self.get_color())
             self.ui.amp_label.setText("Amplitude: %.2f" % max_amp[1])
             self.ui.amp_label.show()
-            self.canvas.draw()
         else:
             self.remove_amplitude()
-            self.ui.amp_label.hide()
+
+        self.canvas.draw()
 
     def plot_peak(self):
         """
@@ -274,10 +274,10 @@ class CustomPlot(QDialog):
             self.peak_time = self.ax.axvline(max_peak[0] * self.session.get_tr(), color=self.get_color())
             self.ui.peak_label.setText("Peak: " + str(max_peak[0] * self.session.get_tr()))
             self.ui.peak_label.show()
-            self.canvas.draw()
         else:
             self.remove_peak_time()
-            self.ui.peak_label.hide()
+
+        self.canvas.draw()
             
     def show_points(self):
         """
