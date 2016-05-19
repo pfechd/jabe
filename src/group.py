@@ -30,6 +30,9 @@ class Group(object):
         self.responses = {}
         self.mean_responses = {}
         self.sem_responses = {}
+        self.smoothed_responses = None
+        self.smoothing_factor = None
+        self.x_axis = None
 
         if configuration:
             self.load_configuration(configuration)
@@ -200,6 +203,28 @@ class Group(object):
             mean_responses[stimuli_type] = response_mean
         return mean_responses
 
+    def get_smooth(self, factor):
+        if factor != self.smoothing_factor or not self.smoothed_responses:
+            self.smoothing_factor = factor
+            self.calculate_smooth()
+        smoothed_curves = {}
+        for key in self.smoothed_responses:
+            smoothed_curves[key] = self.smoothed_responses[key](self.x_axis)
+        return smoothed_curves
+
+    def calculate_smooth(self):
+        """
+        Assumes all vectors returned from self.get_mean() are of equal length
+        """
+        responses = self.get_mean()
+        self.smoothed_responses = {}
+        for key in responses.keys():
+            response = responses[key]
+            self.smoothed_responses[key] = UnivariateSpline(self.x_axis, response, s=self.smoothing_factor)
+
+    def get_x_axis(self):
+        return self.x_axis
+
     def get_sem(self, percentage=None, global_=None):
         if percentage is None:
             percentage = self.get_setting('percent')
@@ -260,6 +285,7 @@ class Group(object):
         # Invalidate cached mean and sem
         self.sem_responses = None
         self.mean_responses = None
+        self.smoothed_responses = None
 
         for child in self.children + self.sessions:
             # If the child doesn't have the files loaded, skip it.
@@ -276,6 +302,8 @@ class Group(object):
                     self.responses[intensity] = np.concatenate((responses, data))
                 else:
                     self.responses[intensity] = data
+
+        self.x_axis = np.array(list(range(min_width))) * self.get_tr()
 
         # Set all data to match the length of the least wide response
         for intensity, data in self.responses.iteritems():

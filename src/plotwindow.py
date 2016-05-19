@@ -181,20 +181,20 @@ class CustomPlot(QDialog):
         """
         if self.ui.checkBox_smooth.isChecked() and self.ui.mean_response_btn.isChecked():
             self.ax.relim()
-            before_smooth = self.session.get_mean()
+            smooth = self.session.get_smooth(self.ui.spinBox.value())
 
             if self.ui.stimuliBox.currentText() == "All":
-                for stimuli_type,stimuli_data in before_smooth.iteritems():
-                    x = np.arange(stimuli_data.shape[0])*self.session.get_tr()
-                    curr = UnivariateSpline(x, stimuli_data, s=self.ui.spinBox.value())
-                    axis, = self.ax.plot(x,curr(x), color=self.get_color(), label=stimuli_type + ", smoothed")
+                for stimuli_type, smoothed_data in smooth.iteritems():
+                    axis, = self.ax.plot(
+                            self.session.get_x_axis(), smoothed_data,
+                            color=self.get_color(), label=stimuli_type + ", smoothed")
                     self.smooth.append(axis)
             else:
-                x = np.arange(before_smooth[self.ui.stimuliBox.currentText()].shape[0])*self.session.get_tr()
-                curr = UnivariateSpline(x, before_smooth[self.ui.stimuliBox.currentText()], s=self.ui.spinBox.value())
-                axis, = self.ax.plot(x,curr(x), color=self.get_color(), label=self.ui.stimuliBox.currentText() + ", smoothed")
+                stimuli_value = self.ui.stimuliBox.currentText()
+                axis, = self.ax.plot(
+                        self.session.get_x_axis(), smooth[stimuli_value],
+                        color=self.get_color(), label=stimuli_value + ", smoothed")
                 self.smooth.append(axis)
-
         else:
             self.remove_smoothed_plots()
 

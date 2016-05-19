@@ -121,6 +121,7 @@ class Session(Group):
         # Invalidate cached mean and sem
         self.sem_responses = None
         self.mean_responses = None
+        self.smoothed_responses = None
 
         self.apply_mask(mask)
         self.separate_into_responses(stimuli, percentage, global_)
@@ -131,6 +132,7 @@ class Session(Group):
         number_of_stimuli = stimuli.amount
 
         shortest_interval = min([j - i for i, j in zip(stimuli.data[:-1, 0], stimuli.data[1:, 0])])
+        self.x_axis = np.array(list(range(shortest_interval))) * self.get_tr()
 
         self.responses = {}
 
