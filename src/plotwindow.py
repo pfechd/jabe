@@ -278,7 +278,7 @@ class CustomPlot(QDialog):
             self.remove_peak_time()
 
         self.canvas.draw()
-            
+
     def show_points(self):
         """
         Points checkbox callback. Show data points in graph
@@ -388,6 +388,7 @@ class CustomPlot(QDialog):
             self.remove_peak_time()
             self.ui.checkBox_sem.setEnabled(False)
             self.remove_sem()
+            self.canvas.draw()
         # Only allow smooth if we are plotting mean
         if self.ui.mean_response_btn.isChecked():
             self.ui.checkBox_smooth.setEnabled(True)
