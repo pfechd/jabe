@@ -96,6 +96,8 @@ class CustomPlot(QDialog):
         # Move the subplot to make space for the legend
         self.fig.subplots_adjust(right=0.8)
 
+        self.set_allowed_buttons()
+
         self.show()
 
     def tool_anatomy(self):
@@ -152,7 +154,7 @@ class CustomPlot(QDialog):
         if self.peak_time:
             self.peak_time.remove()
             self.peak_time = None
-            self.canvas.draw()
+            self.ui.peak_label.hide()
 
     def remove_sem(self):
         if self.sem:
@@ -167,11 +169,13 @@ class CustomPlot(QDialog):
         if self.amp:
             self.amp.remove()
             self.amp = None
+            self.ui.amp_label.hide()
 
     def remove_fwhm(self):
         if self.fwhm is not None:
             self.fwhm.remove()
             self.fwhm = None
+            self.ui.fwhm_label.hide()
 
     def remove_regular_plots(self):
         if self.regular:
