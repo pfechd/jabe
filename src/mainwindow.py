@@ -192,7 +192,7 @@ class MainWindow(QMainWindow):
             json.dump(configuration, f, indent=4)
 
     def load_configuration_button_pressed(self):
-        config_path = QFileDialog.getOpenFileName(self, 'Open file', "", "(*.json)")
+        config_path = QFileDialog.getOpenFileName(self, 'Open file', "", "*.json")
         if config_path[0]:
             self.current_config_path = config_path[0]
             self.load_configuration()
@@ -276,6 +276,7 @@ class MainWindow(QMainWindow):
                 return
             if button == QMessageBox.Yes:
                 self.save_configuration()
+
         self.current_config_path = ""
         self.groups = []
         self.ui.tree_widget.clear()
