@@ -522,8 +522,8 @@
                        <rect>
                         <x>0</x>
                         <y>0</y>
-                        <width>148</width>
-                        <height>290</height>
+                        <width>134</width>
+                        <height>20</height>
                        </rect>
                       </property>
                       <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -1488,15 +1488,24 @@
    <property name="text">
     <string>Save configuration</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
   </action>
   <action name="new_config_menu_btn">
    <property name="text">
     <string>New configuration</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
   </action>
   <action name="load_config_menu_btn">
    <property name="text">
-    <string>Load configuration</string>
+    <string>Open configuration</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
    </property>
   </action>
   <action name="save_config_as_menu_btn">
