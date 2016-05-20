@@ -33,6 +33,7 @@ class Group(object):
         self.smoothed_responses = None
         self.smoothing_factor = None
         self.x_axis = None
+        self.peaks = None
 
         if configuration:
             self.load_configuration(configuration)
@@ -50,62 +51,63 @@ class Group(object):
         else:
             return all([stimuli, mask])
 
-    @staticmethod
-    def calculate_fwhm(x, y, smoothing):
-        """
-        Returns two positions showing the full width half maximum(fwhm) of a given array y.
+    def get_fwhm(self, stimuli, factor):
+        if not self.smoothed_responses:
+            self.get_smooth(factor, splice=True)
+        peaks = self.get_peaks(factor, smooth=True)
 
-        Calculates two positions r1 and r2 on the x axis where y'[r1] and y'[r2]
-        are equal to half of the maximum value of y where y' is a smoothed version of y.
+        def calculate_fwhm(stimuli):
+            top = peaks[stimuli][1]
+            low = float(self.smoothed_responses[stimuli](0))
+            half_max = (top - low)/2
+            y = self.mean_responses[stimuli]
+            spline = UnivariateSpline(self.x_axis, y - half_max - low, s=factor)
+            roots = spline.roots()
+            if np.any(roots):
+                for i in range(1, len(roots)):
+                    if roots[i] > peaks[stimuli][0]:
+                        break
+                roots = (roots[i - 1], roots[i])
+            return roots
 
-        :param x: Time axis
-        :param y: Value axis, for which fwhm is calculated
-        :param smoothing: float. Smoothing factor for y. 0 gives no smoothing.
-        :return: Two positions on the x axis.
-        """
+        if stimuli == "All":
+            res = {}
+            for stimuli in self.smoothed_responses.keys():
+                res[stimuli] = calculate_fwhm(stimuli)
+            return res
+        else:
+            return {stimuli: calculate_fwhm(stimuli)}
 
-        half_maximum = (np.max(y) + np.min(y)) / 2
-        spline = UnivariateSpline(x, y - half_maximum, s=smoothing)
-        roots = spline.roots()
-        try:
-            assert len(roots) == 2  # Higher smoothing factor required
-        except AssertionError:
-            print "Smoothed function contains ", len(roots), " roots, 2 required"
-            return 0, 1
-        r1, r2 = roots
-        # DEBUG
-        #plt.plot(x, spline(x) + half_maximum)
-        return r1, r2
+    def get_peaks(self, factor, smooth=False):
+        if factor != self.smoothing_factor:
+            self.get_smooth(factor, splice=False)
 
-    def calculate_amplitude(self, stimuli, smooth=False):
+        if not smooth:
+            peaks = {}
+            for stimuli_val, curve in self.mean_responses.iteritems():
+                max = np.argmax(curve)
+                pos = max * self.get_tr(), curve[max]
+                peaks[stimuli_val] = pos
+            return peaks
 
-        def calc_smooth_amplitude(curve):
+        if self.peaks:
+            return self.peaks
+        self.calculate_peaks()
+        return self.peaks
+
+    def calculate_peaks(self):
+
+        def calc_smooth_peak(curve):
             roots = curve.derivative().roots()
-            valid_roots = filter(lambda x: x > self.x_axis[0] and x < self.x_axis[-1], roots)
+            valid_roots = filter(
+                    lambda x: x > self.x_axis[0] and x < self.x_axis[-1], roots)
             top_root = valid_roots[np.argmax(curve(valid_roots))]
             return top_root, float(curve(top_root))
 
-        def calc_regular_amplitude(curve):
-            max = np.argmax(curve)
-            return max * self.get_tr(), curve[max]
+        self.peaks = {}
 
-        if stimuli == 'All':
-            res = []
-            if smooth:
-                for stimuli_val, curve in self.smoothed_responses.iteritems():
-                    amp, peak = calc_smooth_amplitude(curve)
-                    res.append((amp, peak, stimuli_val))
-            else:
-                for stimuli_val, curve in self.mean_responses.iteritems():
-                    amp, peak = calc_regular_amplitude(curve)
-                    res.append((amp, peak, stimuli_val))
-            return res
-        else:
-            if smooth:
-                amp, peak = calc_smooth_amplitude(self.smoothed_responses[stimuli])
-            else:
-                amp, peak = calc_regular_amplitude(self.mean_responses[stimuli])
-            return [(amp, peak, stimuli)]
+        for stimuli_val, curve in self.smoothed_responses.iteritems():
+            self.peaks[stimuli_val] = calc_smooth_peak(curve)
 
     def load_anatomy(self, path):
         try:
@@ -226,10 +228,18 @@ class Group(object):
             mean_responses[stimuli_type] = response_mean
         return mean_responses
 
-    def get_smooth(self, factor):
-        if factor != self.smoothing_factor or not self.smoothed_responses:
+    def get_smooth(self, factor, splice=False):
+        if not self.smoothed_responses:
             self.smoothing_factor = factor
+            self.peaks = None
             self.calculate_smooth()
+        if factor != self.smoothing_factor:
+            self.smoothing_factor = factor
+            self.peaks = None
+            for stim, curve in self.smoothed_responses.iteritems():
+                curve.set_smoothing_factor(s=factor)
+        if splice:
+            return self.smoothed_responses
         smoothed_curves = {}
         for key in self.smoothed_responses:
             smoothed_curves[key] = self.smoothed_responses[key](self.x_axis)
@@ -243,7 +253,8 @@ class Group(object):
         self.smoothed_responses = {}
         for key in responses.keys():
             response = responses[key]
-            self.smoothed_responses[key] = UnivariateSpline(self.x_axis, response, k=4, s=self.smoothing_factor)
+            self.smoothed_responses[key] = UnivariateSpline(
+                    self.x_axis, response, k=4, s=self.smoothing_factor)
 
     def get_x_axis(self):
         return self.x_axis
@@ -309,6 +320,7 @@ class Group(object):
         self.sem_responses = None
         self.mean_responses = None
         self.smoothed_responses = None
+        self.peaks = None
 
         for child in self.children + self.sessions:
             # If the child doesn't have the files loaded, skip it.

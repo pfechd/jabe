@@ -34,7 +34,7 @@ class CustomPlot(QDialog):
         super(CustomPlot, self).__init__(parent)
         self.amp = []
         self.peak_time = []
-        self.fwhm = None
+        self.fwhm = []
         self.regular = []
         self.smooth = []
         self.sem = None
@@ -58,13 +58,13 @@ class CustomPlot(QDialog):
 
         self.ui.mplvl.addWidget(self.canvas)
 
-        self.ui.checkBox_fwhm.toggled.connect(self.apply_fwhm)
+        self.ui.checkBox_fwhm.toggled.connect(self.plot_fwhm)
         self.ui.checkBox_sem.toggled.connect(self.plot_sem)
-        self.ui.checkBox_regular.toggled.connect(self.plot_regular)
-        self.ui.checkBox_smooth.toggled.connect(self.plot_smooth)
-        self.ui.checkBox_amp.toggled.connect(self.plot_peak_and_amplitude)
+        self.ui.checkBox_regular.toggled.connect(self.replot)
+        self.ui.checkBox_smooth.toggled.connect(self.replot)
+        self.ui.checkBox_amp.toggled.connect(self.plot_amplitude)
         #self.ui.checkBox_points.toggled.connect(self.show_points)
-        self.ui.checkBox_peak.toggled.connect(self.plot_peak_and_amplitude)
+        self.ui.checkBox_peak.toggled.connect(self.plot_peak)
         self.ui.stimuliBox.currentIndexChanged.connect(self.replot)
         self.ui.mean_response_btn.toggled.connect(self.replot)
 
@@ -107,28 +107,36 @@ class CustomPlot(QDialog):
         """
         self.export_window = ExportWindow(self, self.session, self.toolbar, self.ui.stimuliBox.currentText())
 
-    def apply_fwhm(self):
+    def plot_fwhm(self):
         """
         FWHM checkbox callback. Plot FWHM for current graph. Disabled if no graph plotted
         """
-
+        self.remove_fwhm()
+        if not (self.ui.checkBox_smooth.isChecked() \
+                or self.ui.checkBox_regular.isChecked()) \
+                or self.ui.several_responses_btn.isChecked():
+            self.ui.peak_label.hide()
+            return
+        
         if self.ui.checkBox_fwhm.isChecked():
-            if self.regular is not None:
-                y = self.ax.lines[0].get_ydata()
-                x = np.arange(len(y))*self.session.get_tr()
-                smooth = self.ui.spinBox.value()
-                r1, r2 = self.session.calculate_fwhm(x, y, smooth)
-                self.fwhm = self.ax.axvspan(r1, r2, facecolor='g', alpha=0.3)
-                self.canvas.draw()
-        else:
-            self.remove_fwhm()
+            fwhm = self.session.get_fwhm(self.ui.stimuliBox.currentText(),
+                                  self.ui.spinBox.value())
+            fwhm_text = ""
+            for stimuli_val, values in fwhm.iteritems():
+                self.fwhm.append(self.ax.axvspan(
+                        values[0], values[1], facecolor='g', alpha=0.2))
+                fwhm_text += "FWHM " + stimuli_val + " width: " + \
+                        str(values[1] - values[0]) + "\n"
+            self.ui.fwhm_label.setText(fwhm_text[0:-1])
+            self.ui.fwhm_label.show()
             self.canvas.draw()
-
+        else:
+            self.ui.fwhm_label.hide()
+                
     def replot(self):
         """
         Replot regular and smoothed curve. Used when changing the data to plot
         """
-        self.remove_fwhm()
         self.remove_sem()
 
         self.remove_regular_plots()
@@ -136,8 +144,9 @@ class CustomPlot(QDialog):
         self.remove_smoothed_plots()
         self.plot_smooth()
         
-        self.plot_peak_and_amplitude()
-        self.apply_fwhm()
+        self.plot_peak()
+        self.plot_amplitude()
+        self.plot_fwhm()
         self.plot_sem()
         self.set_allowed_buttons()
 
@@ -166,8 +175,9 @@ class CustomPlot(QDialog):
 
     def remove_fwhm(self):
         if self.fwhm is not None:
-            self.fwhm.remove()
-            self.fwhm = None
+            for fwhm in self.fwhm:
+                fwhm.remove()
+            self.fwhm = []
 
     def remove_regular_plots(self):
         if self.regular:
@@ -199,7 +209,6 @@ class CustomPlot(QDialog):
             self.remove_smoothed_plots()
 
         plt.legend(bbox_to_anchor=(1.01, 1), loc=2, borderaxespad=0., prop={'size':11})
-        self.plot_peak_and_amplitude()
         self.canvas.draw()
 
     def remove_smoothed_plots(self):
@@ -221,7 +230,6 @@ class CustomPlot(QDialog):
             self.remove_regular_plots()
 
         plt.legend(bbox_to_anchor=(1.01, 1), loc=2, borderaxespad=0., prop={'size':11})
-        self.plot_peak_and_amplitude()
         self.canvas.draw()
 
     def plot_sem(self):
@@ -240,46 +248,68 @@ class CustomPlot(QDialog):
             self.remove_sem()
             self.canvas.draw()
 
-    def plot_peak_and_amplitude(self):
+    def plot_amplitude(self):
         self.remove_amplitude()
+        if not (self.ui.checkBox_smooth.isChecked() \
+                or self.ui.checkBox_regular.isChecked()) \
+                or self.ui.several_responses_btn.isChecked():
+            self.ui.amp_label.hide()
+            return
+
+        if self.ui.checkBox_amp.isChecked():
+            points = self.session.get_peaks(
+                    self.ui.spinBox.value(),
+                    smooth=self.ui.checkBox_smooth.isChecked())
+            amp_text = ""
+            if self.ui.stimuliBox.currentText() == "All":
+                for stimuli_val, position in points.iteritems():
+                    self.amp.append(
+                            self.ax.axhline(position[1], color=self.get_color()))
+                    amp_text += "Amplitude " + stimuli_val + ": " + \
+                            str(position[1]) + "\n"
+            else:
+                stimuli_val = self.ui.stimuliBox.currentText()
+                self.amp.append(
+                        self.ax.axhline(points[stimuli_val][1], color=self.get_color()))
+                amp_text += "Amplitude " + stimuli_val + ": " + \
+                        str(points[stimuli_val][1]) + "\n"
+            self.ui.amp_label.setText(amp_text[0:-1])
+            self.ui.amp_label.show()
+            self.canvas.draw()
+        else:
+            self.ui.amp_label.hide()
+
+    def plot_peak(self):
         self.remove_peak_time()
-        amp = self.ui.checkBox_amp.isChecked()
-        peak = self.ui.checkBox_peak.isChecked()
         if not (self.ui.checkBox_smooth.isChecked() \
                 or self.ui.checkBox_regular.isChecked()) \
                 or self.ui.several_responses_btn.isChecked():
             self.ui.peak_label.hide()
-            self.ui.amp_label.hide()
             return
-        if peak or amp:
-            points = self.session.calculate_amplitude(
-                    self.ui.stimuliBox.currentText(),
+
+        if self.ui.checkBox_peak.isChecked():
+            points = self.session.get_peaks(
+                    self.ui.spinBox.value(),
                     smooth=self.ui.checkBox_smooth.isChecked())
-            amp_text = ""
             peak_text = ""
-            for point in points:
-                if peak:
+            if self.ui.stimuliBox.currentText() == "All":
+                for stimuli_val, position in points.iteritems():
                     self.peak_time.append(
-                            self.ax.axvline(point[0], color=self.get_color()))
-                    peak_text += "Peak " + point[2] + ": " + \
-                            str(point[0] * self.session.get_tr()) + "\n"
-                if amp:
-                    self.amp.append(
-                            self.ax.axhline(point[1], color=self.get_color()))
-                    amp_text += "Amplitude " + point[2] + ": " + \
-                            str(point[1] * self.session.get_tr()) + "\n"
-            if peak_text:
-                self.ui.peak_label.setText(peak_text[0:-1])
-                self.ui.peak_label.show()
-            if amp_text:
-                self.ui.amp_label.setText(amp_text[0:-1])
-                self.ui.amp_label.show()
+                            self.ax.axvline(position[0], color=self.get_color()))
+                    peak_text += "Peak " + stimuli_val + ": " + \
+                            str(position[0]) + "\n"
+            else:
+                stimuli_val = self.ui.stimuliBox.currentText()
+                self.peak_time.append(
+                        self.ax.axvline(points[stimuli_val][0], color=self.get_color()))
+                peak_text += "Peak " + stimuli_val + ": " + \
+                        str(points[stimuli_val][0]) + "\n"
+            self.ui.peak_label.setText(peak_text[0:-1])
+            self.ui.peak_label.show()
             self.canvas.draw()
-        if not peak:
+        else:
             self.ui.peak_label.hide()
-        if not amp:
-            self.ui.amp_label.hide()
-            
+
     def show_points(self):
         """
         Points checkbox callback. Show data points in graph
@@ -376,11 +406,8 @@ class CustomPlot(QDialog):
         """
         # Enable the buttons if there are exactly 1 regular curve, or if there is one smoothed curve
         if len(self.regular) == 1 or (len(self.regular) == 0 and len(self.smooth) == 1):
-            self.ui.checkBox_fwhm.setEnabled(True)
             self.ui.checkBox_sem.setEnabled(True)
         else:
-            self.ui.checkBox_fwhm.setEnabled(False)
-            self.remove_fwhm()
             self.ui.checkBox_sem.setEnabled(False)
             self.remove_sem()
         # Only allow smooth if we are plotting mean
@@ -388,7 +415,9 @@ class CustomPlot(QDialog):
             self.ui.checkBox_smooth.setEnabled(True)
             self.ui.checkBox_peak.setEnabled(True)
             self.ui.checkBox_amp.setEnabled(True)
+            self.ui.checkBox_fwhm.setEnabled(True)
         else:
             self.ui.checkBox_smooth.setEnabled(False)
             self.ui.checkBox_peak.setEnabled(False)
             self.ui.checkBox_amp.setEnabled(False)
+            self.ui.checkBox_fwhm.setEnabled(False)
