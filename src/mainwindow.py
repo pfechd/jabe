@@ -374,7 +374,35 @@ class MainWindow(QMainWindow):
 
     def update_stackedwidget(self):
         if self.ui.tree_widget.selectedItems():
-            if isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
+            if isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
+                self.ui.stackedWidget.setCurrentIndex(2)
+                group = self.ui.tree_widget.selectedItems()[0]
+                self.ui.group_name.setText(group.text(0))
+                self.ui.group_description.setText(group.description)
+
+                if group.get_setting('global'):
+                    self.ui.global_normalization_group_btn.setChecked(True)
+                else:
+                    self.ui.local_normalization_group_btn.setChecked(True)
+                if group.get_setting('percent'):
+                    self.ui.percent_group_btn.setChecked(True)
+                else:
+                    self.ui.subtract_group_btn.setChecked(True)
+                self.ui.checkbox_amplitude_group.setChecked(group.get_setting('amplitude'))
+                self.ui.checkbox_peak_group.setChecked(group.get_setting('peak'))
+                self.ui.checkbox_sem_group.setChecked(group.get_setting('sem'))
+                self.ui.checkbox_fwhm_group.setChecked(group.get_setting('fwhm'))
+
+                # Add overview tree in group panel
+                self.ui.individual_overview_tree.clear()
+                self.ui.individual_overview_tree.addTopLevelItems(group.get_overview_tree())
+
+                # Add checkboxes for individuals in group panel
+                self.clear_layout(self.ui.individuals_plot)
+                group.add_individuals_boxes(self.ui.individuals_plot)
+                self.ui.individuals_plot.insertSpacerItem(-1, QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding))
+
+            elif isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
                 self.ui.stackedWidget.setCurrentIndex(3)
                 individual = self.ui.tree_widget.selectedItems()[0]
                 self.ui.individual_name.setText(individual.text(0))
@@ -402,7 +430,7 @@ class MainWindow(QMainWindow):
                 individual.add_sessions_boxes(self.ui.sessions_plot)
                 self.ui.sessions_plot.insertSpacerItem(-1, QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
-            elif isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
+            else:
                 self.ui.stackedWidget.setCurrentIndex(4)
                 session = self.ui.tree_widget.selectedItems()[0]
                 self.ui.session_name.setText(session.text(0))
@@ -420,33 +448,6 @@ class MainWindow(QMainWindow):
                 self.ui.checkbox_peak_session.setChecked(session.get_setting('peak'))
                 self.ui.checkbox_sem_session.setChecked(session.get_setting('sem'))
                 self.ui.checkbox_fwhm_session.setChecked(session.get_setting('fwhm'))
-            else:
-                self.ui.stackedWidget.setCurrentIndex(2)
-                group = self.ui.tree_widget.selectedItems()[0]
-                self.ui.group_name.setText(group.text(0))
-                self.ui.group_description.setText(group.description)
-
-                if group.get_setting('global'):
-                    self.ui.global_normalization_group_btn.setChecked(True)
-                else:
-                    self.ui.local_normalization_group_btn.setChecked(True)
-                if group.get_setting('percent'):
-                    self.ui.percent_group_btn.setChecked(True)
-                else:
-                    self.ui.subtract_group_btn.setChecked(True)
-                self.ui.checkbox_amplitude_group.setChecked(group.get_setting('amplitude'))
-                self.ui.checkbox_peak_group.setChecked(group.get_setting('peak'))
-                self.ui.checkbox_sem_group.setChecked(group.get_setting('sem'))
-                self.ui.checkbox_fwhm_group.setChecked(group.get_setting('fwhm'))
-
-                # Add overview tree in group panel
-                self.ui.individual_overview_tree.clear()
-                self.ui.individual_overview_tree.addTopLevelItems(group.get_overview_tree())
-
-                # Add checkboxes for individuals in group panel
-                self.clear_layout(self.ui.individuals_plot)
-                group.add_individuals_boxes(self.ui.individuals_plot)
-                self.ui.individuals_plot.insertSpacerItem(-1, QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
     def update_text(self):
         if self.ui.tree_widget.selectedItems():
