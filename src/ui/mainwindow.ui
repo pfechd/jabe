@@ -165,7 +165,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QLineEdit" name="group_name_2"/>
+                 <widget class="QLineEdit" name="project_name"/>
                 </item>
                </layout>
               </item>
@@ -179,7 +179,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QTextEdit" name="group_description_2"/>
+                 <widget class="QTextEdit" name="project_description"/>
                 </item>
                </layout>
               </item>

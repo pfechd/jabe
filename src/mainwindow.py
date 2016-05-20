@@ -61,13 +61,16 @@ class MainWindow(QMainWindow):
         self.ui.session_name.textChanged.connect(self.name_changed)
         self.ui.group_name.textChanged.connect(self.name_changed)
         self.ui.individual_name.textChanged.connect(self.name_changed)
+        self.ui.project_name.textChanged.connect(self.name_changed)
         self.ui.session_name.returnPressed.connect(self.ui.session_name.clearFocus)
         self.ui.group_name.returnPressed.connect(self.ui.group_name.clearFocus)
         self.ui.individual_name.returnPressed.connect(self.ui.individual_name.clearFocus)
+        self.ui.group_name.returnPressed.connect(self.ui.group_name.clearFocus)
 
         self.ui.session_description.textChanged.connect(self.description_changed)
         self.ui.group_description.textChanged.connect(self.description_changed)
         self.ui.individual_description.textChanged.connect(self.description_changed)
+        self.ui.project_description.textChanged.connect(self.description_changed)
 
         plot_buttons = [self.ui.global_normalization_individual_btn, self.ui.local_normalization_individual_btn,
                    self.ui.percent_individual_btn, self.ui.subtract_individual_btn,
@@ -379,8 +382,8 @@ class MainWindow(QMainWindow):
             if isinstance(self.ui.tree_widget.selectedItems()[0], ProjectTreeItem):
                 self.ui.stackedWidget.setCurrentIndex(1)
                 group = self.ui.tree_widget.selectedItems()[0]
-                self.ui.group_name.setText(group.text(0))
-                self.ui.group_description.setText(group.description)
+                self.ui.project_name.setText(group.text(0))
+                self.ui.project_description.setText(group.description)
 
                 if group.get_setting('global'):
                     self.ui.global_normalization_group_btn.setChecked(True)
@@ -509,23 +512,27 @@ class MainWindow(QMainWindow):
 
     def name_changed(self):
         if self.ui.tree_widget.selectedItems():
-            if isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
-                text = self.ui.individual_name.text()
-            elif isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
-                text = self.ui.session_name.text()
-            else:
+            if isinstance(self.ui.tree_widget.selectedItems()[0], ProjectTreeItem):
+                text = self.ui.project_name.text()
+            elif isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
                 text = self.ui.group_name.text()
+            elif isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
+                text = self.ui.individual_name.text()
+            else:
+                text = self.ui.session_name.text()
 
             self.ui.tree_widget.selectedItems()[0].update_name(text)
 
     def description_changed(self):
         if self.ui.tree_widget.selectedItems():
-            if isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
-                text = self.ui.individual_description.toPlainText()
-            elif isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
-                text = self.ui.session_description.toPlainText()
-            else:
+            if isinstance(self.ui.tree_widget.selectedItems()[0], ProjectTreeItem):
+                text = self.ui.project_description.toPlainText()
+            elif isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
                 text = self.ui.group_description.toPlainText()
+            elif isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
+                text = self.ui.individual_description.toPlainText()
+            else:
+                text = self.ui.session_description.toPlainText()
 
             self.ui.tree_widget.selectedItems()[0].description = text
 
