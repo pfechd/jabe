@@ -16,8 +16,8 @@ class GroupTreeItem(QTreeWidgetItem, Group):
         # Set the name in the first column of the QTreeWidgetItem
         self.setText(0, self.name)
 
-        if 'individuals' in configuration:
-            for individual_configuration in configuration['individuals']:
+        if 'groups' in configuration:
+            for individual_configuration in configuration['groups']:
                 individual_tree_item = IndividualTreeItem()
                 self.add_individual(individual_tree_item)
                 # Load configuration after adding the individual as it accesses

@@ -101,9 +101,9 @@ class MainWindow(QMainWindow):
     def check_paths(self, configuration, type = None):
         missing_paths = []
         for project in configuration['project']:
-            for group in project['individuals']:
+            for group in project['groups']:
                 missing_paths += (self.check_paths_in_object(group))
-                for individual in group['individuals']:
+                for individual in group['groups']:
                     missing_paths += (self.check_paths_in_object(individual))
                     for session in individual['sessions']:
                         missing_paths += (self.check_paths_in_object(session))

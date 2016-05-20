@@ -235,7 +235,7 @@ class Group(object):
             'name': self.name,
             'description': self.description,
             'plot_settings': self.plot_settings,
-            'individuals': [individual.get_configuration() for individual in self.children],
+            'groups': [group.get_configuration() for group in self.children],
             'sessions': [session.get_configuration() for session in self.sessions]
         }
 
