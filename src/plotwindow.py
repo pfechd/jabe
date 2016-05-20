@@ -243,12 +243,12 @@ class CustomPlot(QDialog):
     def plot_peak_and_amplitude(self):
         self.remove_amplitude()
         self.remove_peak_time()
-        if not (self.ui.checkBox_smooth.isChecked() or self.ui.mean_response_btn.isChecked()):
+        amp = self.ui.checkBox_amp.isChecked()
+        peak = self.ui.checkBox_peak.isChecked()
+        if not (self.ui.checkBox_smooth.isChecked() or self.ui.checkBox_regular.isChecked()):
             self.ui.peak_label.hide()
             self.ui.amp_label.hide()
             return
-        amp = self.ui.checkBox_amp.isChecked()
-        peak = self.ui.checkBox_peak.isChecked()
         if peak or amp:
             points = self.session.calculate_amplitude(
                     self.ui.stimuliBox.currentText(),
@@ -374,17 +374,11 @@ class CustomPlot(QDialog):
         """
         # Enable the buttons if there are exactly 1 regular curve, or if there is one smoothed curve
         if len(self.regular) == 1 or (len(self.regular) == 0 and len(self.smooth) == 1):
-            self.ui.checkBox_amp.setEnabled(True)
             self.ui.checkBox_fwhm.setEnabled(True)
-            self.ui.checkBox_peak.setEnabled(True)
             self.ui.checkBox_sem.setEnabled(True)
         else:
-            self.ui.checkBox_amp.setEnabled(False)
-            self.remove_amplitude()
             self.ui.checkBox_fwhm.setEnabled(False)
             self.remove_fwhm()
-            self.ui.checkBox_peak.setEnabled(False)
-            self.remove_peak_time()
             self.ui.checkBox_sem.setEnabled(False)
             self.remove_sem()
         # Only allow smooth if we are plotting mean
