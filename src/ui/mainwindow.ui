@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1100</width>
-    <height>691</height>
+    <height>749</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -111,7 +111,7 @@
     <item>
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="group_page">
        <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -240,16 +240,6 @@
                   <property name="topMargin">
                    <number>0</number>
                   </property>
-                  <item row="0" column="1">
-                   <widget class="QPushButton" name="anatomy_btn_group">
-                    <property name="enabled">
-                     <bool>false</bool>
-                    </property>
-                    <property name="text">
-                     <string>Choose anatomy</string>
-                    </property>
-                   </widget>
-                  </item>
                   <item row="1" column="1">
                    <widget class="QPushButton" name="stimuli_btn_group">
                     <property name="enabled">
@@ -257,6 +247,16 @@
                     </property>
                     <property name="text">
                      <string>Choose stimuli</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QPushButton" name="anatomy_btn_group">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <property name="text">
+                     <string>Choose anatomy</string>
                     </property>
                    </widget>
                   </item>
@@ -351,6 +351,19 @@
                     </property>
                     <property name="margin">
                      <number>0</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="1">
+                   <widget class="QLineEdit" name="tr_value_group"/>
+                  </item>
+                  <item row="3" column="0">
+                   <widget class="QLabel" name="tr_label_group">
+                    <property name="text">
+                     <string>Tr</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
                     </property>
                    </widget>
                   </item>
@@ -523,7 +536,7 @@
                         <x>0</x>
                         <y>0</y>
                         <width>148</width>
-                        <height>290</height>
+                        <height>254</height>
                        </rect>
                       </property>
                       <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -726,16 +739,6 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="1" column="1">
-                   <widget class="QPushButton" name="stimuli_btn_individual">
-                    <property name="enabled">
-                     <bool>false</bool>
-                    </property>
-                    <property name="text">
-                     <string>Choose stimuli</string>
-                    </property>
-                   </widget>
-                  </item>
                   <item row="2" column="0">
                    <widget class="QLabel" name="maskLabel_9">
                     <property name="enabled">
@@ -829,6 +832,29 @@
                      <number>0</number>
                     </property>
                    </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QPushButton" name="stimuli_btn_individual">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <property name="text">
+                     <string>Choose stimuli</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="0">
+                   <widget class="QLabel" name="tr_label_ind">
+                    <property name="text">
+                     <string>Tr</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="1">
+                   <widget class="QLineEdit" name="tr_value_ind"/>
                   </item>
                  </layout>
                 </item>
@@ -999,7 +1025,7 @@
                         <x>0</x>
                         <y>0</y>
                         <width>148</width>
-                        <height>290</height>
+                        <height>254</height>
                        </rect>
                       </property>
                       <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -1350,6 +1376,19 @@
                     </property>
                    </widget>
                   </item>
+                  <item row="7" column="1">
+                   <widget class="QLineEdit" name="tr_value_session"/>
+                  </item>
+                  <item row="7" column="0">
+                   <widget class="QLabel" name="tr_label_session">
+                    <property name="text">
+                     <string>Tr</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
                  </layout>
                 </item>
                </layout>
@@ -1443,7 +1482,7 @@
      <x>0</x>
      <y>0</y>
      <width>1100</width>
-     <height>27</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
