@@ -12,6 +12,7 @@ from mask import Mask
 from plotwindow import CustomPlot
 from stimuliwindow import StimuliWindow
 from stimuli import Stimuli
+from tree_items.projecttreeitem import ProjectTreeItem
 from tree_items.grouptreeitem import GroupTreeItem
 from tree_items.individualtreeitem import IndividualTreeItem
 from tree_items.sessiontreeitem import SessionTreeItem
@@ -48,8 +49,8 @@ class MainWindow(QMainWindow):
         self.ui.add_session_mask_btn.clicked.connect(self.mask_button_pressed)
         self.ui.add_session_stimuli_btn.clicked.connect(self.stimuli_button_pressed)
         self.ui.create_session_stimuli_btn.clicked.connect(self.create_stimuli_button_pressed)
-        self.ui.add_group_menu_btn.triggered.connect(self.add_group_pressed)
-        self.ui.add_group_btn.clicked.connect(self.add_group_pressed)
+        self.ui.add_group_menu_btn.triggered.connect(self.add_project_pressed)
+        self.ui.add_group_btn.clicked.connect(self.add_project_pressed)
         self.ui.exit_menu_btn.triggered.connect(self.exit_button_pressed)
         self.ui.add_individual_btn.clicked.connect(self.add_item_clicked)
         self.ui.add_session_btn.clicked.connect(self.add_item_clicked)
@@ -89,18 +90,19 @@ class MainWindow(QMainWindow):
                                    self.ui.add_session_mask_btn, self.ui.add_session_stimuli_btn]
 
         self.ui.tree_widget.setColumnWidth(0, 200)
-        self.groups = []
+        self.projects = []
         self.load_configuration()
         self.update_gui()
 
     def check_paths(self, configuration, type = None):
         missing_paths = []
-        for group in configuration['groups']:
-            missing_paths += (self.check_paths_in_object(group))
-            for individual in group['individuals']:
-                missing_paths += (self.check_paths_in_object(individual))
-                for session in individual['sessions']:
-                    missing_paths += (self.check_paths_in_object(session))
+        for project in configuration['project']:
+            for group in project['individuals']:
+                missing_paths += (self.check_paths_in_object(group))
+                for individual in group['individuals']:
+                    missing_paths += (self.check_paths_in_object(individual))
+                    for session in individual['sessions']:
+                        missing_paths += (self.check_paths_in_object(session))
 
         return missing_paths
 
@@ -141,7 +143,7 @@ class MainWindow(QMainWindow):
             current = []
 
         configuration = {
-            'groups': [group.get_configuration() for group in self.groups],
+            'project': [project.get_configuration() for project in self.projects],
             'current': current
         }
 
@@ -213,11 +215,11 @@ class MainWindow(QMainWindow):
                                     "\n".join(missing_paths))
 
 
-            for group_configuration in configuration['groups']:
-                group_tree_item = GroupTreeItem()
+            for group_configuration in configuration['project']:
+                group_tree_item = ProjectTreeItem()
                 self.ui.tree_widget.addTopLevelItem(group_tree_item)
                 group_tree_item.load_configuration(group_configuration)
-                self.groups.append(group_tree_item)
+                self.projects.append(group_tree_item)
                 group_tree_item.create_buttons()
 
             self.update_gui()
@@ -240,14 +242,14 @@ class MainWindow(QMainWindow):
 
             self.update_gui()
 
-    def add_group_pressed(self):
-        current_row = len(self.groups)
-        name = 'Group ' + str(current_row + 1)
-        group = GroupTreeItem()
-        group.update_name(name)
-        self.groups.append(group)
-        self.ui.tree_widget.addTopLevelItem(group)
-        group.create_buttons()
+    def add_project_pressed(self):
+        current_row = len(self.projects)
+        name = 'Project ' + str(current_row + 1)
+        project = ProjectTreeItem()
+        project.update_name(name)
+        self.projects.append(project)
+        self.ui.tree_widget.addTopLevelItem(project)
+        project.create_buttons()
 
     def exit_button_pressed(self):
         self.close()
@@ -255,7 +257,7 @@ class MainWindow(QMainWindow):
     def add_item_clicked(self):
         if self.ui.tree_widget.selectedItems():
             if isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
-                self.ui.tree_widget.selectedItems()[0].add_child()
+                self.ui.tree_widget.selectedItems()[0].add_new_individual()
             elif isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
                 self.ui.tree_widget.selectedItems()[0].add_new_session()
 
@@ -374,7 +376,35 @@ class MainWindow(QMainWindow):
 
     def update_stackedwidget(self):
         if self.ui.tree_widget.selectedItems():
-            if isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
+            if isinstance(self.ui.tree_widget.selectedItems()[0], ProjectTreeItem):
+                self.ui.stackedWidget.setCurrentIndex(1)
+                group = self.ui.tree_widget.selectedItems()[0]
+                self.ui.group_name.setText(group.text(0))
+                self.ui.group_description.setText(group.description)
+
+                if group.get_setting('global'):
+                    self.ui.global_normalization_group_btn.setChecked(True)
+                else:
+                    self.ui.local_normalization_group_btn.setChecked(True)
+                if group.get_setting('percent'):
+                    self.ui.percent_group_btn.setChecked(True)
+                else:
+                    self.ui.subtract_group_btn.setChecked(True)
+                self.ui.checkbox_amplitude_group.setChecked(group.get_setting('amplitude'))
+                self.ui.checkbox_peak_group.setChecked(group.get_setting('peak'))
+                self.ui.checkbox_sem_group.setChecked(group.get_setting('sem'))
+                self.ui.checkbox_fwhm_group.setChecked(group.get_setting('fwhm'))
+
+                # Add overview tree in group panel
+                self.ui.individual_overview_tree.clear()
+                self.ui.individual_overview_tree.addTopLevelItems(group.get_overview_tree())
+
+                # Add checkboxes for individuals in group panel
+                self.clear_layout(self.ui.individuals_plot)
+                group.add_group_boxes(self.ui.individuals_plot)
+                self.ui.individuals_plot.insertSpacerItem(-1, QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding))
+
+            elif isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
                 self.ui.stackedWidget.setCurrentIndex(2)
                 group = self.ui.tree_widget.selectedItems()[0]
                 self.ui.group_name.setText(group.text(0))
