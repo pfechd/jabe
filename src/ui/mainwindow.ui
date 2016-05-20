@@ -573,7 +573,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="extract_btn_group_2">
+            <widget class="QPushButton" name="extract_btn_project">
              <property name="enabled">
               <bool>false</bool>
              </property>

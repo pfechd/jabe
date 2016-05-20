@@ -44,6 +44,7 @@ class MainWindow(QMainWindow):
         self.ui.extract_session_btn.clicked.connect(self.calculate_button_pressed)
         self.ui.extract_btn_individual.clicked.connect(self.calculate_button_pressed)
         self.ui.extract_btn_group.clicked.connect(self.calculate_button_pressed)
+        self.ui.extract_btn_project.clicked.connect(self.calculate_button_pressed)
         self.ui.add_session_anatomy_btn.clicked.connect(self.anatomy_button_pressed)
         self.ui.add_session_epi_btn.clicked.connect(self.brain_button_pressed)
         self.ui.add_session_mask_btn.clicked.connect(self.mask_button_pressed)
@@ -279,9 +280,11 @@ class MainWindow(QMainWindow):
             self.ui.extract_session_btn.setEnabled(individual.ready_for_calculation())
         elif self.ui.tree_widget.selectedItems() and \
                 (isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem) or
-                     isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem)):
+                    isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem) or
+                    isinstance(self.ui.tree_widget.selectedItems()[0], ProjectTreeItem)):
             for button in self.individual_buttons:
                 button.setEnabled(False)
+            self.ui.extract_btn_project.setEnabled(True)
             self.ui.extract_btn_group.setEnabled(True)
             self.ui.extract_btn_individual.setEnabled(True)
         else:
