@@ -111,8 +111,9 @@
     <item>
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
+      <widget class="QWidget" name="page"/>
       <widget class="QWidget" name="project_page">
        <widget class="QFrame" name="frame_4">
         <property name="geometry">
@@ -1055,7 +1056,6 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="page"/>
       <widget class="QWidget" name="individual_page">
        <layout class="QHBoxLayout" name="horizontalLayout_12">
         <item>
