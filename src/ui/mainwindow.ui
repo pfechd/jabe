@@ -42,7 +42,7 @@
         <item>
          <widget class="QToolButton" name="add_group_btn">
           <property name="text">
-           <string>Add group</string>
+           <string>Add project</string>
           </property>
          </widget>
         </item>
@@ -561,14 +561,14 @@
            <item>
             <widget class="QPushButton" name="remove_group_btn_2">
              <property name="text">
-              <string>Remove group</string>
+              <string>Remove project</string>
              </property>
             </widget>
            </item>
            <item>
             <widget class="QPushButton" name="add_individual_btn_2">
              <property name="text">
-              <string>Add individual</string>
+              <string>Add group</string>
              </property>
             </widget>
            </item>
