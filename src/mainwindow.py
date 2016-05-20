@@ -375,7 +375,7 @@ class MainWindow(QMainWindow):
     def update_stackedwidget(self):
         if self.ui.tree_widget.selectedItems():
             if isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
-                self.ui.stackedWidget.setCurrentIndex(2)
+                self.ui.stackedWidget.setCurrentIndex(3)
                 individual = self.ui.tree_widget.selectedItems()[0]
                 self.ui.individual_name.setText(individual.text(0))
                 self.ui.individual_description.setText(individual.description)
@@ -403,7 +403,7 @@ class MainWindow(QMainWindow):
                 self.ui.sessions_plot.insertSpacerItem(-1, QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
             elif isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
-                self.ui.stackedWidget.setCurrentIndex(3)
+                self.ui.stackedWidget.setCurrentIndex(4)
                 session = self.ui.tree_widget.selectedItems()[0]
                 self.ui.session_name.setText(session.text(0))
                 self.ui.session_description.setText(session.description)
@@ -421,7 +421,7 @@ class MainWindow(QMainWindow):
                 self.ui.checkbox_sem_session.setChecked(session.get_setting('sem'))
                 self.ui.checkbox_fwhm_session.setChecked(session.get_setting('fwhm'))
             else:
-                self.ui.stackedWidget.setCurrentIndex(0)
+                self.ui.stackedWidget.setCurrentIndex(2)
                 group = self.ui.tree_widget.selectedItems()[0]
                 self.ui.group_name.setText(group.text(0))
                 self.ui.group_description.setText(group.description)
