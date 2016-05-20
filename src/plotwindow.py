@@ -245,7 +245,9 @@ class CustomPlot(QDialog):
         self.remove_peak_time()
         amp = self.ui.checkBox_amp.isChecked()
         peak = self.ui.checkBox_peak.isChecked()
-        if not (self.ui.checkBox_smooth.isChecked() or self.ui.checkBox_regular.isChecked()):
+        if not (self.ui.checkBox_smooth.isChecked() \
+                or self.ui.checkBox_regular.isChecked()) \
+                or self.ui.several_responses_btn.isChecked():
             self.ui.peak_label.hide()
             self.ui.amp_label.hide()
             return
@@ -365,7 +367,7 @@ class CustomPlot(QDialog):
         """
         if self.ui.mean_response_btn.isChecked():
             self.plot_mean()
-        elif not isinstance(self.session,Session):
+        elif not isinstance(self.session, Session):
             self.plot_several_sessions()
 
     def set_allowed_buttons(self):
@@ -384,5 +386,9 @@ class CustomPlot(QDialog):
         # Only allow smooth if we are plotting mean
         if self.ui.mean_response_btn.isChecked():
             self.ui.checkBox_smooth.setEnabled(True)
+            self.ui.checkBox_peak.setEnabled(True)
+            self.ui.checkBox_amp.setEnabled(True)
         else:
             self.ui.checkBox_smooth.setEnabled(False)
+            self.ui.checkBox_peak.setEnabled(False)
+            self.ui.checkBox_amp.setEnabled(False)
