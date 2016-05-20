@@ -32,8 +32,8 @@ class CustomPlot(QDialog):
         """
 
         super(CustomPlot, self).__init__(parent)
-        self.amp = None
-        self.peak_time = None
+        self.amp = []
+        self.peak_time = []
         self.fwhm = None
         self.regular = []
         self.smooth = []
@@ -62,9 +62,9 @@ class CustomPlot(QDialog):
         self.ui.checkBox_sem.toggled.connect(self.plot_sem)
         self.ui.checkBox_regular.toggled.connect(self.plot_regular)
         self.ui.checkBox_smooth.toggled.connect(self.plot_smooth)
-        self.ui.checkBox_amp.toggled.connect(self.plot_amplitude)
+        self.ui.checkBox_amp.toggled.connect(self.plot_peak_and_amplitude)
         #self.ui.checkBox_points.toggled.connect(self.show_points)
-        self.ui.checkBox_peak.toggled.connect(self.plot_peak)
+        self.ui.checkBox_peak.toggled.connect(self.plot_peak_and_amplitude)
         self.ui.stimuliBox.currentIndexChanged.connect(self.replot)
         self.ui.mean_response_btn.toggled.connect(self.replot)
 
@@ -128,8 +128,6 @@ class CustomPlot(QDialog):
         """
         Replot regular and smoothed curve. Used when changing the data to plot
         """
-        self.remove_peak_time()
-        self.remove_amplitude()
         self.remove_fwhm()
         self.remove_sem()
 
@@ -138,16 +136,16 @@ class CustomPlot(QDialog):
         self.remove_smoothed_plots()
         self.plot_smooth()
         
-        self.plot_amplitude()
-        self.plot_peak()
+        self.plot_peak_and_amplitude()
         self.apply_fwhm()
         self.plot_sem()
         self.set_allowed_buttons()
 
     def remove_peak_time(self):
         if self.peak_time:
-            self.peak_time.remove()
-            self.peak_time = None
+            for peak in self.peak_time:
+                peak.remove()
+            self.peak_time = []
             self.canvas.draw()
 
     def remove_sem(self):
@@ -161,8 +159,10 @@ class CustomPlot(QDialog):
 
     def remove_amplitude(self):
         if self.amp:
-            self.amp.remove()
-            self.amp = None
+            for amp in self.amp:
+                amp.remove()
+            self.amp = []
+            self.canvas.draw()
 
     def remove_fwhm(self):
         if self.fwhm is not None:
@@ -200,8 +200,7 @@ class CustomPlot(QDialog):
 
         plt.legend(bbox_to_anchor=(1.01, 1), loc=2, borderaxespad=0., prop={'size':11})
         self.canvas.draw()
-        self.plot_amplitude()
-        self.plot_peak()
+        self.plot_peak_and_amplitude()
 
     def remove_smoothed_plots(self):
         if self.smooth:
@@ -223,8 +222,7 @@ class CustomPlot(QDialog):
 
         plt.legend(bbox_to_anchor=(1.01, 1), loc=2, borderaxespad=0., prop={'size':11})
         self.canvas.draw()
-        self.plot_amplitude()
-        self.plot_peak()
+        self.plot_peak_and_amplitude()
 
     def plot_sem(self):
         """

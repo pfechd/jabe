@@ -80,26 +80,32 @@ class Group(object):
     def calculate_amplitude(self, stimuli, smooth=False):
 
         def calc_smooth_amplitude(curve):
-            smooth = self.smoothed_responses[stimuli]
-            roots = smooth.derivative().roots()
+            roots = curve.derivative().roots()
             valid_roots = filter(lambda x: x > self.x_axis[0] and x < self.x_axis[-1], roots)
-            top_root = valid_roots[np.argmax(smooth(valid_roots))]
-            return top_root, smooth(top_root)
+            top_root = valid_roots[np.argmax(curve(valid_roots))]
+            return top_root, float(curve(top_root))
 
         def calc_regular_amplitude(curve):
             max = np.argmax(curve)
             return max * self.get_tr(), curve[max]
 
-        if stimuli == 'all':
-            pass # not yet implemented
-            # res = []
-            # for stimuli_val, curve in self.smoothed_responses:
-            #     res.append(calc_smooth_curve(curve))
-            # return res
+        if stimuli == 'All':
+            res = []
+            if smooth:
+                for stimuli_val, curve in self.smoothed_responses.iteritems():
+                    amp, peak = calc_smooth_amplitude(curve)
+                    res.append((amp, peak, stimuli_val))
+            else:
+                for stimuli_val, curve in self.mean_responses.iteritems():
+                    amp, peak = calc_regular_amplitude(curve)
+                    res.append((amp, peak, stimuli_val))
+            return res
         else:
             if smooth:
-                return calc_smooth_amplitude(self.smoothed_responses[stimuli])
-            return calc_regular_amplitude(self.get_mean()[stimuli])
+                amp, peak = calc_smooth_amplitude(self.smoothed_responses[stimuli])
+            else:
+                amp, peak = calc_regular_amplitude(self.mean_responses[stimuli])
+            return [(amp, peak, stimuli)]
 
     def load_anatomy(self, path):
         try:
