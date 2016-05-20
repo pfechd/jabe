@@ -40,7 +40,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="QToolButton" name="add_group_btn">
+         <widget class="QToolButton" name="add_project_btn">
           <property name="text">
            <string>Add project</string>
           </property>
@@ -559,14 +559,14 @@
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_14">
            <item>
-            <widget class="QPushButton" name="remove_group_btn_2">
+            <widget class="QPushButton" name="remove_project_btn">
              <property name="text">
               <string>Remove project</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="add_individual_btn_2">
+            <widget class="QPushButton" name="add_group_btn">
              <property name="text">
               <string>Add group</string>
              </property>
@@ -1923,7 +1923,7 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="add_group_menu_btn"/>
+    <addaction name="add_project_menu_btn"/>
     <addaction name="separator"/>
     <addaction name="exit_menu_btn"/>
    </widget>
@@ -1937,9 +1937,9 @@
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="add_group_menu_btn">
+  <action name="add_project_menu_btn">
    <property name="text">
-    <string>Add group</string>
+    <string>Add project</string>
    </property>
   </action>
   <action name="exit_menu_btn">

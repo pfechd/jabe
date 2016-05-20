@@ -50,11 +50,13 @@ class MainWindow(QMainWindow):
         self.ui.add_session_mask_btn.clicked.connect(self.mask_button_pressed)
         self.ui.add_session_stimuli_btn.clicked.connect(self.stimuli_button_pressed)
         self.ui.create_session_stimuli_btn.clicked.connect(self.create_stimuli_button_pressed)
-        self.ui.add_group_menu_btn.triggered.connect(self.add_project_pressed)
-        self.ui.add_group_btn.clicked.connect(self.add_project_pressed)
+        self.ui.add_project_menu_btn.triggered.connect(self.add_project_pressed)
+        self.ui.add_project_btn.clicked.connect(self.add_project_pressed)
         self.ui.exit_menu_btn.triggered.connect(self.exit_button_pressed)
+        self.ui.add_group_btn.clicked.connect(self.add_item_clicked)
         self.ui.add_individual_btn.clicked.connect(self.add_item_clicked)
         self.ui.add_session_btn.clicked.connect(self.add_item_clicked)
+        self.ui.remove_project_btn.clicked.connect(self.remove_pressed)
         self.ui.remove_session_btn.clicked.connect(self.remove_pressed)
         self.ui.remove_group_btn.clicked.connect(self.remove_pressed)
         self.ui.remove_individual_btn.clicked.connect(self.remove_pressed)
@@ -260,7 +262,9 @@ class MainWindow(QMainWindow):
 
     def add_item_clicked(self):
         if self.ui.tree_widget.selectedItems():
-            if isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
+            if isinstance(self.ui.tree_widget.selectedItems()[0], ProjectTreeItem):
+                self.ui.tree_widget.selectedItems()[0].add_new_group()
+            elif isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
                 self.ui.tree_widget.selectedItems()[0].add_new_individual()
             elif isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
                 self.ui.tree_widget.selectedItems()[0].add_new_session()
