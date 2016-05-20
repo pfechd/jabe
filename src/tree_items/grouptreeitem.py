@@ -40,11 +40,9 @@ class GroupTreeItem(QTreeWidgetItem, Group):
         self.add_individual(individual)
 
     def remove_item(self):
-        tree = self.treeWidget()
-        tree.takeTopLevelItem(tree.indexFromItem(self).row())
-        tree.parent().parent().groups.remove(self)
-        if len(tree.selectedItems()) == 0:
-                tree.window().ui.stackedWidget.setCurrentIndex(1)
+        self.parent().remove_child(self)
+        self.treeWidget().window().update_gui()
+        self.parent().removeChild(self)
 
     def create_buttons(self):
         tree = self.treeWidget()

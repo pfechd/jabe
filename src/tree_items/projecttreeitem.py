@@ -42,7 +42,7 @@ class ProjectTreeItem(QTreeWidgetItem, Group):
     def remove_item(self):
         tree = self.treeWidget()
         tree.takeTopLevelItem(tree.indexFromItem(self).row())
-        tree.parent().parent().groups.remove(self)
+        tree.parent().parent().projects.remove(self)
         if len(tree.selectedItems()) == 0:
                 tree.window().ui.stackedWidget.setCurrentIndex(1)
 
