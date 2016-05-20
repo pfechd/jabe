@@ -111,7 +111,7 @@
     <item>
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>2</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="group_page">
        <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -355,7 +355,14 @@
                    </widget>
                   </item>
                   <item row="3" column="1">
-                   <widget class="QLineEdit" name="tr_value_group"/>
+                   <widget class="QLineEdit" name="tr_value_group">
+                    <property name="text">
+                     <string>0.5</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
                   </item>
                   <item row="3" column="0">
                    <widget class="QLabel" name="tr_label_group">
@@ -854,7 +861,14 @@
                    </widget>
                   </item>
                   <item row="3" column="1">
-                   <widget class="QLineEdit" name="tr_value_ind"/>
+                   <widget class="QLineEdit" name="tr_value_ind">
+                    <property name="text">
+                     <string>0.5</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
                   </item>
                  </layout>
                 </item>
@@ -1377,7 +1391,14 @@
                    </widget>
                   </item>
                   <item row="7" column="1">
-                   <widget class="QLineEdit" name="tr_value_session"/>
+                   <widget class="QLineEdit" name="tr_value_session">
+                    <property name="text">
+                     <string>0.5</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
                   </item>
                   <item row="7" column="0">
                    <widget class="QLabel" name="tr_label_session">

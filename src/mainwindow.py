@@ -46,7 +46,7 @@ class MainWindow(QMainWindow):
         self.ui.add_session_anatomy_btn.clicked.connect(self.anatomy_button_pressed)
         self.ui.add_session_epi_btn.clicked.connect(self.brain_button_pressed)
         self.ui.add_session_mask_btn.clicked.connect(self.mask_button_pressed)
-        self.ui.add_session_stimuli_btn.clicked.connect(self.stimuli_button_pressed)
+        self.ui.add_session_stimuli_btn.clicked.connect(self.stimuli_button_pressed(0))
         self.ui.create_session_stimuli_btn.clicked.connect(self.create_stimuli_button_pressed)
         self.ui.add_group_menu_btn.triggered.connect(self.add_group_pressed)
         self.ui.add_group_btn.clicked.connect(self.add_group_pressed)
@@ -316,20 +316,36 @@ class MainWindow(QMainWindow):
             print 'Mask not chosen'
         self.update_gui()
 
-    def stimuli_button_pressed(self):
+    def stimuli_button_pressed(self, level):
         """ Callback function, run when the choose stimuli button is pressed."""
+        tr = self.get_tr(level)
+        #tr = QInputDialog.getDouble(self, "Time interval", "Enter time interval between images (tr)", 0.0, 0.0)
 
-        tr = QInputDialog.getDouble(self, "Time interval", "Enter time interval between images (tr)", 0.0, 0.0)
-
-        if tr[0] > 0.0:
+        if tr > 0.0:
             file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.mat)")
             if file_name[0]:
-                self.load_stimuli(file_name[0], tr[0])
+                self.load_stimuli(file_name[0], tr)
             else:
                 print 'Stimuli not chosen'
             self.update_gui()
-        elif tr[1]:
+        else:
             QMessageBox.warning(self, "Error", "Time interval has to be greater than 0")
+
+
+    def get_tr(self, level):
+        """
+        Checks if Tr value (time between images) is valid and returns tr value if that's the case.
+        :return: float value of tr
+        """
+        tr = [self.ui.tr_value_session.text(), self.ui.tr_value_ind.text(), self.ui.tr_value_group.text()]
+        tr_level = tr[level]
+        print(tr_level)
+        try:
+            output = float(tr_level)
+        except ValueError:
+            QMessageBox.warning(self, "ValueError", "Tr must be a number, ex. 1.2")
+
+        return output
 
 
     def create_stimuli_button_pressed(self):
