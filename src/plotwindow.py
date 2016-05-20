@@ -240,43 +240,40 @@ class CustomPlot(QDialog):
             self.remove_sem()
             self.canvas.draw()
 
-    def plot_amplitude(self):
-        """
-        Amplitude checkbox callback. Annotate amplitude in graph with a horizontal line
-        """
+    def plot_peak_and_amplitude(self):
         self.remove_amplitude()
-        if not (self.ui.checkBox_smooth.isChecked() or self.ui.mean_response_btn.isChecked()):
-            return
-
-        if self.ui.checkBox_amp.isChecked() and (self.regular or self.smooth):
-            max_amp = self.session.calculate_amplitude(
-                    self.ui.stimuliBox.currentText(),
-                    smooth=self.ui.checkBox_smooth.isChecked())
-            self.amp = self.ax.axhline(max_amp[1], color=self.get_color())
-            self.ui.amp_label.setText("Amplitude: %.2f" % max_amp[1])
-            self.ui.amp_label.show()
-            self.canvas.draw()
-        else:
-            self.ui.amp_label.hide()
-
-    def plot_peak(self):
-        """
-        Peak checkbox callback. Annotate time of peak in graph with a vertical line
-        """
         self.remove_peak_time()
         if not (self.ui.checkBox_smooth.isChecked() or self.ui.mean_response_btn.isChecked()):
+            self.ui.peak_label.hide()
+            self.ui.amp_label.hide()
             return
-        if self.ui.checkBox_peak.isChecked() and (self.regular or self.smooth):
-            y = self.ax.lines[0].get_ydata()
-            x = np.arange(len(y))
-            max_peak = self.session.calculate_amplitude(
+        amp = self.ui.checkBox_amp.isChecked()
+        peak = self.ui.checkBox_peak.isChecked()
+        if peak or amp:
+            points = self.session.calculate_amplitude(
                     self.ui.stimuliBox.currentText(),
                     smooth=self.ui.checkBox_smooth.isChecked())
-            self.peak_time = self.ax.axvline(max_peak[0], color=self.get_color())
-            self.ui.peak_label.setText("Peak: " + str(max_peak[0] * self.session.get_tr()))
-            self.ui.peak_label.show()
+            amp_text = ""
+            peak_text = ""
+            for point in points:
+                if peak:
+                    self.peak_time.append(
+                            self.ax.axvline(point[0], color=self.get_color()))
+                    peak_text += "Peak " + point[2] + ": " + \
+                            str(point[0] * self.session.get_tr()) + "\n"
+                if amp:
+                    self.amp.append(
+                            self.ax.axhline(point[1], color=self.get_color()))
+                    amp_text += "Amplitude " + point[2] + ": " + \
+                            str(point[1] * self.session.get_tr()) + "\n"
+            if peak_text:
+                self.ui.peak_label.setText(peak_text)
+                self.ui.peak_label.show()
+            if amp_text:
+                self.ui.amp_label.setText(amp_text)
+                self.ui.amp_label.show()
             self.canvas.draw()
-        else:
+        if not peak:
             self.ui.peak_label.hide()
             
     def show_points(self):
