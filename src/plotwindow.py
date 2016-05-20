@@ -199,8 +199,8 @@ class CustomPlot(QDialog):
             self.remove_smoothed_plots()
 
         plt.legend(bbox_to_anchor=(1.01, 1), loc=2, borderaxespad=0., prop={'size':11})
-        self.canvas.draw()
         self.plot_peak_and_amplitude()
+        self.canvas.draw()
 
     def remove_smoothed_plots(self):
         if self.smooth:
@@ -221,8 +221,8 @@ class CustomPlot(QDialog):
             self.remove_regular_plots()
 
         plt.legend(bbox_to_anchor=(1.01, 1), loc=2, borderaxespad=0., prop={'size':11})
-        self.canvas.draw()
         self.plot_peak_and_amplitude()
+        self.canvas.draw()
 
     def plot_sem(self):
         """
@@ -267,14 +267,16 @@ class CustomPlot(QDialog):
                     amp_text += "Amplitude " + point[2] + ": " + \
                             str(point[1] * self.session.get_tr()) + "\n"
             if peak_text:
-                self.ui.peak_label.setText(peak_text)
+                self.ui.peak_label.setText(peak_text[0:-1])
                 self.ui.peak_label.show()
             if amp_text:
-                self.ui.amp_label.setText(amp_text)
+                self.ui.amp_label.setText(amp_text[0:-1])
                 self.ui.amp_label.show()
             self.canvas.draw()
         if not peak:
             self.ui.peak_label.hide()
+        if not amp:
+            self.ui.amp_label.hide()
             
     def show_points(self):
         """
