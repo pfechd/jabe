@@ -243,7 +243,7 @@
                   <item row="0" column="1">
                    <widget class="QPushButton" name="anatomy_btn_group">
                     <property name="enabled">
-                     <bool>false</bool>
+                     <bool>true</bool>
                     </property>
                     <property name="text">
                      <string>Choose anatomy</string>
@@ -253,7 +253,7 @@
                   <item row="1" column="1">
                    <widget class="QPushButton" name="stimuli_btn_group">
                     <property name="enabled">
-                     <bool>false</bool>
+                     <bool>true</bool>
                     </property>
                     <property name="text">
                      <string>Choose stimuli</string>
@@ -261,9 +261,9 @@
                    </widget>
                   </item>
                   <item row="2" column="0">
-                   <widget class="QLabel" name="maskLabel_5">
+                   <widget class="QLabel" name="group_mask_label">
                     <property name="enabled">
-                     <bool>false</bool>
+                     <bool>true</bool>
                     </property>
                     <property name="minimumSize">
                      <size>
@@ -285,7 +285,7 @@
                   <item row="2" column="1">
                    <widget class="QPushButton" name="mask_btn_group">
                     <property name="enabled">
-                     <bool>false</bool>
+                     <bool>true</bool>
                     </property>
                     <property name="text">
                      <string>Choose mask</string>
@@ -293,9 +293,9 @@
                    </widget>
                   </item>
                   <item row="1" column="0">
-                   <widget class="QLabel" name="stimuliLabel_5">
+                   <widget class="QLabel" name="group_stimuli_label">
                     <property name="enabled">
-                     <bool>false</bool>
+                     <bool>true</bool>
                     </property>
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
@@ -321,9 +321,9 @@
                    </widget>
                   </item>
                   <item row="0" column="0">
-                   <widget class="QLabel" name="brainLabel_5">
+                   <widget class="QLabel" name="group_anatomy_label">
                     <property name="enabled">
-                     <bool>false</bool>
+                     <bool>true</bool>
                     </property>
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -716,30 +716,30 @@
                   <property name="topMargin">
                    <number>0</number>
                   </property>
-                  <item row="0" column="1">
-                   <widget class="QPushButton" name="anatomy_btn_individual">
-                    <property name="enabled">
-                     <bool>false</bool>
-                    </property>
-                    <property name="text">
-                     <string>Choose anatomy</string>
-                    </property>
-                   </widget>
-                  </item>
                   <item row="1" column="1">
                    <widget class="QPushButton" name="stimuli_btn_individual">
                     <property name="enabled">
-                     <bool>false</bool>
+                     <bool>true</bool>
                     </property>
                     <property name="text">
                      <string>Choose stimuli</string>
                     </property>
                    </widget>
                   </item>
-                  <item row="2" column="0">
-                   <widget class="QLabel" name="maskLabel_9">
+                  <item row="0" column="1">
+                   <widget class="QPushButton" name="anatomy_btn_individual">
                     <property name="enabled">
-                     <bool>false</bool>
+                     <bool>true</bool>
+                    </property>
+                    <property name="text">
+                     <string>Choose anatomy</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="individual_mask_label">
+                    <property name="enabled">
+                     <bool>true</bool>
                     </property>
                     <property name="minimumSize">
                      <size>
@@ -761,7 +761,7 @@
                   <item row="2" column="1">
                    <widget class="QPushButton" name="mask_btn_individual">
                     <property name="enabled">
-                     <bool>false</bool>
+                     <bool>true</bool>
                     </property>
                     <property name="text">
                      <string>Choose mask</string>
@@ -769,9 +769,9 @@
                    </widget>
                   </item>
                   <item row="1" column="0">
-                   <widget class="QLabel" name="stimuliLabel_9">
+                   <widget class="QLabel" name="individual_stimuli_label">
                     <property name="enabled">
-                     <bool>false</bool>
+                     <bool>true</bool>
                     </property>
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
@@ -797,9 +797,9 @@
                    </widget>
                   </item>
                   <item row="0" column="0">
-                   <widget class="QLabel" name="brainLabel_9">
+                   <widget class="QLabel" name="individual_anatomy_label">
                     <property name="enabled">
-                     <bool>false</bool>
+                     <bool>true</bool>
                     </property>
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">

@@ -6,6 +6,7 @@ import nibabel as nib
 from src.brain import Brain
 from src.stimuli import Stimuli
 from src.mask import Mask
+import session
 
 
 class Group(object):
@@ -99,7 +100,7 @@ class Group(object):
             temp_stimuli = Stimuli(path, tr)
         except:
             return "The file is not a proper stimuli file. It might be corrupted or in the wrong format"
-        if self.brain and temp_stimuli.data[-1, 0] > self.brain.images:
+        if isinstance(self, session.Session) and self.brain and temp_stimuli.data[-1, 0] > self.brain.images:
             return "The times in the stimuli file are too long compared to the length of the EPI sequence"
         else:
             self.stimuli = temp_stimuli
@@ -114,7 +115,7 @@ class Group(object):
             return path + " could not be opened. It might be corrupted"
         if len(temp_mask.shape) != 3:
             return "The data has " + str(len(temp_mask.shape)) + " dimensions instead of 3"
-        elif self.brain and self.brain.shape[0:3] != temp_mask.shape:
+        elif isinstance(self, session.Session) and self.brain and self.brain.shape[0:3] != temp_mask.shape:
             return "The mask is not the same size as the EPI sequence"
         else:
             self.mask = temp_mask
@@ -185,7 +186,7 @@ class Group(object):
                  frame.
         """
 
-        responses = self.aggregate(percentage, global_)
+        responses = self.aggregate(percentage, global_, self.mask, self.stimuli)
         mean_responses = {}
 
         for stimuli_type, stimuli_data in responses.iteritems():
@@ -215,7 +216,7 @@ class Group(object):
     def calculate_sem(self, percentage, global_):
         """ Calculate the standard error of the mean (SEM) of the response """
 
-        responses = self.aggregate(percentage, global_)
+        responses = self.aggregate(percentage, global_, self.mask, self.stimuli)
         responses_sem = {}
 
         for stimuli_type, stimuli_data in responses.iteritems():
@@ -231,17 +232,34 @@ class Group(object):
         return responses_sem
 
     def get_configuration(self):
-        return {
+        configuration = {
             'name': self.name,
             'description': self.description,
             'plot_settings': self.plot_settings,
             'individuals': [individual.get_configuration() for individual in self.children],
             'sessions': [session.get_configuration() for session in self.sessions]
         }
+        if self.anatomy:
+            configuration['anatomy_path'] = self.anatomy.path
+
+        if self.mask:
+            configuration['mask'] = self.mask.get_configuration()
+
+        if self.stimuli:
+            configuration['stimuli'] = self.stimuli.get_configuration()
+
+        return configuration
+
 
     def load_configuration(self, configuration):
         if 'name' in configuration:
             self.name = configuration['name']
+        if 'anatomy_path' in configuration:
+            self.load_anatomy(configuration['anatomy_path'])
+        if 'mask' in configuration:
+            self.load_mask(configuration['mask']['path'])
+        if 'stimuli' in configuration:
+            self.load_stimuli(configuration['stimuli']['path'], configuration['stimuli']['tr'])
         if 'description' in configuration:
             self.description = configuration['description']
         if 'plot_settings' in configuration:
@@ -263,7 +281,7 @@ class Group(object):
 
         for child in self.children + self.sessions:
             # If the child doesn't have the files loaded, skip it.
-            if not child.ready_for_calculation():
+            if not child.ready_for_calculation(self.mask, self.stimuli):
                 continue
             child_response = child.aggregate(percentage, global_, mask, stimuli)
 

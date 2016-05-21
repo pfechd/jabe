@@ -44,9 +44,15 @@ class MainWindow(QMainWindow):
         self.ui.extract_btn_individual.clicked.connect(self.calculate_button_pressed)
         self.ui.extract_btn_group.clicked.connect(self.calculate_button_pressed)
         self.ui.add_session_anatomy_btn.clicked.connect(self.anatomy_button_pressed)
+        self.ui.anatomy_btn_group.clicked.connect(self.anatomy_button_pressed)
+        self.ui.anatomy_btn_individual.clicked.connect(self.anatomy_button_pressed)
         self.ui.add_session_epi_btn.clicked.connect(self.brain_button_pressed)
         self.ui.add_session_mask_btn.clicked.connect(self.mask_button_pressed)
+        self.ui.mask_btn_group.clicked.connect(self.mask_button_pressed)
+        self.ui.mask_btn_individual.clicked.connect(self.mask_button_pressed)
         self.ui.add_session_stimuli_btn.clicked.connect(self.stimuli_button_pressed)
+        self.ui.stimuli_btn_individual.clicked.connect(self.stimuli_button_pressed)
+        self.ui.stimuli_btn_group.clicked.connect(self.stimuli_button_pressed)
         self.ui.create_session_stimuli_btn.clicked.connect(self.create_stimuli_button_pressed)
         self.ui.add_group_menu_btn.triggered.connect(self.add_group_pressed)
         self.ui.add_group_btn.clicked.connect(self.add_group_pressed)
@@ -340,31 +346,28 @@ class MainWindow(QMainWindow):
             self.update_gui()
 
     def load_anatomy(self, path):
-        if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
-            session = self.ui.tree_widget.selectedItems()[0]
-            error = session.load_anatomy(path)
-            if error:
-                QMessageBox.warning(self, "File error", error)
-                self.anatomy_button_pressed()
-            self.update_gui()
+        session = self.ui.tree_widget.selectedItems()[0]
+        error = session.load_anatomy(path)
+        if error:
+            QMessageBox.warning(self, "File error", error)
+            self.anatomy_button_pressed()
+        self.update_gui()
 
     def load_mask(self, path):
-        if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
-            session = self.ui.tree_widget.selectedItems()[0]
-            error = session.load_mask(path)
-            if error:
-                QMessageBox.warning(self, "File error", error)
-                self.mask_button_pressed()
-            self.update_gui()
+        session = self.ui.tree_widget.selectedItems()[0]
+        error = session.load_mask(path)
+        if error:
+            QMessageBox.warning(self, "File error", error)
+            self.mask_button_pressed()
+        self.update_gui()
 
     def load_stimuli(self, path):
-        if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
-            session = self.ui.tree_widget.selectedItems()[0]
-            error = session.load_stimuli(path, 0.5)
-            if error:
-                QMessageBox.warning(self, "File error", error)
-                self.stimuli_button_pressed()
-            self.update_gui()
+        session = self.ui.tree_widget.selectedItems()[0]
+        error = session.load_stimuli(path, 0.5)
+        if error:
+            QMessageBox.warning(self, "File error", error)
+            self.stimuli_button_pressed()
+        self.update_gui()
 
     def update_gui(self):
         self.update_buttons()
@@ -451,27 +454,58 @@ class MainWindow(QMainWindow):
     def update_text(self):
         if self.ui.tree_widget.selectedItems():
             if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
-                individual = self.ui.tree_widget.selectedItems()[0]
+                session = self.ui.tree_widget.selectedItems()[0]
 
-                if individual.brain:
-                    self.ui.session_epi_label.setText('EPI-images chosen: ' + individual.brain.path.split('/')[-1])
+                if session.brain:
+                    self.ui.session_epi_label.setText('EPI-images chosen: ' + session.brain.path.split('/')[-1])
                 else:
                     self.ui.session_epi_label.setText('No EPI-images chosen')
 
-                if individual.anatomy:
-                    self.ui.session_anatomy_label.setText('Anatomy chosen: ' + individual.anatomy.path.split('/')[-1])
+                if session.anatomy:
+                    self.ui.session_anatomy_label.setText('Anatomy chosen: ' + session.anatomy.path.split('/')[-1])
                 else:
                     self.ui.session_anatomy_label.setText('No anatomy chosen')
 
-                if individual.mask:
-                    self.ui.session_mask_label.setText('Mask picked: ' + individual.mask.path.split('/')[-1])
+                if session.mask:
+                    self.ui.session_mask_label.setText('Mask picked: ' + session.mask.path.split('/')[-1])
                 else:
                     self.ui.session_mask_label.setText('No mask chosen')
 
-                if individual.stimuli:
-                    self.ui.session_stimuli_label.setText('Stimuli picked: ' + individual.stimuli.path.split('/')[-1])
+                if session.stimuli:
+                    self.ui.session_stimuli_label.setText('Stimuli picked: ' + session.stimuli.path.split('/')[-1])
                 else:
                     self.ui.session_stimuli_label.setText('No stimuli chosen')
+            elif isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
+                individual = self.ui.tree_widget.selectedItems()[0]
+
+                if individual.anatomy:
+                    self.ui.individual_anatomy_label.setText('Anatomy chosen: ' + individual.anatomy.path.split('/')[-1])
+                else:
+                    self.ui.individual_anatomy_label.setText('No anatomy chosen')
+                if individual.mask:
+                    self.ui.individual_mask_label.setText('Mask chosen: ' + individual.mask.path.split('/')[-1])
+                else:
+                    self.ui.individual_mask_label.setText('No mask chosen')
+                if individual.stimuli:
+                    self.ui.individual_stimuli_label.setText('Stimuli chosen: ' + individual.stimuli.path.split('/')[-1])
+                else:
+                    self.ui.individual_stimuli_label.setText('No stimuli chosen')
+            elif isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
+                group = self.ui.tree_widget.selectedItems()[0]
+
+                if group.anatomy:
+                    self.ui.group_anatomy_label.setText('Anatomy chosen: ' + group.anatomy.path.split('/')[-1])
+                else:
+                    self.ui.group_anatomy_label.setText('No anatomy chosen')
+                if group.mask:
+                    self.ui.group_mask_label.setText('Mask chosen: ' + group.mask.path.split('/')[-1])
+                else:
+                    self.ui.group_mask_label.setText('No mask chosen')
+                if group.stimuli:
+                    self.ui.group_stimuli_label.setText('Stimuli chosen: ' + group.stimuli.path.split('/')[-1])
+                else:
+                    self.ui.group_stimuli_label.setText('No stimuli chosen')
+
         else:
             for label in [self.ui.session_epi_label, self.ui.session_mask_label, self.ui.session_stimuli_label]:
                 label.setText('')
