@@ -35,12 +35,12 @@ class Mask:
 
             # Set ones in a volume of a cube around the specified coordinate
             if shape == "Box":
-                for z in range(int(coordinate[2] - width[2] / (2*voxel_size[2])),
-                               int(coordinate[2] + width[2] / 2*voxel_size[2] + 1)):
-                    for y in range(int(coordinate[1] - width[1] / 2*voxel_size[1]),
-                                   int(coordinate[1] + width[1] / 2*voxel_size[1] + 1)):
-                        for x in range(int(coordinate[0] - width[0] / 2*voxel_size[0]),
-                                       int(coordinate[0] + width[0] / 2*voxel_size[0] + 1)):
+                for z in range(int(coordinate[2] - width[2] / 2),
+                               int(coordinate[2] + width[2] / 2 + 1)):
+                    for y in range(int(coordinate[1] - width[1] / 2),
+                                   int(coordinate[1] + width[1] / 2 + 1)):
+                        for x in range(int(coordinate[0] - width[0] / 2),
+                                       int(coordinate[0] + width[0] / 2 + 1)):
                             self.data[x, y, z] = 1
 
             # Set ones in every coordinate within the distance radius_width around the coordinate, making it a sphere
