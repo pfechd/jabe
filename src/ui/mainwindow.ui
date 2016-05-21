@@ -213,9 +213,9 @@
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_13">
                 <item>
-                 <widget class="QCheckBox" name="checkBox_2">
+                 <widget class="QCheckBox" name="group_use_mask">
                   <property name="enabled">
-                   <bool>false</bool>
+                   <bool>true</bool>
                   </property>
                   <property name="text">
                    <string>Same anatomy image and mask for all sessions</string>
@@ -223,9 +223,9 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QCheckBox" name="checkBox">
+                 <widget class="QCheckBox" name="group_use_stimuli">
                   <property name="enabled">
-                   <bool>false</bool>
+                   <bool>true</bool>
                   </property>
                   <property name="text">
                    <string>Same stimuli for all sessions</string>
@@ -683,9 +683,9 @@
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_47">
                 <item>
-                 <widget class="QCheckBox" name="checkBox_3">
+                 <widget class="QCheckBox" name="individual_use_mask">
                   <property name="enabled">
-                   <bool>false</bool>
+                   <bool>true</bool>
                   </property>
                   <property name="text">
                    <string>Same anatomy image and mask for all sessions</string>
@@ -696,9 +696,9 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QCheckBox" name="checkBox_4">
+                 <widget class="QCheckBox" name="individual_use_stimuli">
                   <property name="enabled">
-                   <bool>false</bool>
+                   <bool>true</bool>
                   </property>
                   <property name="text">
                    <string>Same stimuli for all sessions</string>

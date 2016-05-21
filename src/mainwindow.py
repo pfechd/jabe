@@ -75,15 +75,17 @@ class MainWindow(QMainWindow):
         self.ui.individual_description.textChanged.connect(self.description_changed)
 
         plot_buttons = [self.ui.global_normalization_individual_btn, self.ui.local_normalization_individual_btn,
-                   self.ui.percent_individual_btn, self.ui.subtract_individual_btn,
-                   self.ui.checkbox_amplitude_individual, self.ui.checkbox_peak_individual,
-                   self.ui.checkbox_sem_individual, self.ui.checkbox_fwhm_individual,
-                   self.ui.global_normalization_session_btn, self.ui.local_normalization_session_btn,
-                   self.ui.percent_session_btn, self.ui.subtract_session_btn, self.ui.checkbox_amplitude_session,
-                   self.ui.checkbox_peak_session, self.ui.checkbox_sem_session, self.ui.checkbox_fwhm_session,
-                   self.ui.global_normalization_group_btn, self.ui.local_normalization_group_btn,
-                   self.ui.percent_group_btn, self.ui.subtract_group_btn, self.ui.checkbox_amplitude_group,
-                   self.ui.checkbox_peak_group, self.ui.checkbox_sem_group, self.ui.checkbox_fwhm_group]
+                        self.ui.percent_individual_btn, self.ui.subtract_individual_btn,
+                        self.ui.checkbox_amplitude_individual, self.ui.checkbox_peak_individual,
+                        self.ui.checkbox_sem_individual, self.ui.checkbox_fwhm_individual,
+                        self.ui.individual_use_mask, self.ui.individual_use_stimuli,
+                        self.ui.global_normalization_session_btn, self.ui.local_normalization_session_btn,
+                        self.ui.percent_session_btn, self.ui.subtract_session_btn, self.ui.checkbox_amplitude_session,
+                        self.ui.checkbox_peak_session, self.ui.checkbox_sem_session, self.ui.checkbox_fwhm_session,
+                        self.ui.global_normalization_group_btn, self.ui.local_normalization_group_btn,
+                        self.ui.percent_group_btn, self.ui.subtract_group_btn, self.ui.checkbox_amplitude_group,
+                        self.ui.checkbox_peak_group, self.ui.checkbox_sem_group, self.ui.checkbox_fwhm_group,
+                        self.ui.group_use_mask, self.ui.group_use_stimuli]
 
         for button in plot_buttons:
             button.clicked.connect(self.plot_settings_changed)
@@ -97,7 +99,7 @@ class MainWindow(QMainWindow):
         self.ui.tree_widget.setColumnWidth(0, 200)
         self.groups = []
         self.load_configuration()
-        self.update_gui()
+        self.plot_settings_changed()
 
     def check_paths(self, configuration, type = None):
         missing_paths = []
@@ -283,8 +285,8 @@ class MainWindow(QMainWindow):
                      isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem)):
             for button in self.individual_buttons:
                 button.setEnabled(False)
-            self.ui.extract_btn_group.setEnabled(True)
-            self.ui.extract_btn_individual.setEnabled(True)
+            self.ui.extract_btn_group.setEnabled(self.ui.tree_widget.selectedItems()[0].ready_for_calculation())
+            self.ui.extract_btn_individual.setEnabled(self.ui.tree_widget.selectedItems()[0].ready_for_calculation())
         else:
             for button in self.individual_buttons:
                 button.setEnabled(False)
@@ -395,6 +397,8 @@ class MainWindow(QMainWindow):
                 self.ui.checkbox_peak_individual.setChecked(individual.get_setting('peak'))
                 self.ui.checkbox_sem_individual.setChecked(individual.get_setting('sem'))
                 self.ui.checkbox_fwhm_individual.setChecked(individual.get_setting('fwhm'))
+                self.ui.individual_use_mask.setChecked(individual.get_setting('use_mask'))
+                self.ui.individual_use_stimuli.setChecked(individual.get_setting('use_stimuli'))
 
                 # Add overview tree in individual panel
                 self.ui.sessions_overview_tree.clear()
@@ -441,6 +445,9 @@ class MainWindow(QMainWindow):
                 self.ui.checkbox_peak_group.setChecked(group.get_setting('peak'))
                 self.ui.checkbox_sem_group.setChecked(group.get_setting('sem'))
                 self.ui.checkbox_fwhm_group.setChecked(group.get_setting('fwhm'))
+                self.ui.group_use_mask.setChecked(group.get_setting('use_mask'))
+                self.ui.group_use_stimuli.setChecked(group.get_setting('use_stimuli'))
+
 
                 # Add overview tree in group panel
                 self.ui.individual_overview_tree.clear()
@@ -542,6 +549,8 @@ class MainWindow(QMainWindow):
                 individual.plot_settings['peak'] = self.ui.checkbox_peak_individual.isChecked()
                 individual.plot_settings['sem'] = self.ui.checkbox_sem_individual.isChecked()
                 individual.plot_settings['fwhm'] = self.ui.checkbox_fwhm_individual.isChecked()
+                individual.plot_settings['use_mask'] = self.ui.individual_use_mask.isChecked()
+                individual.plot_settings['use_stimuli'] = self.ui.individual_use_stimuli.isChecked()
             elif isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
                 session = self.ui.tree_widget.selectedItems()[0]
                 session.plot_settings['global'] = self.ui.global_normalization_session_btn.isChecked()
@@ -558,6 +567,9 @@ class MainWindow(QMainWindow):
                 group.plot_settings['peak'] = self.ui.checkbox_peak_group.isChecked()
                 group.plot_settings['sem'] = self.ui.checkbox_sem_group.isChecked()
                 group.plot_settings['fwhm'] = self.ui.checkbox_fwhm_group.isChecked()
+                group.plot_settings['use_mask'] = self.ui.group_use_mask.isChecked()
+                group.plot_settings['use_stimuli'] = self.ui.group_use_stimuli.isChecked()
+        self.update_gui()
 
     def clear_layout(self, layout):
         while layout.count():

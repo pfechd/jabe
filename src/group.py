@@ -35,16 +35,16 @@ class Group(object):
         if configuration:
             self.load_configuration(configuration)
 
-    def ready_for_calculation(self, stimuli=None, mask=None):
+    def ready_for_calculation(self, mask=None, stimuli=None):
         if not stimuli:
-            stimuli = self.stimuli
+            stimuli = self.get_stimuli()
         if not mask:
-            mask = self.mask
+            mask = self.get_mask()
 
         children = self.children + self.sessions
 
         if children:
-            return any([child.ready_for_calculation(stimuli, mask) for child in children])
+            return any([child.ready_for_calculation(mask, stimuli) for child in children])
         else:
             return all([stimuli, mask])
 
@@ -172,7 +172,7 @@ class Group(object):
             global_ = self.get_setting('global')
 
         settings_changed = self.settings_changed(percentage, global_,
-                                                 self.mask, self.stimuli)
+                                                 self.get_mask(), self.get_stimuli())
         if settings_changed or not self.mean_responses:
             self.mean_responses = self.calculate_mean(percentage, global_)
         return self.mean_responses
@@ -185,8 +185,7 @@ class Group(object):
                  is the vector containing the mean value for the given time
                  frame.
         """
-
-        responses = self.aggregate(percentage, global_, self.mask, self.stimuli)
+        responses = self.aggregate(percentage, global_, self.get_mask(), self.get_stimuli())
         mean_responses = {}
 
         for stimuli_type, stimuli_data in responses.iteritems():
@@ -215,8 +214,7 @@ class Group(object):
 
     def calculate_sem(self, percentage, global_):
         """ Calculate the standard error of the mean (SEM) of the response """
-
-        responses = self.aggregate(percentage, global_, self.mask, self.stimuli)
+        responses = self.aggregate(percentage, global_, self.get_mask(), self.get_stimuli())
         responses_sem = {}
 
         for stimuli_type, stimuli_data in responses.iteritems():
@@ -279,9 +277,14 @@ class Group(object):
         self.sem_responses = None
         self.mean_responses = None
 
+        if not mask:
+            mask = self.get_mask()
+        if not stimuli:
+            stimuli = self.get_stimuli()
+
         for child in self.children + self.sessions:
             # If the child doesn't have the files loaded, skip it.
-            if not child.ready_for_calculation(self.mask, self.stimuli):
+            if not child.ready_for_calculation(mask, stimuli):
                 continue
             child_response = child.aggregate(percentage, global_, mask, stimuli)
 
@@ -310,3 +313,15 @@ class Group(object):
             return self.plot_settings[setting]
         else:
             return False
+
+    def get_mask(self):
+        if isinstance(self, session.Session) or self.get_setting('use_mask'):
+            return self.mask
+        else:
+            return None
+
+    def get_stimuli(self):
+        if isinstance(self, session.Session) or self.get_setting('use_stimuli'):
+            return self.stimuli
+        else:
+            return None
