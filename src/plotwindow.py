@@ -97,6 +97,7 @@ class CustomPlot(QDialog):
         self.fig.subplots_adjust(right=0.8)
 
         self.show()
+        self.ui.verticalLayout_3.update()
 
     def tool_anatomy(self):
          self.anatomy_window = AnatomyWindow(self, self.session)

@@ -310,6 +310,12 @@
                   <property name="enabled">
                    <bool>true</bool>
                   </property>
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
                   <property name="text">
                    <string>Amplitude</string>
                   </property>
@@ -320,6 +326,12 @@
                   <property name="enabled">
                    <bool>true</bool>
                   </property>
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
                   <property name="text">
                    <string>Peak</string>
                   </property>
@@ -327,6 +339,12 @@
                 </item>
                 <item>
                  <widget class="QLabel" name="fwhm_label">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
                   <property name="text">
                    <string>FWHM</string>
                   </property>
@@ -363,8 +381,6 @@
              </layout>
             </item>
            </layout>
-           <zorder>layoutWidget</zorder>
-           <zorder>amp_label</zorder>
           </widget>
          </widget>
         </item>
