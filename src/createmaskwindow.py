@@ -108,7 +108,7 @@ class CreateMaskWindow(QDialog):
                             return
                         path = file_name[0]+file_name[1]
                         shape = self.ui.comboBox_shape.currentText()
-                        width = (float(width), float(width), float(width))
+                        width = voxel_width
                         Mask(path, shape, coordinate, width, self.brain_file)
                         self.close()
                         self.parent().load_mask(path)
