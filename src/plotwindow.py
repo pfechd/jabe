@@ -112,7 +112,10 @@ class CustomPlot(QDialog):
 
     def plot_fwhm(self):
         """
-        FWHM checkbox callback. Plot FWHM for current graph. Disabled if no graph plotted
+        If fwhm checkbox is checked this function will update fwhm
+        span and datalog info.
+        If fwhm checkbox is not checked this function will remove 
+        fwhm span and datalog info.
         """
         self.remove_fwhm()
         if not (self.ui.checkBox_smooth.isChecked() \
@@ -143,7 +146,9 @@ class CustomPlot(QDialog):
                 
     def replot(self):
         """
-        Replot regular and smoothed curve. Used when changing the data to plot
+        Replot regular and smoothed curve, amplitude, peak and fwhm. 
+        Used when changing the data to plot and callback function for
+        many checkboxes.
         """
         self.remove_sem()
 
@@ -195,7 +200,9 @@ class CustomPlot(QDialog):
 
     def plot_smooth(self):
         """
-        Smooth checkbox callback. Plot smooth from session object
+        Plot smoothed responses from session object if smoothed checkbox 
+        is checked.
+        Will otherwise hide smoothed responses
         """
         if self.ui.checkBox_smooth.isChecked() and self.ui.mean_response_btn.isChecked():
             self.ax.relim()
@@ -232,7 +239,9 @@ class CustomPlot(QDialog):
 
     def plot_mean(self):
         """
-        Mean checkbox callback. Plot mean from session object
+        Plot mean responses from session object if mean checkbox 
+        is checked.
+        Will otherwise hide mean responses
         """
         if self.ui.checkBox_regular.isChecked():
             self.ax.relim()
@@ -262,6 +271,12 @@ class CustomPlot(QDialog):
             self.canvas.draw()
 
     def plot_amplitude(self):
+        """
+        If amplitude checkbox is checked this function will update amplitude
+        lines and datalog info.
+        If amplitude checkbox is not checked this function will remove 
+        amplitude lines and datalog info.
+        """
         self.remove_amplitude()
         if not (self.ui.checkBox_smooth.isChecked() \
                 or self.ui.checkBox_regular.isChecked()) \
@@ -297,6 +312,12 @@ class CustomPlot(QDialog):
             self.ui.amp_label.hide()
 
     def plot_peak(self):
+        """
+        If peak checkbox is checked this function will update peak
+        lines and datalog info.
+        If peak checkbox is not checked this function will remove 
+        peak lines and datalog info.
+        """
         self.remove_peak_time()
         if not (self.ui.checkBox_smooth.isChecked() \
                 or self.ui.checkBox_regular.isChecked()) \

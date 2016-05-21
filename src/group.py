@@ -52,11 +52,31 @@ class Group(object):
             return all([stimuli, mask])
 
     def get_fwhm(self, stimuli, factor):
+        """
+        Returns a dictionary with stimuli values as keys and x posisitions as values
+
+        The x posisions are two positions on the x-axis that show where on the y axis
+        the smoothed response with the stimuli value is at half its maximum value.
+        The min value used is the value on the y axis when x equals 0.
+        The max values is the position returend by self.get_peak.
+        Raises Exception if no peak exists in the span or if not enough data points are
+        avaliable for smoothing.
+
+        :param stimuli: stimuli value for which fwhm is calculated.
+        'All' means fwhm is calculated for all stimuli.
+        :param factor: smoothing factor used for calculating fwhm.
+        :return: Dictionary with stimuli values as keys and tuples with two floats as value
+        """
+
         if not self.smoothed_responses:
             self.get_smooth(factor, splice=True)
         peaks = self.get_peaks(factor, smooth=True)
 
         def calculate_fwhm(stimuli):
+            """
+            Returns a tuple with positions on the x axis
+            Assumes that stimuli exists in self.smooth_responses
+            """
             top = peaks[stimuli][1]
             low = float(self.smoothed_responses[stimuli](0))
             half_max = (top - low)/2
@@ -78,10 +98,15 @@ class Group(object):
         else:
             return {stimuli: calculate_fwhm(stimuli)}
 
-    def get_peaks(self, factor, smooth=False):
-        if factor != self.smoothing_factor and smooth:
-            self.get_smooth(factor, splice=False)
+    def get_peaks(self, factor=0, smooth=False):
+        """
+        Return the coordinates the peak of every stimuli value in the group.
 
+        :param factor: Smoothing factor used if peak of smoothed curve is used.
+        :param smooth: Whether the peak from the smoothed curve or regular curve
+        should be returned.
+        If True, this function can raise an exception if a smoothed curve has no peak.
+        """
         if not smooth:
             peaks = {}
             for stimuli_val, curve in self.mean_responses.iteritems():
@@ -90,14 +115,27 @@ class Group(object):
                 peaks[stimuli_val] = pos
             return peaks
 
+        if factor != self.smoothing_factor:
+            self.get_smooth(factor, splice=False)
+
         if self.peaks:
             return self.peaks
-        self.calculate_peaks()
+        self.calculate_smooth_peaks()
         return self.peaks
 
-    def calculate_peaks(self):
+    def calculate_smooth_peaks(self):
+        """
+        Calculate peaks of every curve in self.smoothed_responses and 
+        stores them in self.peaks
+
+        Raises an exception if a curve has no peak.
+        """
 
         def calc_smooth_peak(curve):
+            """
+            Calculate the peak of given curve>
+            Raises an exception if the curve has no peak.
+            """
             roots = curve.derivative().roots()
             valid_roots = filter(
                     lambda x: x > self.x_axis[0] and x < self.x_axis[-1], roots)
@@ -234,6 +272,17 @@ class Group(object):
         return mean_responses
 
     def get_smooth(self, factor, splice=False):
+        """
+        Returnes the smoothed responses in the group.
+
+        Raises an Exception if a curve has too few data points for smoothing.
+        :param factor: smoothing factor used
+        :param splice: Whether splice data shoud be returned or samples from
+        the spiced data on the x values in self.x_axis
+        :return: A dictionary with stimuli values as keys and curves as values.
+        If splice = False curves are of type numpy.array. If splice = True
+        curves are of type scipy.interpolate.UnivariateSpline
+        """
         if not self.smoothed_responses:
             self.smoothing_factor = factor
             self.peaks = None
@@ -252,7 +301,9 @@ class Group(object):
 
     def calculate_smooth(self):
         """
-        Assumes all vectors returned from self.get_mean() are of equal length
+        Calculates smoothed curves for each stimuli value in the group and 
+        stores them in self.smoothed_responses.
+        Raises Exception if a curve has too few data points for smoothing.
         """
         responses = self.get_mean()
         self.smoothed_responses = {}
