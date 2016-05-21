@@ -23,8 +23,7 @@ class Mask:
         # Otherwise we make a new mask with the specified data.
         if width == None:
             self.path = path
-            mask_file = nib.load(path)
-            self.data = mask_file.get_data()
+            self.mask_file = nib.load(path)
         else:
             voxel_size = brain_file._header.get_zooms()
             size = brain_file.get_data().shape[0:3]
@@ -83,3 +82,18 @@ class Mask:
                 most_ones[0][2] = i
 
         return most_ones
+
+    @property
+    def shape(self):
+        return self.mask_file.shape
+
+    @property
+    def data(self):
+        return self.mask_file.get_data()
+
+    @property
+    def images(self):
+        if self.mask_file.shape < 4:
+            return 1
+        else:
+            return self.mask_file.shape[3]

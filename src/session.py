@@ -186,11 +186,11 @@ class Session(Group):
             temp_brain = Brain(path)
         except IOError:
             return path + " does not exist"
-        except nib.wrapstruct.WrapStructError:
+        except:
             return path + " could not be opened. It might be corrupted"
-        if len(temp_brain.sequence.shape) != 4:
-            return "The data has " + str(len(temp_brain.sequence.shape)) + " dimensions instead of 4"
-        elif self.mask and self.mask.data.shape != temp_brain.sequence.shape[0:3]:
+        if len(temp_brain.shape) != 4:
+            return "The data has " + str(len(temp_brain.shape)) + " dimensions instead of 4"
+        elif self.mask and self.mask.shape != temp_brain.shape[0:3]:
             return "The EPI sequence is not the same size as the mask"
         elif self.stimuli and self.stimuli.data[-1,0] > temp_brain.images:
             return "The EPI sequence is too short compared to the times in the stimuli file"
