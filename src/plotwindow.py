@@ -1,7 +1,7 @@
 import numpy as np
 
 import matplotlib.pyplot as plt
-from PyQt5.QtWidgets import QDialog
+from PyQt5.QtWidgets import QDialog, QMessageBox
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from scipy.interpolate import UnivariateSpline
@@ -120,8 +120,13 @@ class CustomPlot(QDialog):
             return
         
         if self.ui.checkBox_fwhm.isChecked():
-            fwhm = self.session.get_fwhm(self.ui.stimuliBox.currentText(),
-                                  self.ui.spinBox.value())
+            try:
+                fwhm = self.session.get_fwhm(self.ui.stimuliBox.currentText(),
+                                      self.ui.spinBox.value())
+            except Exception as exc:
+                self.ui.checkBox_fwhm.setChecked(False)
+                QMessageBox.warning(self, exc.args[0], exc.args[1])
+                return
             fwhm_text = ""
             for stimuli_val, values in fwhm.iteritems():
                 self.fwhm.append(self.ax.axvspan(
@@ -192,7 +197,12 @@ class CustomPlot(QDialog):
         """
         if self.ui.checkBox_smooth.isChecked() and self.ui.mean_response_btn.isChecked():
             self.ax.relim()
-            smooth = self.session.get_smooth(self.ui.spinBox.value())
+            try:
+                smooth = self.session.get_smooth(self.ui.spinBox.value())
+            except Exception as exc:
+                self.ui.checkBox_smooth.setChecked(False)
+                QMessageBox.warning(self, exc.args[0], exc.args[1])
+                return
 
             if self.ui.stimuliBox.currentText() == "All":
                 for stimuli_type, smoothed_data in smooth.iteritems():
@@ -258,9 +268,14 @@ class CustomPlot(QDialog):
             return
 
         if self.ui.checkBox_amp.isChecked():
-            points = self.session.get_peaks(
-                    self.ui.spinBox.value(),
-                    smooth=self.ui.checkBox_smooth.isChecked())
+            try:
+                points = self.session.get_peaks(
+                        self.ui.spinBox.value(),
+                        smooth=self.ui.checkBox_smooth.isChecked())
+            except Exception as exc:
+                self.ui.checkBox_amp.setChecked(False)
+                QMessageBox.warning(self, exc.args[0], exc.args[1])
+                return
             amp_text = ""
             if self.ui.stimuliBox.currentText() == "All":
                 for stimuli_val, position in points.iteritems():
@@ -289,9 +304,14 @@ class CustomPlot(QDialog):
             return
 
         if self.ui.checkBox_peak.isChecked():
-            points = self.session.get_peaks(
-                    self.ui.spinBox.value(),
-                    smooth=self.ui.checkBox_smooth.isChecked())
+            try:
+                points = self.session.get_peaks(
+                        self.ui.spinBox.value(),
+                        smooth=self.ui.checkBox_smooth.isChecked())
+            except Exception as exc:
+                self.ui.checkBox_amp.setChecked(False)
+                QMessageBox.warning(self, exc.args[0], exc.args[1])
+                return
             peak_text = ""
             if self.ui.stimuliBox.currentText() == "All":
                 for stimuli_val, position in points.iteritems():

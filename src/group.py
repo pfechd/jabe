@@ -79,7 +79,7 @@ class Group(object):
             return {stimuli: calculate_fwhm(stimuli)}
 
     def get_peaks(self, factor, smooth=False):
-        if factor != self.smoothing_factor:
+        if factor != self.smoothing_factor and smooth:
             self.get_smooth(factor, splice=False)
 
         if not smooth:
@@ -101,13 +101,18 @@ class Group(object):
             roots = curve.derivative().roots()
             valid_roots = filter(
                     lambda x: x > self.x_axis[0] and x < self.x_axis[-1], roots)
+            if valid_roots < 1:
+                raise Exception
             top_root = valid_roots[np.argmax(curve(valid_roots))]
             return top_root, float(curve(top_root))
 
         self.peaks = {}
 
         for stimuli_val, curve in self.smoothed_responses.iteritems():
-            self.peaks[stimuli_val] = calc_smooth_peak(curve)
+            try:
+                self.peaks[stimuli_val] = calc_smooth_peak(curve)
+            except Exception:
+                raise Exception("Peak error", str(stimuli_val) + " has no valid peak")
 
     def load_anatomy(self, path):
         try:
@@ -253,8 +258,12 @@ class Group(object):
         self.smoothed_responses = {}
         for key in responses.keys():
             response = responses[key]
-            self.smoothed_responses[key] = UnivariateSpline(
-                    self.x_axis, response, k=4, s=self.smoothing_factor)
+            try:
+                self.smoothed_responses[key] = UnivariateSpline(
+                        self.x_axis, response, k=4, s=self.smoothing_factor)
+            except:
+                raise Exception("Smoothing error", 
+                        "Not enough data points for smoothing")
 
     def get_x_axis(self):
         return self.x_axis
