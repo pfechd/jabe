@@ -96,6 +96,8 @@ class CustomPlot(QDialog):
         # Move the subplot to make space for the legend
         self.fig.subplots_adjust(right=0.8)
 
+        self.set_allowed_buttons()
+
         self.show()
         self.ui.verticalLayout_3.update()
 
@@ -180,7 +182,7 @@ class CustomPlot(QDialog):
             self.canvas.draw()
 
     def remove_fwhm(self):
-        if self.fwhm is not None:
+        if self.fwhm:
             for fwhm in self.fwhm:
                 fwhm.remove()
             self.fwhm = []
@@ -291,7 +293,6 @@ class CustomPlot(QDialog):
                         str(points[stimuli_val][1]) + "\n"
             self.ui.amp_label.setText(amp_text[0:-1])
             self.ui.amp_label.show()
-            self.canvas.draw()
         else:
             self.ui.amp_label.hide()
 
@@ -327,7 +328,6 @@ class CustomPlot(QDialog):
                         str(points[stimuli_val][0]) + "\n"
             self.ui.peak_label.setText(peak_text[0:-1])
             self.ui.peak_label.show()
-            self.canvas.draw()
         else:
             self.ui.peak_label.hide()
 
@@ -431,6 +431,7 @@ class CustomPlot(QDialog):
         else:
             self.ui.checkBox_sem.setEnabled(False)
             self.remove_sem()
+            self.canvas.draw()
         # Only allow smooth if we are plotting mean
         if self.ui.mean_response_btn.isChecked():
             self.ui.checkBox_smooth.setEnabled(True)

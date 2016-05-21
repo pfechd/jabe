@@ -124,11 +124,12 @@ class Session(Group):
         self.smoothed_responses = None
 
         self.apply_mask(mask)
-        self.separate_into_responses(stimuli, percentage, global_)
+        self.separate_into_responses(stimuli)
+        self.normalize(percentage, global_)
 
         return self.responses
 
-    def separate_into_responses(self, stimuli, percentage, global_):
+    def separate_into_responses(self, stimuli):
         number_of_stimuli = stimuli.amount
 
         shortest_interval = min([j - i for i, j in zip(stimuli.data[:-1, 0], stimuli.data[1:, 0])])
@@ -141,7 +142,6 @@ class Session(Group):
             start = stimuli.data[i, 0]
             end = start + shortest_interval
             response = self.masked_data[:, (start - 1):(end - 1)]
-            response = self.normalize_sequence(start, end, response, percentage, global_)
             intensity = str(stimuli.data[i, 1])
             if intensity in self.responses:
                 self.responses[intensity] = np.concatenate((self.responses[intensity], response))
@@ -162,29 +162,34 @@ class Session(Group):
             visual_brain_time = np.nonzero(visual_brain)
             self.masked_data[:, i] = np.mean(visual_brain[visual_brain_time])
 
-    def normalize_sequence(self, start, end, response, percentage, global_):
+    def normalize(self, percentage, global_):
         """
-        Applies normalization on the response data depending on type and reference point.
+        Normalizes all sequences in the session
 
-        :param start: the response sequence' start index in data.
-        :param end: the response sequence' last index in data.
-        :param response: the data sequence to be normalized
+        Assumes all values in self.responses are non-zero.
+        Assumes that there exists non-zero values in self.brain.sequence.
         :param percentage: Whether percentual change from reference value should be shown.
         If false, the response will be normalized by subtraction of the reference value.
         :param global_: Whether reference value should be the global mean.
         If false, reference value will be the start value of the response
         """
         if global_:
-            time_indexes = list(range(start, end))
-            ref = np.mean(self.brain.sequence[:, :, :, time_indexes], (0, 1, 2))     # Mean of spatial dimensions
-        else:
-            ref = np.ones(end - start) * response[0][0]
+            ref = np.sum(self.brain.sequence, (0, 1, 2, 3))     # Sum of all dimensions
+            number_of_samples = np.nonzero(self.brain.sequence)[0].size     # Count the coordinates
+            ref = ref / number_of_samples
 
-        if percentage:
-            if ref.all():
-                return (response / ref - 1) * 100
-        else:
-            return response - ref
+        for key in self.responses.keys():
+            number_of_stimuli = self.responses[key].shape[0]
+
+            if global_:
+                ref = np.ones(number_of_stimuli) * ref
+            else:
+                ref = self.responses[key][:, 0]
+            for i in range(number_of_stimuli):
+                if percentage:
+                    self.responses[key][i, :] = (self.responses[key][i, :] / ref[i]) * 100
+                else:
+                    self.responses[key][i, :] = self.responses[key][i, :] - ref[i]
 
     def load_sequence(self, path):
         """ Load the sequence from the path. Returns an error message if something went wrong, otherwise None """
