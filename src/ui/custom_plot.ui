@@ -79,6 +79,27 @@
          </widget>
         </item>
         <item>
+         <widget class="QToolButton" name="toolButton_add_subplot">
+          <property name="text">
+           <string>Add subplot</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="toolButton_rem_subplot">
+          <property name="text">
+           <string>Remove subplot</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="Line" name="line">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QToolButton" name="toolButton_export">
           <property name="text">
            <string>Export</string>
@@ -246,6 +267,9 @@
         </item>
         <item>
          <widget class="QCheckBox" name="checkBox_peak">
+          <property name="contextMenuPolicy">
+           <enum>Qt::DefaultContextMenu</enum>
+          </property>
           <property name="text">
            <string>Peak time</string>
           </property>
