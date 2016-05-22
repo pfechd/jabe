@@ -49,7 +49,7 @@ class CustomPlot(QDialog):
         self.ax = self.fig.add_subplot(111)
         self.ui.toolButton_anatomy.hide()
 
-        if isinstance(self.session, Session) and session.anatomy is not None:
+        if session.anatomy is not None:
             self.ui.toolButton_anatomy.show()
 
         self.canvas = FigureCanvas(self.fig)
