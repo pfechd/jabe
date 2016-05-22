@@ -1,5 +1,6 @@
 <RCC>
   <qresource>
+    <file alias="logo">../../icons/logga_huvud.png</file>
     <file alias="minus-icon">../../icons/minus-icon.png</file>
     <file alias="plus-icon">../../icons/plus-icon.png</file>
   </qresource>
