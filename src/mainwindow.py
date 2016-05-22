@@ -448,7 +448,6 @@ class MainWindow(QMainWindow):
                 self.ui.group_use_mask.setChecked(group.get_setting('use_mask'))
                 self.ui.group_use_stimuli.setChecked(group.get_setting('use_stimuli'))
 
-
                 # Add overview tree in group panel
                 self.ui.individual_overview_tree.clear()
                 self.ui.individual_overview_tree.addTopLevelItems(group.get_overview_tree())
