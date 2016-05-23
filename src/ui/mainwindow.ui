@@ -1893,7 +1893,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="extract_session_btn">
+              <widget class="QPushButton" name="extract_btn_session">
                <property name="text">
                 <string>Extract data</string>
                </property>

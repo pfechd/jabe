@@ -41,35 +41,61 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
         self.ui.tree_widget.setColumnWidth(1, 25)
         self.ui.tree_widget.setColumnWidth(2, 25)
-        self.ui.extract_session_btn.clicked.connect(self.calculate_button_pressed)
+        self.connect_buttons()
+        self.ui.stackedWidget.setCurrentIndex(1)
+        self.show()
+
+        self.individual_buttons = [self.ui.extract_btn_session, self.ui.add_session_epi_btn,
+                                   self.ui.add_session_mask_btn, self.ui.add_session_stimuli_btn]
+
+        self.ui.tree_widget.setColumnWidth(0, 200)
+        self.projects = []
+        self.load_configuration()
+        self.update_gui()
+
+    def connect_buttons(self):
+        # Connect extract buttons
+        self.ui.extract_btn_session.clicked.connect(self.calculate_button_pressed)
         self.ui.extract_btn_individual.clicked.connect(self.calculate_button_pressed)
         self.ui.extract_btn_group.clicked.connect(self.calculate_button_pressed)
         self.ui.extract_btn_project.clicked.connect(self.calculate_button_pressed)
+        # Connect add anatomy buttons
         self.ui.add_session_anatomy_btn.clicked.connect(self.anatomy_button_pressed)
+        # Connect add epi buttons
         self.ui.add_session_epi_btn.clicked.connect(self.brain_button_pressed)
+        # Connect add mask buttons
         self.ui.add_session_mask_btn.clicked.connect(self.mask_button_pressed)
+        # Connect add session buttons
         self.ui.add_session_stimuli_btn.clicked.connect(self.stimuli_button_pressed)
+        # Connect crate
         self.ui.create_session_stimuli_btn.clicked.connect(self.create_stimuli_button_pressed)
+        # Connect add project buttons
         self.ui.add_project_menu_btn.triggered.connect(self.add_project_pressed)
         self.ui.add_project_btn.clicked.connect(self.add_project_pressed)
+        # Connect exit button
         self.ui.exit_menu_btn.triggered.connect(self.exit_button_pressed)
+        # Connect add buttons for tree view
         self.ui.add_group_btn.clicked.connect(self.add_item_clicked)
         self.ui.add_individual_btn.clicked.connect(self.add_item_clicked)
         self.ui.add_session_btn.clicked.connect(self.add_item_clicked)
+        # Connect remove buttons for tree view
         self.ui.remove_project_btn.clicked.connect(self.remove_pressed)
         self.ui.remove_session_btn.clicked.connect(self.remove_pressed)
         self.ui.remove_group_btn.clicked.connect(self.remove_pressed)
         self.ui.remove_individual_btn.clicked.connect(self.remove_pressed)
+        # Connect item selection changed for tree view
         self.ui.tree_widget.itemSelectionChanged.connect(self.update_gui)
+        # Connect name changed for tree view
         self.ui.session_name.textChanged.connect(self.name_changed)
         self.ui.group_name.textChanged.connect(self.name_changed)
         self.ui.individual_name.textChanged.connect(self.name_changed)
         self.ui.project_name.textChanged.connect(self.name_changed)
+        # Clear focus whenever enter is pressed in name field
         self.ui.session_name.returnPressed.connect(self.ui.session_name.clearFocus)
         self.ui.group_name.returnPressed.connect(self.ui.group_name.clearFocus)
         self.ui.individual_name.returnPressed.connect(self.ui.individual_name.clearFocus)
         self.ui.group_name.returnPressed.connect(self.ui.group_name.clearFocus)
-
+        # Connect text changed events for descriptions
         self.ui.session_description.textChanged.connect(self.description_changed)
         self.ui.group_description.textChanged.connect(self.description_changed)
         self.ui.individual_description.textChanged.connect(self.description_changed)
@@ -88,17 +114,6 @@ class MainWindow(QMainWindow):
 
         for button in plot_buttons:
             button.clicked.connect(self.plot_settings_changed)
-
-        self.ui.stackedWidget.setCurrentIndex(1)
-        self.show()
-
-        self.individual_buttons = [self.ui.extract_session_btn, self.ui.add_session_epi_btn,
-                                   self.ui.add_session_mask_btn, self.ui.add_session_stimuli_btn]
-
-        self.ui.tree_widget.setColumnWidth(0, 200)
-        self.projects = []
-        self.load_configuration()
-        self.update_gui()
 
     def check_paths(self, configuration, type = None):
         missing_paths = []
