@@ -125,7 +125,7 @@ class MainWindow(QMainWindow):
     def closeEvent(self, event):
         if self.groups != []:
             button = QMessageBox.question(self, "Save",
-                                          "Do you want to save the current configuration before quitting?",
+                                          "Do you want to save the current workspace before quitting?",
                                           QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
             if button == QMessageBox.Cancel:
                 event.ignore()
@@ -195,7 +195,7 @@ class MainWindow(QMainWindow):
     def load_configuration_button_pressed(self):
         if self.groups != []:
             button = QMessageBox.question(self, "Save",
-                                          "Do you want to save the current configuration before loading?",
+                                          "Do you want to save the current workspace before loading?",
                                           QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
             if button == QMessageBox.Cancel:
                 return
@@ -280,7 +280,7 @@ class MainWindow(QMainWindow):
     def create_new_configuration(self):
         if self.groups != []:
             button = QMessageBox.question(self, "Save",
-                                          "Do you want to save the current configuration before creating a new one?",
+                                          "Do you want to save the current workspace before creating a new one?",
                                           QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
             if button == QMessageBox.Cancel:
                 return
