@@ -540,3 +540,9 @@ class CustomPlot(QDialog):
             self.ui.checkBox_smooth.setEnabled(True)
         else:
             self.ui.checkBox_smooth.setEnabled(False)
+
+    def resizeEvent(self, QResizeEvent):
+        try:
+            self.fig.tight_layout(pad=2.0)
+        except:
+            pass
