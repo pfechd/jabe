@@ -298,7 +298,7 @@ class MainWindow(QMainWindow):
             individual = self.ui.tree_widget.selectedItems()[0]
             for button in self.individual_buttons:
                 button.setEnabled(True)
-            self.ui.extract_session_btn.setEnabled(individual.ready_for_calculation())
+            self.ui.extract_btn_session.setEnabled(individual.ready_for_calculation())
         elif self.ui.tree_widget.selectedItems() and \
                 (isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem) or
                     isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem) or
