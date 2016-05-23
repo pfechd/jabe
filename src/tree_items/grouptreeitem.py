@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QTreeWidgetItem
+from PyQt5.QtWidgets import QTreeWidgetItem, QMessageBox
 from PyQt5 import QtWidgets, QtGui
 from individualtreeitem import IndividualTreeItem
 from ..group import Group
@@ -40,6 +40,13 @@ class GroupTreeItem(QTreeWidgetItem, Group):
         self.add_individual(individual)
 
     def remove_item(self):
+        remove = None
+        if len(self.children) > 0 or self.description != "" or self.mask is not None or self.stimuli is not None or\
+                self.anatomy is not None or self.plot_settings != {}:
+            remove = QMessageBox.question(None, "Remove", "Are you sure you want to remove this?",
+                                          QMessageBox.Yes | QMessageBox.No)
+        if remove == QMessageBox.No:
+            return
         self.parent().remove_child(self)
         self.treeWidget().window().update_gui()
         self.parent().removeChild(self)
