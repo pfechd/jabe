@@ -384,7 +384,7 @@
                   </property>
                   <layout class="QVBoxLayout" name="verticalLayout_19">
                    <item>
-                    <widget class="QRadioButton" name="local_normalization_group_btn_2">
+                    <widget class="QRadioButton" name="local_normalization_project_btn">
                      <property name="enabled">
                       <bool>true</bool>
                      </property>
@@ -397,7 +397,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QRadioButton" name="global_normalization_group_btn_2">
+                    <widget class="QRadioButton" name="global_normalization_project_btn">
                      <property name="enabled">
                       <bool>true</bool>
                      </property>
@@ -419,7 +419,7 @@
                   </property>
                   <layout class="QVBoxLayout" name="verticalLayout_31">
                    <item>
-                    <widget class="QRadioButton" name="subtract_group_btn_2">
+                    <widget class="QRadioButton" name="subtract_project_btn">
                      <property name="enabled">
                       <bool>true</bool>
                      </property>
@@ -432,7 +432,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QRadioButton" name="percent_group_btn_2">
+                    <widget class="QRadioButton" name="percent_project_btn">
                      <property name="enabled">
                       <bool>true</bool>
                      </property>
@@ -454,7 +454,7 @@
                   </property>
                   <layout class="QVBoxLayout" name="verticalLayout_32">
                    <item>
-                    <widget class="QCheckBox" name="checkbox_amplitude_group_2">
+                    <widget class="QCheckBox" name="checkbox_amplitude_project">
                      <property name="enabled">
                       <bool>true</bool>
                      </property>
@@ -464,7 +464,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QCheckBox" name="checkbox_peak_group_2">
+                    <widget class="QCheckBox" name="checkbox_peak_project">
                      <property name="enabled">
                       <bool>true</bool>
                      </property>
@@ -474,7 +474,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QCheckBox" name="checkbox_sem_group_2">
+                    <widget class="QCheckBox" name="checkbox_sem_project">
                      <property name="enabled">
                       <bool>true</bool>
                      </property>
@@ -484,7 +484,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QCheckBox" name="checkbox_fwhm_group_2">
+                    <widget class="QCheckBox" name="checkbox_fwhm_project">
                      <property name="enabled">
                       <bool>true</bool>
                      </property>

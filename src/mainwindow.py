@@ -560,30 +560,35 @@ class MainWindow(QMainWindow):
 
     def plot_settings_changed(self):
         if self.ui.tree_widget.selectedItems():
-            if isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
-                individual = self.ui.tree_widget.selectedItems()[0]
-                individual.plot_settings['global'] = self.ui.global_normalization_individual_btn.isChecked()
-                individual.plot_settings['percent'] = self.ui.percent_individual_btn.isChecked()
-                individual.plot_settings['amplitude'] = self.ui.checkbox_amplitude_individual.isChecked()
-                individual.plot_settings['peak'] = self.ui.checkbox_peak_individual.isChecked()
-                individual.plot_settings['sem'] = self.ui.checkbox_sem_individual.isChecked()
-                individual.plot_settings['fwhm'] = self.ui.checkbox_fwhm_individual.isChecked()
-            elif isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
-                session = self.ui.tree_widget.selectedItems()[0]
-                session.plot_settings['global'] = self.ui.global_normalization_session_btn.isChecked()
-                session.plot_settings['percent'] = self.ui.percent_session_btn.isChecked()
-                session.plot_settings['amplitude'] = self.ui.checkbox_amplitude_session.isChecked()
-                session.plot_settings['peak'] = self.ui.checkbox_peak_session.isChecked()
-                session.plot_settings['sem'] = self.ui.checkbox_sem_session.isChecked()
-                session.plot_settings['fwhm'] = self.ui.checkbox_fwhm_session.isChecked()
+            tree_item = self.ui.tree_widget.selectedItems()[0]
+            if isinstance(tree_item, ProjectTreeItem):
+                tree_item.plot_settings['global'] = self.ui.global_normalization_project_btn.isChecked()
+                tree_item.plot_settings['percent'] = self.ui.percent_project_btn.isChecked()
+                tree_item.plot_settings['amplitude'] = self.ui.checkbox_amplitude_project.isChecked()
+                tree_item.plot_settings['peak'] = self.ui.checkbox_peak_project.isChecked()
+                tree_item.plot_settings['sem'] = self.ui.checkbox_sem_project.isChecked()
+                tree_item.plot_settings['fwhm'] = self.ui.checkbox_fwhm_project.isChecked()
+            elif isinstance(tree_item, GroupTreeItem):
+                tree_item.plot_settings['global'] = self.ui.global_normalization_group_btn.isChecked()
+                tree_item.plot_settings['percent'] = self.ui.percent_group_btn.isChecked()
+                tree_item.plot_settings['amplitude'] = self.ui.checkbox_amplitude_group.isChecked()
+                tree_item.plot_settings['peak'] = self.ui.checkbox_peak_group.isChecked()
+                tree_item.plot_settings['sem'] = self.ui.checkbox_sem_group.isChecked()
+                tree_item.plot_settings['fwhm'] = self.ui.checkbox_fwhm_group.isChecked()
+            elif isinstance(tree_item, IndividualTreeItem):
+                tree_item.plot_settings['global'] = self.ui.global_normalization_individual_btn.isChecked()
+                tree_item.plot_settings['percent'] = self.ui.percent_individual_btn.isChecked()
+                tree_item.plot_settings['amplitude'] = self.ui.checkbox_amplitude_individual.isChecked()
+                tree_item.plot_settings['peak'] = self.ui.checkbox_peak_individual.isChecked()
+                tree_item.plot_settings['sem'] = self.ui.checkbox_sem_individual.isChecked()
+                tree_item.plot_settings['fwhm'] = self.ui.checkbox_fwhm_individual.isChecked()
             else:
-                group = self.ui.tree_widget.selectedItems()[0]
-                group.plot_settings['global'] = self.ui.global_normalization_group_btn.isChecked()
-                group.plot_settings['percent'] = self.ui.percent_group_btn.isChecked()
-                group.plot_settings['amplitude'] = self.ui.checkbox_amplitude_group.isChecked()
-                group.plot_settings['peak'] = self.ui.checkbox_peak_group.isChecked()
-                group.plot_settings['sem'] = self.ui.checkbox_sem_group.isChecked()
-                group.plot_settings['fwhm'] = self.ui.checkbox_fwhm_group.isChecked()
+                tree_item.plot_settings['global'] = self.ui.global_normalization_session_btn.isChecked()
+                tree_item.plot_settings['percent'] = self.ui.percent_session_btn.isChecked()
+                tree_item.plot_settings['amplitude'] = self.ui.checkbox_amplitude_session.isChecked()
+                tree_item.plot_settings['peak'] = self.ui.checkbox_peak_session.isChecked()
+                tree_item.plot_settings['sem'] = self.ui.checkbox_sem_session.isChecked()
+                tree_item.plot_settings['fwhm'] = self.ui.checkbox_fwhm_session.isChecked()
 
     def clear_layout(self, layout):
         while layout.count():
