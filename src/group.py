@@ -165,19 +165,23 @@ class Group(object):
         else:
             return self._aggregate(percentage, global_, mask, stimuli)
 
-    def get_mean(self, percentage=None, global_=None):
+    def get_mean(self, percentage=None, global_=None, mask=None, stimuli=None):
         if percentage is None:
             percentage = self.get_setting('percent')
         if global_ is None:
             global_ = self.get_setting('global')
+        if mask is None:
+            mask = self.get_mask()
+        if stimuli is None:
+            stimuli = self.get_stimuli()
 
         settings_changed = self.settings_changed(percentage, global_,
-                                                 self.get_mask(), self.get_stimuli())
+                                                 mask, stimuli)
         if settings_changed or not self.mean_responses:
-            self.mean_responses = self.calculate_mean(percentage, global_)
+            self.mean_responses = self.calculate_mean(percentage, global_, mask, stimuli)
         return self.mean_responses
 
-    def calculate_mean(self, percentage, global_):
+    def calculate_mean(self, percentage, global_, mask, stimuli):
         """
         Calculate the mean of every response grouped by stimuli type
 
@@ -185,7 +189,7 @@ class Group(object):
                  is the vector containing the mean value for the given time
                  frame.
         """
-        responses = self.aggregate(percentage, global_, self.get_mask(), self.get_stimuli())
+        responses = self.aggregate(percentage, global_, mask, stimuli)
         mean_responses = {}
 
         for stimuli_type, stimuli_data in responses.iteritems():
