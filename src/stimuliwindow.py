@@ -55,6 +55,7 @@ class StimuliWindow(QDialog):
         """
         
         stimuli = []
+        tmp_time = 0.0
         all_rows = self.ui.stimuli_table.rowCount()
         if all_rows == 0:
             QMessageBox.warning(self, "Warning", "Your table contains no rows. Please add rows and values.")
@@ -68,22 +69,18 @@ class StimuliWindow(QDialog):
 
                 if self.ui.stimuli_table.item(row, 0):
                     time = self.ui.stimuli_table.item(row, 0).text()
-
+                    print tmp_time
+                    print float(time)
+                    if tmp_time >= float(time):
+                        QMessageBox.warning(self, "Warning", "You have entered time values that are not in ascending order.")
+                        return []
+                    tmp_time = float(time)
+                    
                 if self.ui.stimuli_table.item(row, 1):
                     value = self.ui.stimuli_table.item(row,1).text()
 
                 if self.is_number(time) and self.is_number(value):
                     stimuli.append([float(time), float(value)])
-                    if row == all_rows - 1:
-                        # If the end of the table has been reached,
-                        # put the value from the end time box at the end of the array
-                        time = self.ui.end_time_box.text()
-
-                        if self.is_number(time):
-                            stimuli.append([float(time), 0])
-                        else:
-                            QMessageBox.warning(self, "Warning", "You have entered an inaccurate end time value. Please enter only a number.")
-                            return []
                 else:
                     QMessageBox.warning(self, "Warning", "You have entered one or more invalid values. Please enter only numbers.")
                     return []
@@ -109,7 +106,7 @@ class StimuliWindow(QDialog):
                     self.close()
                     stimuli = np.array(stimuli)
                     sio.savemat(filename, {'visual_stimuli':stimuli})
-                    self.parent().load_stimuli(filename + file_path[1])
+                    self.parent().load_stimuli(filename +file_path[1])
                 else:
                     QMessageBox.warning(self, "Warning", "Invalid filename.")
                 
