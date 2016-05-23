@@ -214,7 +214,6 @@ class MainWindow(QMainWindow):
                 QMessageBox.warning(self, "File error", "The following files are missing and will not be loaded:\n" +
                                     "\n".join(missing_paths))
 
-
             for group_configuration in configuration['groups']:
                 group_tree_item = GroupTreeItem()
                 self.ui.tree_widget.addTopLevelItem(group_tree_item)
@@ -286,13 +285,13 @@ class MainWindow(QMainWindow):
                 button.setEnabled(False)
 
     def calculate_button_pressed(self):
-        """ Callback function, run when the calculate button is pressed."""
+        """ Callback function run when the calculate button is pressed."""
         # Make sure to update plot settings at least once before running
         self.plot_settings_changed()
         CustomPlot(self, self.ui.tree_widget.selectedItems()[0])
 
     def brain_button_pressed(self):
-        """ Callback function, run when the choose brain button is pressed."""
+        """ Callback function run when the choose brain button is pressed."""
         file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii*)")
         if file_name[0]:
             self.load_brain(file_name[0])
@@ -301,7 +300,7 @@ class MainWindow(QMainWindow):
         self.update_gui()
 
     def anatomy_button_pressed(self):
-        """ Callback function, run when the choose anatomy button is pressed."""
+        """ Callback function run when the choose anatomy button is pressed."""
         file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii*)")
         if file_name[0]:
             self.load_anatomy(file_name[0])
@@ -310,7 +309,7 @@ class MainWindow(QMainWindow):
         self.update_gui()
 
     def mask_button_pressed(self):
-        """ Callback function, run when the choose mask button is pressed."""
+        """ Callback function run when the choose mask button is pressed."""
         file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii*)")
         if file_name[0]:
             self.load_mask(file_name[0])
@@ -319,7 +318,7 @@ class MainWindow(QMainWindow):
         self.update_gui()
 
     def create_mask_button_pressed(self):
-        """ Callback function, run when the create mask button is pressed."""
+        """ Callback function run when the create mask button is pressed."""
         # Make sure EPI-file is choosen before running
         if self.ui.tree_widget.selectedItems()[0].brain:
             CreateMaskWindow(self, self.ui.tree_widget.selectedItems()[0].brain.brain_file)
@@ -328,7 +327,7 @@ class MainWindow(QMainWindow):
         self.update_gui()
 
     def stimuli_button_pressed(self):
-        """ Callback function, run when the choose stimuli button is pressed."""
+        """ Callback function run when the choose stimuli button is pressed."""
         file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.mat)")
         if file_name[0]:
             self.load_stimuli(file_name[0])
@@ -337,7 +336,7 @@ class MainWindow(QMainWindow):
         self.update_gui()
 
     def create_stimuli_button_pressed(self):
-        """ Callback function, run when the create simuli button is pressed."""
+        """ Callback function run when the create simuli button is pressed."""
         
         self.stimuli_window = StimuliWindow(self)
         
