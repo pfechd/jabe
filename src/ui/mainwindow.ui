@@ -111,7 +111,7 @@
     <item>
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>2</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="group_page">
        <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -240,13 +240,13 @@
                   <property name="topMargin">
                    <number>0</number>
                   </property>
-                  <item row="0" column="1">
-                   <widget class="QPushButton" name="anatomy_btn_group">
+                  <item row="2" column="1">
+                   <widget class="QPushButton" name="mask_btn_group">
                     <property name="enabled">
                      <bool>true</bool>
                     </property>
                     <property name="text">
-                     <string>Choose anatomy</string>
+                     <string>Choose mask</string>
                     </property>
                    </widget>
                   </item>
@@ -272,13 +272,23 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="2" column="1">
-                   <widget class="QPushButton" name="mask_btn_group">
+                  <item row="0" column="1">
+                   <widget class="QPushButton" name="anatomy_btn_group">
                     <property name="enabled">
                      <bool>true</bool>
                     </property>
                     <property name="text">
-                     <string>Choose mask</string>
+                     <string>Choose anatomy</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="1">
+                   <widget class="QPushButton" name="stimuli_btn_group">
+                    <property name="enabled">
+                     <bool>true</bool>
+                    </property>
+                    <property name="text">
+                     <string>Choose stimuli</string>
                     </property>
                    </widget>
                   </item>
@@ -316,16 +326,6 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="3" column="1">
-                   <widget class="QPushButton" name="stimuli_btn_group">
-                    <property name="enabled">
-                     <bool>true</bool>
-                    </property>
-                    <property name="text">
-                     <string>Choose stimuli</string>
-                    </property>
-                   </widget>
-                  </item>
                   <item row="3" column="0">
                    <widget class="QLabel" name="group_stimuli_label">
                     <property name="enabled">
@@ -351,6 +351,13 @@
                     </property>
                     <property name="margin">
                      <number>0</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="1">
+                   <widget class="QPushButton" name="create_stimuli_group_btn">
+                    <property name="text">
+                     <string>Create stimuli</string>
                     </property>
                    </widget>
                   </item>
@@ -716,38 +723,6 @@
                   <property name="topMargin">
                    <number>0</number>
                   </property>
-                  <item row="0" column="1">
-                   <widget class="QPushButton" name="anatomy_btn_individual">
-                    <property name="enabled">
-                     <bool>true</bool>
-                    </property>
-                    <property name="text">
-                     <string>Choose anatomy</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="2" column="0">
-                   <widget class="QLabel" name="individual_mask_label">
-                    <property name="enabled">
-                     <bool>true</bool>
-                    </property>
-                    <property name="minimumSize">
-                     <size>
-                      <width>0</width>
-                      <height>50</height>
-                     </size>
-                    </property>
-                    <property name="text">
-                     <string>No mask chosen</string>
-                    </property>
-                    <property name="wordWrap">
-                     <bool>true</bool>
-                    </property>
-                    <property name="margin">
-                     <number>0</number>
-                    </property>
-                   </widget>
-                  </item>
                   <item row="2" column="1">
                    <widget class="QPushButton" name="mask_btn_individual">
                     <property name="enabled">
@@ -827,6 +802,45 @@
                     </property>
                     <property name="margin">
                      <number>0</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="individual_mask_label">
+                    <property name="enabled">
+                     <bool>true</bool>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>50</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string>No mask chosen</string>
+                    </property>
+                    <property name="wordWrap">
+                     <bool>true</bool>
+                    </property>
+                    <property name="margin">
+                     <number>0</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QPushButton" name="anatomy_btn_individual">
+                    <property name="enabled">
+                     <bool>true</bool>
+                    </property>
+                    <property name="text">
+                     <string>Choose anatomy</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="1">
+                   <widget class="QPushButton" name="create_stimuli_individual_btn">
+                    <property name="text">
+                     <string>Create stimuli</string>
                     </property>
                    </widget>
                   </item>

@@ -56,6 +56,8 @@ class MainWindow(QMainWindow):
         self.ui.stimuli_btn_individual.clicked.connect(self.stimuli_button_pressed)
         self.ui.stimuli_btn_group.clicked.connect(self.stimuli_button_pressed)
         self.ui.create_session_stimuli_btn.clicked.connect(self.create_stimuli_button_pressed)
+        self.ui.create_stimuli_individual_btn.clicked.connect(self.create_stimuli_button_pressed)
+        self.ui.create_stimuli_group_btn.clicked.connect(self.create_stimuli_button_pressed)
         self.ui.add_group_menu_btn.triggered.connect(self.add_group_pressed)
         self.ui.add_group_btn.clicked.connect(self.add_group_pressed)
         self.ui.exit_menu_btn.triggered.connect(self.exit_button_pressed)
@@ -515,6 +517,7 @@ class MainWindow(QMainWindow):
 
                 self.ui.individual_stimuli_label.setEnabled(individual.get_setting('use_stimuli'))
                 self.ui.stimuli_btn_individual.setEnabled(individual.get_setting('use_stimuli'))
+                self.ui.create_stimuli_individual_btn.setEnabled(individual.get_setting('use_stimuli'))
             elif isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
                 group = self.ui.tree_widget.selectedItems()[0]
 
@@ -538,6 +541,7 @@ class MainWindow(QMainWindow):
 
                 self.ui.group_stimuli_label.setEnabled(group.get_setting('use_stimuli'))
                 self.ui.stimuli_btn_group.setEnabled(group.get_setting('use_stimuli'))
+                self.ui.create_stimuli_group_btn.setEnabled(group.get_setting('use_stimuli'))
 
         else:
             for label in [self.ui.session_epi_label, self.ui.session_mask_label, self.ui.session_stimuli_label]:
