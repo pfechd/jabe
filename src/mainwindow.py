@@ -124,7 +124,8 @@ class MainWindow(QMainWindow):
 
     def closeEvent(self, event):
         if self.groups != []:
-            button = QMessageBox.question(self, "Save", "Do you want to save the current configuration before quitting?",
+            button = QMessageBox.question(self, "Save",
+                                          "Do you want to save the current configuration before quitting?",
                                           QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
             if button == QMessageBox.Cancel:
                 event.ignore()
@@ -269,8 +270,8 @@ class MainWindow(QMainWindow):
 
     def create_new_configuration(self):
         if self.groups != []:
-            button = QMessageBox.question(self, "Save", "Do you want to save the current configuration before creating"
-                                                        " a new one?",
+            button = QMessageBox.question(self, "Save",
+                                          "Do you want to save the current configuration before creating a new one?",
                                           QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
             if button == QMessageBox.Cancel:
                 return
