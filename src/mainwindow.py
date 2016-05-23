@@ -292,6 +292,7 @@ class MainWindow(QMainWindow):
         self.current_config_path = ""
         self.groups = []
         self.ui.tree_widget.clear()
+        self.ui.stackedWidget.setCurrentIndex(2)
 
     def add_group_pressed(self):
         current_row = len(self.groups)
