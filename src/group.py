@@ -28,6 +28,8 @@ class Group(object):
 
         # Result of calculations are kept here
         self.responses = {}
+        self.mean_responses = {}
+        self.sem_responses = {}
 
         if configuration:
             self.load_configuration(configuration)
@@ -84,8 +86,10 @@ class Group(object):
             temp_anatomy = Brain(path)
         except IOError:
             return path + " does not exist"
-        if len(temp_anatomy.sequence.shape) != 3:
-            return "The data has " + str(len(temp_anatomy.sequence.shape)) + " dimensions instead of 3"
+        except:
+            return path + " could not be opened. It might be corrupted"
+        if len(temp_anatomy.shape) != 3:
+            return "The data has " + str(len(temp_anatomy.shape)) + " dimensions instead of 3"
         else:
             self.anatomy = temp_anatomy
             return None
@@ -93,8 +97,8 @@ class Group(object):
     def load_stimuli(self, path, tr):
         try:
             temp_stimuli = Stimuli(path, tr)
-        except KeyError:
-            return "The file is not a proper stimuli file"
+        except:
+            return "The file is not a proper stimuli file. It might be corrupted or in the wrong format"
         if self.brain and temp_stimuli.data[-1, 0] > self.brain.images:
             return "The times in the stimuli file are too long compared to the length of the EPI sequence"
         else:
@@ -106,9 +110,11 @@ class Group(object):
             temp_mask = Mask(path)
         except IOError:
             return path + " does not exist"
-        if len(temp_mask.data.shape) != 3:
-            return "The data has " + str(len(temp_mask.data.shape)) + " dimensions instead of 3"
-        elif self.brain and self.brain.sequence.shape[0:3] != temp_mask.data.shape:
+        except:
+            return path + " could not be opened. It might be corrupted"
+        if len(temp_mask.shape) != 3:
+            return "The data has " + str(len(temp_mask.shape)) + " dimensions instead of 3"
+        elif self.brain and self.brain.shape[0:3] != temp_mask.shape:
             return "The mask is not the same size as the EPI sequence"
         else:
             self.mask = temp_mask
@@ -158,7 +164,19 @@ class Group(object):
         else:
             return self._aggregate(percentage, global_, mask, stimuli)
 
-    def calculate_mean(self, percentage = None, global_ = None):
+    def get_mean(self, percentage=None, global_=None):
+        if percentage is None:
+            percentage = self.get_setting('percent')
+        if global_ is None:
+            global_ = self.get_setting('global')
+
+        settings_changed = self.settings_changed(percentage, global_,
+                                                 self.mask, self.stimuli)
+        if settings_changed or not self.mean_responses:
+            self.mean_responses = self.calculate_mean(percentage, global_)
+        return self.mean_responses
+
+    def calculate_mean(self, percentage, global_):
         """
         Calculate the mean of every response grouped by stimuli type
 
@@ -166,10 +184,6 @@ class Group(object):
                  is the vector containing the mean value for the given time
                  frame.
         """
-        if percentage is None:
-            percentage = self.get_setting('percent')
-        if global_ is None:
-            global_ = self.get_setting('global')
 
         responses = self.aggregate(percentage, global_)
         mean_responses = {}
@@ -186,12 +200,20 @@ class Group(object):
             mean_responses[stimuli_type] = response_mean
         return mean_responses
 
-    def calculate_sem(self, percentage = None, global_ = None):
-        """ Calculate the standard error of the mean (SEM) of the response """
+    def get_sem(self, percentage=None, global_=None):
         if percentage is None:
             percentage = self.get_setting('percent')
         if global_ is None:
             global_ = self.get_setting('global')
+
+        settings_changed = self.settings_changed(percentage, global_,
+                                                 self.mask, self.stimuli)
+        if settings_changed or not self.sem_responses:
+            self.sem_responses = self.calculate_sem(percentage, global_)
+        return self.sem_responses
+
+    def calculate_sem(self, percentage, global_):
+        """ Calculate the standard error of the mean (SEM) of the response """
 
         responses = self.aggregate(percentage, global_)
         responses_sem = {}
@@ -234,6 +256,10 @@ class Group(object):
     def _aggregate(self, percentage, global_, mask, stimuli):
         self.responses = {}
         min_width = float('inf')
+
+        # Invalidate cached mean and sem
+        self.sem_responses = None
+        self.mean_responses = None
 
         for child in self.children + self.sessions:
             # If the child doesn't have the files loaded, skip it.

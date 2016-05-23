@@ -1,5 +1,6 @@
 import nibabel as nib
 import numpy as np
+import os
 
 
 class Mask:
@@ -10,43 +11,49 @@ class Mask:
     accessed through the member called data.
     """
 
-    def __init__(self, path=None, coordinates=None, size=None, voxel_size=None, shape=None, shape_size=None):
+    def __init__(self, path=None, shape=None, coordinate=None, width=None, brain_file=None):
         """ Load a mask from a path or create a mask from the specified data
-        :param path: path for the NIfTI file
-        :param coordinates: coordinates for the center point of the ROI
-        :param size: the size of the mask
-        :param voxel_size: the size in mm for each voxel
-        :param shape: the shape of the ROI, cube or sphere
-        :param shape_size: the size of the ROI
+        :param path: Path for the NIfTI file
+        :param shape: The shape of the ROI, cube or sphere
+        :param coordinate: Coordinates for the center point of the ROI
+        :param width: The size of the ROI
+        :param brain_file: The EPI-image
         """
-        # if we get a path then we load that path, otherwise we make a new mask with the specified data
-        if path is not None:
+        # If we do not get a width,then we load a path.
+        # Otherwise we make a new mask with the specified data.
+        if width == None:
             self.path = path
-            mask_file = nib.load(path)
-            self.data = mask_file.get_data()
+            self.mask_file = nib.load(path)
         else:
-            # create empty matrix of correct size
+            voxel_size = brain_file._header.get_zooms()
+            size = brain_file.get_data().shape[0:3]
+
+            # Create empty matrix of correct size
             self.data = np.zeros(size)
 
-            # Convert coordinates and shape_size to mm
-            shape_size /= voxel_size
-            coordinates = (coordinates[0] / voxel_size, coordinates[1] / voxel_size, coordinates[2] / voxel_size)
 
-            # set ones in a volume of a cube around the specified coordinate
-            if shape == "cube":
-                for z in range(coordinates[2] - shape_size / 2, coordinates[2] + shape_size / 2 + 1):
-                    for y in range(coordinates[1] - shape_size / 2, coordinates[1] + shape_size / 2 + 1):
-                        for x in range(coordinates[0] - shape_size / 2, coordinates[0] + shape_size / 2 + 1):
-                            self.data[z, y, x] = 1
+            # Set ones in a volume of a cube around the specified coordinate
+            if shape == "Box":
+                for z in range(int(coordinate[2] - width[2] / 2),
+                               int(coordinate[2] + width[2] / 2 + 1)):
+                    for y in range(int(coordinate[1] - width[1] / 2),
+                                   int(coordinate[1] + width[1] / 2 + 1)):
+                        for x in range(int(coordinate[0] - width[0] / 2),
+                                       int(coordinate[0] + width[0] / 2 + 1)):
+                            self.data[x, y, z] = 1
 
-            # set ones in every coordinate within the distance shape_size around he coordinate, making it a sphere
-            if shape == "sphere":
+            # Set ones in every coordinate within the distance radius_width around the coordinate, making it a sphere
+            if shape == "Sphere":
                 for z in range(0, size[2]):
                     for y in range(0, size[1]):
                         for x in range(0, size[0]):
-                            if (coordinates[2] - z) ** 2 + (coordinates[1] - y) ** 2 + (
-                                        coordinates[0] - x) ** 2 <= shape_size ** 2:
-                                self.data[z, y, x] = 1
+                            if (coordinate[2] - z) ** 2 + (coordinate[1] - y) ** 2 + (
+                                        coordinate[0] - x) ** 2 <= width[0] ** 2:
+                                self.data[x, y, z] = 1
+
+            # Create a nifti file containing the data and save it to path
+            mask_file = nib.Nifti1Image(self.data, brain_file._affine)
+            nib.save(mask_file, path)
 
     def get_configuration(self):
         return {'path': self.path}
@@ -75,3 +82,18 @@ class Mask:
                 most_ones[0][2] = i
 
         return most_ones
+
+    @property
+    def shape(self):
+        return self.mask_file.shape
+
+    @property
+    def data(self):
+        return self.mask_file.get_data()
+
+    @property
+    def images(self):
+        if self.mask_file.shape < 4:
+            return 1
+        else:
+            return self.mask_file.shape[3]

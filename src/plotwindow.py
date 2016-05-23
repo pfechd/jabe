@@ -96,6 +96,8 @@ class CustomPlot(QDialog):
         # Move the subplot to make space for the legend
         self.fig.subplots_adjust(right=0.8)
 
+        self.set_allowed_buttons()
+
         self.show()
 
     def tool_anatomy(self):
@@ -119,10 +121,14 @@ class CustomPlot(QDialog):
                 smooth = self.ui.spinBox.value()
                 r1, r2 = self.session.calculate_fwhm(x, y, smooth)
                 self.fwhm = self.ax.axvspan(r1, r2, facecolor='g', alpha=0.3)
+                self.ui.fwhm_label.setText("FWHM begins at %.2f s\nFWHM ends at %.2f s\nDuration: %.2f s" %
+                                           (r1, r2, r2-r1))
+                self.ui.fwhm_label.show()
                 self.canvas.draw()
         else:
             self.remove_fwhm()
-            self.canvas.draw()
+
+        self.canvas.draw()
 
     def replot(self):
         """
@@ -148,7 +154,7 @@ class CustomPlot(QDialog):
         if self.peak_time:
             self.peak_time.remove()
             self.peak_time = None
-            self.canvas.draw()
+            self.ui.peak_label.hide()
 
     def remove_sem(self):
         if self.sem:
@@ -163,11 +169,13 @@ class CustomPlot(QDialog):
         if self.amp:
             self.amp.remove()
             self.amp = None
+            self.ui.amp_label.hide()
 
     def remove_fwhm(self):
         if self.fwhm is not None:
             self.fwhm.remove()
             self.fwhm = None
+            self.ui.fwhm_label.hide()
 
     def remove_regular_plots(self):
         if self.regular:
@@ -181,7 +189,7 @@ class CustomPlot(QDialog):
         """
         if self.ui.checkBox_smooth.isChecked() and self.ui.mean_response_btn.isChecked():
             self.ax.relim()
-            before_smooth = self.session.calculate_mean()
+            before_smooth = self.session.get_mean()
 
             if self.ui.stimuliBox.currentText() == "All":
                 for stimuli_type,stimuli_data in before_smooth.iteritems():
@@ -213,7 +221,7 @@ class CustomPlot(QDialog):
         """
         if self.ui.checkBox_regular.isChecked():
             self.ax.relim()
-            mean = self.session.calculate_mean()
+            mean = self.session.get_mean()
             self.plot_data(mean)
 
         else:
@@ -228,10 +236,10 @@ class CustomPlot(QDialog):
         """
 
         if self.ui.checkBox_sem.isChecked() and self.ui.stimuliBox.currentText() != "All":
-            mean = self.session.calculate_mean()[self.ui.stimuliBox.currentText()]
+            mean = self.session.get_mean()[self.ui.stimuliBox.currentText()]
             x = np.arange(mean.size)*self.session.get_tr()
             self.ax.relim()
-            sem = self.session.calculate_sem()
+            sem = self.session.get_sem()
             self.sem =self.ax.errorbar(x, mean, yerr=sem[self.ui.stimuliBox.currentText()])
             self.canvas.draw()
         else:
@@ -250,10 +258,10 @@ class CustomPlot(QDialog):
             self.amp = self.ax.axhline(max_amp[1], color=self.get_color())
             self.ui.amp_label.setText("Amplitude: %.2f" % max_amp[1])
             self.ui.amp_label.show()
-            self.canvas.draw()
         else:
             self.remove_amplitude()
-            self.ui.amp_label.hide()
+
+        self.canvas.draw()
 
     def plot_peak(self):
         """
@@ -266,11 +274,11 @@ class CustomPlot(QDialog):
             self.peak_time = self.ax.axvline(max_peak[0] * self.session.get_tr(), color=self.get_color())
             self.ui.peak_label.setText("Peak: " + str(max_peak[0] * self.session.get_tr()))
             self.ui.peak_label.show()
-            self.canvas.draw()
         else:
             self.remove_peak_time()
-            self.ui.peak_label.hide()
-            
+
+        self.canvas.draw()
+
     def show_points(self):
         """
         Points checkbox callback. Show data points in graph
@@ -304,8 +312,9 @@ class CustomPlot(QDialog):
         """
         Add all stimuli types that exists in the data to a combobox
         """
-        self.ui.stimuliBox.addItem("All")
-        data = self.session.calculate_mean()
+        data = self.session.get_mean()
+        if len(data) > 1:
+            self.ui.stimuliBox.addItem("All")
         for stimuli_type in data:
             self.ui.stimuliBox.addItem(stimuli_type)
 
@@ -319,8 +328,8 @@ class CustomPlot(QDialog):
             children = self.session.sessions + self.session.children
             for child in children:
                 if child.ready_for_calculation():
-                    child_mean = child.calculate_mean(self.session.get_setting('percent'),
-                                                  self.session.get_setting('global'))
+                    child_mean = child.get_mean(self.session.get_setting('percent'),
+                                                self.session.get_setting('global'))
                     self.plot_data(child_mean, child.name)
 
         else:
@@ -379,6 +388,7 @@ class CustomPlot(QDialog):
             self.remove_peak_time()
             self.ui.checkBox_sem.setEnabled(False)
             self.remove_sem()
+            self.canvas.draw()
         # Only allow smooth if we are plotting mean
         if self.ui.mean_response_btn.isChecked():
             self.ui.checkBox_smooth.setEnabled(True)
