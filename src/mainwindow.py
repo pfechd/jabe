@@ -15,7 +15,8 @@ from stimuli import Stimuli
 from tree_items.grouptreeitem import GroupTreeItem
 from tree_items.individualtreeitem import IndividualTreeItem
 from tree_items.sessiontreeitem import SessionTreeItem
-
+from createmaskwindow import CreateMaskWindow
+from namedialog import NameDialog
 
 try:
     import Cocoa    # Only used on Mac OS when building .app
@@ -50,6 +51,7 @@ class MainWindow(QMainWindow):
         self.ui.add_session_mask_btn.clicked.connect(self.mask_button_pressed)
         self.ui.mask_btn_group.clicked.connect(self.mask_button_pressed)
         self.ui.mask_btn_individual.clicked.connect(self.mask_button_pressed)
+        self.ui.create_session_mask_btn.clicked.connect(self.create_mask_button_pressed)
         self.ui.add_session_stimuli_btn.clicked.connect(self.stimuli_button_pressed)
         self.ui.stimuli_btn_individual.clicked.connect(self.stimuli_button_pressed)
         self.ui.stimuli_btn_group.clicked.connect(self.stimuli_button_pressed)
@@ -322,6 +324,15 @@ class MainWindow(QMainWindow):
             self.load_mask(file_name[0])
         else:
             print 'Mask not chosen'
+        self.update_gui()
+
+    def create_mask_button_pressed(self):
+        """ Callback function, run when the create mask button is pressed."""
+        # Make sure EPI-file is choosen before running
+        if self.ui.tree_widget.selectedItems()[0].brain:
+            CreateMaskWindow(self, self.ui.tree_widget.selectedItems()[0].brain.brain_file)
+        else:
+            QMessageBox.warning(self, "Warning", "You have not chosen an EPI-image. Please choose an EPI-image.")
         self.update_gui()
 
     def stimuli_button_pressed(self):
