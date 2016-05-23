@@ -379,10 +379,10 @@ class MainWindow(QMainWindow):
     def update_gui(self):
         self.update_buttons()
         self.update_text()
-        self.update_stackedwidget()
+        self.update_stacked_widget()
         self.ui.tree_widget.update()
 
-    def update_stackedwidget(self):
+    def update_stacked_widget(self):
         if self.ui.tree_widget.selectedItems():
             if isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
                 self.ui.stackedWidget.setCurrentIndex(2)
