@@ -40,18 +40,15 @@ class TestSession(unittest.TestCase):
         # Crash if session has no name in config
         ref = Session()
 
-<<<<<<< HEAD
         ref.load_configuration({'path': 'test_path',
                                 'anatomy_path': 'test_anatomy_path',
                                 'name': 'test_name',
                                 'description': 'test_desc',
                                 'plot_settings': 'test_settings'})
-=======
-        self.session.calculate()
 
-        diff = self.session.response - expected_result
-
-        self.assertEqual((diff < 1e-8).all(), True)
+        self.assertEqual(ref.name, 'test_name')
+        self.assertEqual(ref.description, 'test_desc')
+        self.assertEqual(ref.plot_settings, 'test_settings')
 
     def test_calculate_mean(self):
         self.session.calculate()
@@ -131,11 +128,6 @@ class TestSession(unittest.TestCase):
     def tearDown(self):
         self.session = None
         self.mask = None
->>>>>>> master
-
-        self.assertEqual(ref.name, 'test_name')
-        self.assertEqual(ref.description, 'test_desc')
-        self.assertEqual(ref.plot_settings, 'test_settings')
 
 if __name__ == '__main__':
     unittest.main()
