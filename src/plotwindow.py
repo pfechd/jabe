@@ -121,7 +121,7 @@ class CustomPlot(QDialog):
         if not (self.ui.checkBox_smooth.isChecked() \
                 or self.ui.checkBox_regular.isChecked()) \
                 or self.ui.several_responses_btn.isChecked():
-            self.ui.peak_label.hide()
+            self.ui.fwhm_label.hide()
             return
         
         if self.ui.checkBox_fwhm.isChecked():
