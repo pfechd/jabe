@@ -496,6 +496,14 @@ class MainWindow(QMainWindow):
                     self.ui.individual_stimuli_label.setText('Stimuli chosen: ' + individual.stimuli.path.split('/')[-1])
                 else:
                     self.ui.individual_stimuli_label.setText('No stimuli chosen')
+
+                self.ui.individual_mask_label.setEnabled(individual.get_setting('use_mask'))
+                self.ui.mask_btn_individual.setEnabled(individual.get_setting('use_mask'))
+                self.ui.individual_anatomy_label.setEnabled(individual.get_setting('use_mask'))
+                self.ui.anatomy_btn_individual.setEnabled(individual.get_setting('use_mask'))
+
+                self.ui.individual_stimuli_label.setEnabled(individual.get_setting('use_stimuli'))
+                self.ui.stimuli_btn_individual.setEnabled(individual.get_setting('use_stimuli'))
             elif isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
                 group = self.ui.tree_widget.selectedItems()[0]
 
@@ -511,6 +519,14 @@ class MainWindow(QMainWindow):
                     self.ui.group_stimuli_label.setText('Stimuli chosen: ' + group.stimuli.path.split('/')[-1])
                 else:
                     self.ui.group_stimuli_label.setText('No stimuli chosen')
+
+                self.ui.group_mask_label.setEnabled(group.get_setting('use_mask'))
+                self.ui.mask_btn_group.setEnabled(group.get_setting('use_mask'))
+                self.ui.group_anatomy_label.setEnabled(group.get_setting('use_mask'))
+                self.ui.anatomy_btn_group.setEnabled(group.get_setting('use_mask'))
+
+                self.ui.group_stimuli_label.setEnabled(group.get_setting('use_stimuli'))
+                self.ui.stimuli_btn_group.setEnabled(group.get_setting('use_stimuli'))
 
         else:
             for label in [self.ui.session_epi_label, self.ui.session_mask_label, self.ui.session_stimuli_label]:
