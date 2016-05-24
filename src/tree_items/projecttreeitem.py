@@ -76,29 +76,31 @@ class ProjectTreeItem(QTreeWidgetItem, Group):
     def get_overview_tree(self):
         top_tree_items = []
         for group in self.children:
-            tree_item = QTreeWidgetItem([group.name])
-            for session in group.sessions:
-                sess_item = QTreeWidgetItem([session.name])
-                tree_item.addChild(sess_item)
+            group_item = QTreeWidgetItem([group.name])
+            top_tree_items.append(group_item)
+            for individual in group.children:
+                individual_item = QTreeWidgetItem([individual.name])
+                group_item.addChild(individual_item)
+                for session in individual.sessions:
+                    sess_item = QTreeWidgetItem([session.name])
+                    individual_item.addChild(sess_item)
 
-                if session.brain:
-                    epi_path_item = QTreeWidgetItem(['EPI: ' + session.brain.path.split('/')[-1]])
-                else:
-                    epi_path_item = QTreeWidgetItem(['EPI: None'])
+                    if session.brain:
+                        epi_path_item = QTreeWidgetItem(['EPI: ' + session.brain.path.split('/')[-1]])
+                    else:
+                        epi_path_item = QTreeWidgetItem(['EPI: None'])
 
-                if session.mask:
-                    mask_path_item = QTreeWidgetItem(['Mask: ' + session.mask.path.split('/')[-1]])
-                else:
-                    mask_path_item = QTreeWidgetItem(['Mask: None'])
+                    if session.mask:
+                        mask_path_item = QTreeWidgetItem(['Mask: ' + session.mask.path.split('/')[-1]])
+                    else:
+                        mask_path_item = QTreeWidgetItem(['Mask: None'])
 
-                if session.stimuli:
-                    stim_path_item = QTreeWidgetItem(['Stimuli: ' + session.stimuli.path.split('/')[-1]])
-                else:
-                    stim_path_item = QTreeWidgetItem(['Stimuli: None'])
+                    if session.stimuli:
+                        stim_path_item = QTreeWidgetItem(['Stimuli: ' + session.stimuli.path.split('/')[-1]])
+                    else:
+                        stim_path_item = QTreeWidgetItem(['Stimuli: None'])
 
-                sess_item.addChildren([epi_path_item, mask_path_item, stim_path_item])
-
-            top_tree_items.append(tree_item)
+                    sess_item.addChildren([epi_path_item, mask_path_item, stim_path_item])
         return top_tree_items
 
     def add_group_boxes(self, layout):

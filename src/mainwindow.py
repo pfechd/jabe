@@ -424,8 +424,8 @@ class MainWindow(QMainWindow):
                     self.ui.subtract_group_btn.setChecked(True)
 
                 # Add overview tree in group panel
-                self.ui.individual_overview_tree.clear()
-                self.ui.individual_overview_tree.addTopLevelItems(group.get_overview_tree())
+                self.ui.group_overview_tree.clear()
+                self.ui.group_overview_tree.addTopLevelItems(group.get_overview_tree())
 
             elif isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
                 self.ui.stackedWidget.setCurrentIndex(2)

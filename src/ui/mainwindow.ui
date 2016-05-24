@@ -137,7 +137,7 @@
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_30">
                 <item>
-                 <widget class="QTreeWidget" name="individual_overview_tree_2">
+                 <widget class="QTreeWidget" name="group_overview_tree">
                   <property name="autoScroll">
                    <bool>false</bool>
                   </property>
