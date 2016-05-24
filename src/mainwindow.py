@@ -157,13 +157,17 @@ class MainWindow(QMainWindow):
             if button == QMessageBox.Cancel:
                 event.ignore()
             if button == QMessageBox.Yes:
-                self.save_configuration()
+                success = self.save_configuration()
+                if not success:
+                    event.ignore()
 
     def save_configuration_as(self):
         config_file = QFileDialog.getSaveFileName(self, "", "", ".json")
         if config_file[0]:
             self.current_config_path = config_file[0] + config_file[1]
             self.save_configuration()
+            return True
+        return False
 
     def save_configuration(self):
         """
@@ -171,8 +175,8 @@ class MainWindow(QMainWindow):
         """
         config_filename = self.current_config_path
         if config_filename == "":
-            self.save_configuration_as()
-            return
+            saved = self.save_configuration_as()
+            return saved
 
         if self.ui.tree_widget.selectedItems():
             selected = self.ui.tree_widget.selectedItems()[0]
@@ -218,6 +222,8 @@ class MainWindow(QMainWindow):
 
         with open(config_path, 'w') as f:
             json.dump(configuration, f, indent=4)
+
+        return True
 
     def load_configuration_button_pressed(self):
         if self.groups != []:
@@ -372,7 +378,7 @@ class MainWindow(QMainWindow):
 
     def brain_button_pressed(self):
         """ Callback function run when the choose brain button is pressed."""
-        file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii*)")
+        file_name = QFileDialog.getOpenFileName(self, None, 'Open file', "", "Images (*.nii*)")
         if file_name[0]:
             self.load_brain(file_name[0])
         self.update_gui()
