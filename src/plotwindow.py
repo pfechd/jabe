@@ -429,7 +429,6 @@ class CustomPlot(QDialog):
             self.current_ax.relim()
             sem = self.session.get_sem()
             self.sem.append(self.current_ax.errorbar(x, mean, color=self.get_color(), yerr=sem[self.ui.stimuliBox.currentText()]))
-            self.sem =self.ax.errorbar(x, mean, yerr=sem[self.ui.stimuliBox.currentText()])
         else:
             self.remove_sem()
         self.canvas.draw()
@@ -642,9 +641,10 @@ class CustomPlot(QDialog):
             self.ui.stimuliBox.setEnabled(True)
             self.ui.checkBox_regular.setEnabled(True)
 
-            if self.ui.checkBox_regular.isChecked() or self.ui.checkBox_smooth.isChecked():
+            if not self.ui.several_responses_btn.isChecked() and (self.ui.checkBox_regular.isChecked() or self.ui.checkBox_smooth.isChecked()):
                 self.ui.checkBox_amp.setEnabled(True)
                 self.ui.checkBox_fwhm.setEnabled(True)
+
                 if self.ui.stimuliBox.currentText() != 'All':
                     self.ui.checkBox_sem.setEnabled(True)
                 else:
