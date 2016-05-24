@@ -43,7 +43,7 @@ class AnatomyWindow(QDialog):
         self.show_brain()
 
     def convert_coord(self, coord):
-        conversion_matrix = np.linalg.inv(self.session.anatomy.brain_file._affine).dot(self.session.brain.brain_file._affine)
+        conversion_matrix = np.linalg.inv(self.session.anatomy.brain_file._affine).dot(self.session.mask.mask_file._affine)
         return apply_affine(conversion_matrix, coord)
 
     def show_brain(self):

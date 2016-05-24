@@ -78,9 +78,9 @@ class Session(Group):
 
         return configuration
 
-    def ready_for_calculation(self, stimuli=None, mask=None):
+    def ready_for_calculation(self, mask=None, stimuli=None):
         return self.brain is not None and \
-               super(Session, self).ready_for_calculation(stimuli, mask)
+               super(Session, self).ready_for_calculation(mask, stimuli)
 
     def settings_changed(self, percentage, global_, mask, stimuli):
         """
