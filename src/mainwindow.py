@@ -104,7 +104,6 @@ class MainWindow(QMainWindow):
         self.ui.tree_widget.setColumnWidth(0, 200)
         self.groups = []
         
-        self.load_configuration()
         self.plot_settings_changed()
         self.update_gui()
 
