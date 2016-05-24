@@ -318,10 +318,7 @@ class MainWindow(QMainWindow):
         self.update_gui()
 
     def stimuli_button_pressed(self):
-        """ Callback function, run when the choose stimuli button is pressed.
-
-        :param level: which level to get tr value from (session-, individual- or group-level)
-        """
+        """ Callback function, run when the choose stimuli button is pressed. """
         tr = self.get_tr()
         if tr:
             file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.mat)")
@@ -335,7 +332,6 @@ class MainWindow(QMainWindow):
         """
         Checks if Tr value (time between images) is valid and returns tr value if that's the case.
 
-        :param level: which level to get tr value from (session-, individual- or group-level)
         :return: float value of tr
         """
         if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
