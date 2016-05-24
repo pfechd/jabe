@@ -384,10 +384,10 @@ class MainWindow(QMainWindow):
                 self.mask_button_pressed()
             self.update_gui()
 
-    def load_stimuli(self, path):
+    def load_stimuli(self, path, tr):
         if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
             session = self.ui.tree_widget.selectedItems()[0]
-            error = session.load_stimuli(path)
+            error = session.load_stimuli(path, tr)
             if error:
                 QMessageBox.warning(self, "File error", error)
                 self.stimuli_button_pressed()
