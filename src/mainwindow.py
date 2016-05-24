@@ -400,9 +400,6 @@ class MainWindow(QMainWindow):
                 self.ui.sessions_overview_tree.addTopLevelItems(individual.get_overview_tree())
 
                 # Add checkboxes for individuals in individual panel
-                self.clear_layout(self.ui.sessions_plot)
-                individual.add_sessions_boxes(self.ui.sessions_plot)
-                self.ui.sessions_plot.insertSpacerItem(-1, QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
             elif isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
                 self.ui.stackedWidget.setCurrentIndex(3)
@@ -438,9 +435,6 @@ class MainWindow(QMainWindow):
                 self.ui.individual_overview_tree.addTopLevelItems(group.get_overview_tree())
 
                 # Add checkboxes for individuals in group panel
-                self.clear_layout(self.ui.individuals_plot)
-                group.add_individuals_boxes(self.ui.individuals_plot)
-                self.ui.individuals_plot.insertSpacerItem(-1, QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
     def update_text(self):
         if self.ui.tree_widget.selectedItems():
