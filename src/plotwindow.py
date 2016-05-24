@@ -132,9 +132,9 @@ class CustomPlot(QDialog):
                         str(values[1] - values[0]) + "\n"
             self.ui.fwhm_label.setText(fwhm_text[0:-1])
             self.ui.fwhm_label.show()
-            self.canvas.draw()
         else:
             self.ui.fwhm_label.hide()
+        self.canvas.draw()
                 
     def replot(self):
         """
@@ -160,7 +160,6 @@ class CustomPlot(QDialog):
             for peak in self.peak_time:
                 peak.remove()
             self.peak_time = []
-            self.canvas.draw()
 
     def remove_sem(self):
         if self.sem:
@@ -176,7 +175,6 @@ class CustomPlot(QDialog):
             for amp in self.amp:
                 amp.remove()
             self.amp = []
-            self.canvas.draw()
 
     def remove_fwhm(self):
         if self.fwhm:
@@ -257,10 +255,9 @@ class CustomPlot(QDialog):
             self.ax.relim()
             sem = self.session.get_sem()
             self.sem =self.ax.errorbar(x, mean, yerr=sem[self.ui.stimuliBox.currentText()])
-            self.canvas.draw()
         else:
             self.remove_sem()
-            self.canvas.draw()
+        self.canvas.draw()
 
     def plot_amplitude(self):
         """
@@ -302,6 +299,7 @@ class CustomPlot(QDialog):
             self.ui.amp_label.show()
         else:
             self.ui.amp_label.hide()
+        self.canvas.draw()
 
     def plot_peak(self):
         """
@@ -343,6 +341,7 @@ class CustomPlot(QDialog):
             self.ui.peak_label.show()
         else:
             self.ui.peak_label.hide()
+        self.canvas.draw()
 
     def show_points(self):
         """
