@@ -6,6 +6,7 @@ import nibabel as nib
 from src.brain import Brain
 from src.stimuli import Stimuli
 from src.mask import Mask
+import session
 
 
 class Group(object):
@@ -38,16 +39,16 @@ class Group(object):
         if configuration:
             self.load_configuration(configuration)
 
-    def ready_for_calculation(self, stimuli=None, mask=None):
+    def ready_for_calculation(self, mask=None, stimuli=None):
         if not stimuli:
-            stimuli = self.stimuli
+            stimuli = self.get_stimuli()
         if not mask:
-            mask = self.mask
+            mask = self.get_mask()
 
         children = self.children + self.sessions
 
         if children:
-            return any([child.ready_for_calculation(stimuli, mask) for child in children])
+            return any([child.ready_for_calculation(mask, stimuli) for child in children])
         else:
             return all([stimuli, mask])
 
@@ -170,7 +171,7 @@ class Group(object):
             temp_stimuli = Stimuli(path, tr)
         except:
             return "The file is not a proper stimuli file. It might be corrupted or in the wrong format"
-        if self.brain and temp_stimuli.data[-1, 0] > self.brain.images:
+        if isinstance(self, session.Session) and self.brain and temp_stimuli.data[-1, 0] > self.brain.images:
             return "The times in the stimuli file are too long compared to the length of the EPI sequence"
         else:
             self.stimuli = temp_stimuli
@@ -185,7 +186,7 @@ class Group(object):
             return path + " could not be opened. It might be corrupted"
         if len(temp_mask.shape) != 3:
             return "The data has " + str(len(temp_mask.shape)) + " dimensions instead of 3"
-        elif self.brain and self.brain.shape[0:3] != temp_mask.shape:
+        elif isinstance(self, session.Session) and self.brain and self.brain.shape[0:3] != temp_mask.shape:
             return "The mask is not the same size as the EPI sequence"
         else:
             self.mask = temp_mask
@@ -235,19 +236,23 @@ class Group(object):
         else:
             return self._aggregate(percentage, global_, mask, stimuli)
 
-    def get_mean(self, percentage=None, global_=None):
+    def get_mean(self, percentage=None, global_=None, mask=None, stimuli=None):
         if percentage is None:
             percentage = self.get_setting('percent')
         if global_ is None:
             global_ = self.get_setting('global')
+        if mask is None:
+            mask = self.get_mask()
+        if stimuli is None:
+            stimuli = self.get_stimuli()
 
         settings_changed = self.settings_changed(percentage, global_,
-                                                 self.mask, self.stimuli)
+                                                 mask, stimuli)
         if settings_changed or not self.mean_responses:
-            self.mean_responses = self.calculate_mean(percentage, global_)
+            self.mean_responses = self.calculate_mean(percentage, global_, mask, stimuli)
         return self.mean_responses
 
-    def calculate_mean(self, percentage, global_):
+    def calculate_mean(self, percentage, global_, mask, stimuli):
         """
         Calculate the mean of every response grouped by stimuli type
 
@@ -255,8 +260,7 @@ class Group(object):
                  is the vector containing the mean value for the given time
                  frame.
         """
-
-        responses = self.aggregate(percentage, global_)
+        responses = self.aggregate(percentage, global_, mask, stimuli)
         mean_responses = {}
 
         for stimuli_type, stimuli_data in responses.iteritems():
@@ -333,8 +337,7 @@ class Group(object):
 
     def calculate_sem(self, percentage, global_):
         """ Calculate the standard error of the mean (SEM) of the response """
-
-        responses = self.aggregate(percentage, global_)
+        responses = self.aggregate(percentage, global_, self.get_mask(), self.get_stimuli())
         responses_sem = {}
 
         for stimuli_type, stimuli_data in responses.iteritems():
@@ -350,17 +353,34 @@ class Group(object):
         return responses_sem
 
     def get_configuration(self):
-        return {
+        configuration = {
             'name': self.name,
             'description': self.description,
             'plot_settings': self.plot_settings,
             'groups': [group.get_configuration() for group in self.children],
             'sessions': [session.get_configuration() for session in self.sessions]
         }
+        if self.anatomy:
+            configuration['anatomy_path'] = self.anatomy.path
+
+        if self.mask:
+            configuration['mask'] = self.mask.get_configuration()
+
+        if self.stimuli:
+            configuration['stimuli'] = self.stimuli.get_configuration()
+
+        return configuration
+
 
     def load_configuration(self, configuration):
         if 'name' in configuration:
             self.name = configuration['name']
+        if 'anatomy_path' in configuration:
+            self.load_anatomy(configuration['anatomy_path'])
+        if 'mask' in configuration:
+            self.load_mask(configuration['mask']['path'])
+        if 'stimuli' in configuration:
+            self.load_stimuli(configuration['stimuli']['path'], configuration['stimuli']['tr'])
         if 'description' in configuration:
             self.description = configuration['description']
         if 'plot_settings' in configuration:
@@ -382,9 +402,14 @@ class Group(object):
         self.smoothed_responses = None
         self.peaks = None
 
+        if not mask:
+            mask = self.get_mask()
+        if not stimuli:
+            stimuli = self.get_stimuli()
+
         for child in self.children + self.sessions:
             # If the child doesn't have the files loaded, skip it.
-            if not child.ready_for_calculation():
+            if not child.ready_for_calculation(mask, stimuli):
                 continue
             child_response = child.aggregate(percentage, global_, mask, stimuli)
 
@@ -415,3 +440,15 @@ class Group(object):
             return self.plot_settings[setting]
         else:
             return False
+
+    def get_mask(self):
+        if isinstance(self, session.Session) or self.get_setting('use_mask'):
+            return self.mask
+        else:
+            return None
+
+    def get_stimuli(self):
+        if isinstance(self, session.Session) or self.get_setting('use_stimuli'):
+            return self.stimuli
+        else:
+            return None
