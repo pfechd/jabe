@@ -17,6 +17,9 @@
    <iconset resource="icons.qrc">
     <normaloff>:/logo</normaloff>:/logo</iconset>
   </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout_8">
     <item>
@@ -940,7 +943,7 @@
                   <item>
                    <widget class="QGroupBox" name="groupBox_17">
                     <property name="title">
-                     <string>Normalization level::</string>
+                     <string>Normalization level:</string>
                     </property>
                     <property name="flat">
                      <bool>true</bool>
@@ -1132,7 +1135,7 @@
                   <item row="5" column="1">
                    <widget class="QPushButton" name="create_session_mask_btn">
                     <property name="enabled">
-                     <bool>false</bool>
+                     <bool>true</bool>
                     </property>
                     <property name="text">
                      <string>Create mask</string>

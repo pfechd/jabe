@@ -46,7 +46,7 @@
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>Input stimuli time and value</string>
+        <string>Input stimuli time and type</string>
        </property>
       </widget>
      </item>
@@ -89,7 +89,7 @@
      </column>
      <column>
       <property name="text">
-       <string>Value</string>
+       <string>Stimulus type</string>
       </property>
      </column>
     </widget>
