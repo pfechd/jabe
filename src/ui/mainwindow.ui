@@ -11,12 +11,19 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Prototype</string>
+   <string>JABE - Just Another BOLD Extractor</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="icons.qrc">
+    <normaloff>:/logo</normaloff>:/logo</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout_9">
+   <layout class="QHBoxLayout" name="horizontalLayout_8">
     <item>
      <layout class="QVBoxLayout" name="verticalLayout">
+      <property name="sizeConstraint">
+       <enum>QLayout::SetMaximumSize</enum>
+      </property>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_7">
         <item>
@@ -31,9 +38,12 @@
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Maximum</enum>
+          </property>
           <property name="sizeHint" stdset="0">
            <size>
-            <width>40</width>
+            <width>150</width>
             <height>20</height>
            </size>
           </property>
@@ -50,6 +60,18 @@
       </item>
       <item>
        <widget class="QTreeWidget" name="tree_widget">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>260</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="horizontalScrollBarPolicy">
          <enum>Qt::ScrollBarAsNeeded</enum>
         </property>
@@ -477,8 +499,8 @@
                        <rect>
                         <x>0</x>
                         <y>0</y>
-                        <width>134</width>
-                        <height>20</height>
+                        <width>148</width>
+                        <height>28</height>
                        </rect>
                       </property>
                       <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -908,8 +930,8 @@
                        <rect>
                         <x>0</x>
                         <y>0</y>
-                        <width>134</width>
-                        <height>20</height>
+                        <width>148</width>
+                        <height>28</height>
                        </rect>
                       </property>
                       <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -1057,14 +1079,14 @@
              <item row="1" column="0">
               <widget class="QGroupBox" name="groupBox_15">
                <property name="sizePolicy">
-                <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
                <property name="maximumSize">
                 <size>
-                 <width>300</width>
+                 <width>16777215</width>
                  <height>16777215</height>
                 </size>
                </property>
@@ -1080,32 +1102,6 @@
                   <property name="topMargin">
                    <number>0</number>
                   </property>
-                  <item row="5" column="0">
-                   <widget class="QLabel" name="session_mask_label">
-                    <property name="minimumSize">
-                     <size>
-                      <width>0</width>
-                      <height>50</height>
-                     </size>
-                    </property>
-                    <property name="text">
-                     <string>No mask chosen</string>
-                    </property>
-                    <property name="wordWrap">
-                     <bool>true</bool>
-                    </property>
-                    <property name="margin">
-                     <number>0</number>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="5" column="1">
-                   <widget class="QPushButton" name="add_session_mask_btn">
-                    <property name="text">
-                     <string>Choose mask</string>
-                    </property>
-                   </widget>
-                  </item>
                   <item row="2" column="0">
                    <widget class="QLabel" name="session_stimuli_label">
                     <property name="sizePolicy">
@@ -1196,16 +1192,6 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="6" column="1">
-                   <widget class="QPushButton" name="create_session_mask_btn">
-                    <property name="enabled">
-                     <bool>true</bool>
-                    </property>
-                    <property name="text">
-                     <string>Create mask</string>
-                    </property>
-                   </widget>
-                  </item>
                   <item row="3" column="1">
                    <widget class="QPushButton" name="create_session_stimuli_btn">
                     <property name="enabled">
@@ -1213,6 +1199,42 @@
                     </property>
                     <property name="text">
                      <string>Create stimuli</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="0">
+                   <widget class="QLabel" name="session_mask_label">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>50</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string>No mask chosen</string>
+                    </property>
+                    <property name="wordWrap">
+                     <bool>true</bool>
+                    </property>
+                    <property name="margin">
+                     <number>0</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="1">
+                   <widget class="QPushButton" name="add_session_mask_btn">
+                    <property name="text">
+                     <string>Choose mask</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="5" column="1">
+                   <widget class="QPushButton" name="create_session_mask_btn">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <property name="text">
+                     <string>Create mask</string>
                     </property>
                    </widget>
                   </item>
