@@ -215,8 +215,6 @@ class CustomPlot(QDialog):
     def load_ax_settings(self):
         ax = self.current_ax
 
-        print self.current_ax.lines
-
         self.ui.mean_response_btn.setChecked(self.axes[ax]['plot'] == 'mean')
         self.ui.several_responses_btn.setChecked(self.axes[ax]['plot'] == 'several')
 

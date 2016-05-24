@@ -80,6 +80,9 @@
         </item>
         <item>
          <widget class="QToolButton" name="toolButton_add_subplot">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:13pt;&quot;&gt;Add subplot to window&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>Add subplot</string>
           </property>
@@ -87,6 +90,9 @@
         </item>
         <item>
          <widget class="QToolButton" name="toolButton_rem_subplot">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:13pt;&quot;&gt;Remove highlighted subplot&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>Remove subplot</string>
           </property>
@@ -101,6 +107,9 @@
         </item>
         <item>
          <widget class="QCheckBox" name="checkBox_labels">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Toggle labels in subplot(s)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>Labels</string>
           </property>
@@ -110,6 +119,9 @@
          <widget class="QSpinBox" name="label_size">
           <property name="enabled">
            <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set label size (0 - 30)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="maximum">
            <number>30</number>
@@ -186,6 +198,9 @@
           <property name="enabled">
            <bool>true</bool>
           </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show mean graph(s) of current stimuli type&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="autoFillBackground">
            <bool>false</bool>
           </property>
@@ -201,6 +216,9 @@
          <widget class="QRadioButton" name="several_responses_btn">
           <property name="enabled">
            <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show all graphs for current stimuli type&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
            <string>Several</string>
@@ -218,6 +236,9 @@
        <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
          <widget class="QCheckBox" name="checkBox_regular">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>Regular</string>
           </property>
@@ -230,6 +251,9 @@
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
            <widget class="QCheckBox" name="checkBox_smooth">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show smoothed graph(s)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="text">
              <string>Smooth</string>
             </property>
@@ -239,6 +263,9 @@
            <widget class="QSpinBox" name="spinBox">
             <property name="enabled">
              <bool>true</bool>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set smoothing factor (0 - 99)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="value">
              <number>20</number>
@@ -261,7 +288,11 @@
          </widget>
         </item>
         <item>
-         <widget class="QComboBox" name="stimuliBox"/>
+         <widget class="QComboBox" name="stimuliBox">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Chose stimuli type to plot&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
