@@ -55,6 +55,7 @@ class StimuliWindow(QDialog):
         """
         
         stimuli = []
+        tmp_time = 0.0
         all_rows = self.ui.stimuli_table.rowCount()
         if all_rows == 0:
             QMessageBox.warning(self, "Warning", "Your table contains no rows. Please add rows and values.")
@@ -62,18 +63,33 @@ class StimuliWindow(QDialog):
         else:
             for row in xrange(0, all_rows):
                 # Goes through all columns in all rows of the table, converts them to
-                # float and adds them to the stimuli array if they are numbers
+                # float and adds them to the stimuli array if they are numbers.
+                # Also checks if time values are in ascending order.
                 value = ''
                 time = ''
 
                 if self.ui.stimuli_table.item(row, 0):
                     time = self.ui.stimuli_table.item(row, 0).text()
-
+                    if tmp_time >= float(time):
+                        QMessageBox.warning(self, "Warning", "You have entered time values that are not in ascending order.")
+                        return []
+                    tmp_time = float(time)
+                    
                 if self.ui.stimuli_table.item(row, 1):
                     value = self.ui.stimuli_table.item(row,1).text()
 
                 if self.is_number(time) and self.is_number(value):
                     stimuli.append([float(time), float(value)])
+                    if row == all_rows - 1:
+                        # If the end of the table has been reached,
+                        # put the value from the end time box at the end of the array.
+                        time = self.ui.end_time_box.text()
+
+                        if self.is_number(time) and tmp_time < float(time):
+                            stimuli.append([float(time), 0])
+                        else:
+                            QMessageBox.warning(self, "Warning", "You have entered an inaccurate end time value.")
+                            return []
                 else:
                     QMessageBox.warning(self, "Warning", "You have entered one or more invalid values. Please enter only numbers.")
                     return []
@@ -83,7 +99,7 @@ class StimuliWindow(QDialog):
     def save_stimuli(self):
         """ Saves the values from the table to a .mat file."""
 
-        # Refreshes the table
+        # Refreshes the table.
         self.ui.stimuli_table.setDisabled(True)
         self.ui.stimuli_table.setDisabled(False)
 
@@ -95,11 +111,11 @@ class StimuliWindow(QDialog):
             if file_path[0]:
                 filename = file_path[0].split(os.path.sep)[-1].split('.')[0]
                 if filename:
-                    # Checks if the filename is valid
+                    # Checks if the filename is valid.
                     self.close()
                     stimuli = np.array(stimuli)
                     sio.savemat(filename, {'visual_stimuli':stimuli})
-                    self.parent().load_stimuli(filename +file_path[1])
+                    self.parent().load_stimuli(filename + file_path[1])
                 else:
                     QMessageBox.warning(self, "Warning", "Invalid filename.")
                 
