@@ -299,7 +299,7 @@
                 <item>
                  <widget class="QCheckBox" name="checkBox_5">
                   <property name="enabled">
-                   <bool>false</bool>
+                   <bool>true</bool>
                   </property>
                   <property name="text">
                    <string>Same anatomy image and mask for all sessions</string>
@@ -309,7 +309,7 @@
                 <item>
                  <widget class="QCheckBox" name="checkBox_6">
                   <property name="enabled">
-                   <bool>false</bool>
+                   <bool>true</bool>
                   </property>
                   <property name="text">
                    <string>Same stimuli for all sessions</string>
@@ -324,8 +324,18 @@
                   <property name="topMargin">
                    <number>0</number>
                   </property>
+                  <item row="4" column="1">
+                   <widget class="QPushButton" name="create_stimuli_project">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <property name="text">
+                     <string>Create stimuli</string>
+                    </property>
+                   </widget>
+                  </item>
                   <item row="0" column="1">
-                   <widget class="QPushButton" name="anatomy_btn_group_2">
+                   <widget class="QPushButton" name="anatomy_btn_project">
                     <property name="enabled">
                      <bool>false</bool>
                     </property>
@@ -334,8 +344,8 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="1" column="1">
-                   <widget class="QPushButton" name="stimuli_btn_group_2">
+                  <item row="2" column="1">
+                   <widget class="QPushButton" name="stimuli_btn_project">
                     <property name="enabled">
                      <bool>false</bool>
                     </property>
@@ -345,38 +355,6 @@
                    </widget>
                   </item>
                   <item row="2" column="0">
-                   <widget class="QLabel" name="maskLabel_6">
-                    <property name="enabled">
-                     <bool>false</bool>
-                    </property>
-                    <property name="minimumSize">
-                     <size>
-                      <width>0</width>
-                      <height>50</height>
-                     </size>
-                    </property>
-                    <property name="text">
-                     <string>No mask chosen</string>
-                    </property>
-                    <property name="wordWrap">
-                     <bool>true</bool>
-                    </property>
-                    <property name="margin">
-                     <number>0</number>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="2" column="1">
-                   <widget class="QPushButton" name="mask_btn_group_2">
-                    <property name="enabled">
-                     <bool>false</bool>
-                    </property>
-                    <property name="text">
-                     <string>Choose mask</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="0">
                    <widget class="QLabel" name="stimuliLabel_6">
                     <property name="enabled">
                      <bool>false</bool>
@@ -435,6 +413,38 @@
                     </property>
                     <property name="margin">
                      <number>0</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="maskLabel_6">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>50</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string>No mask chosen</string>
+                    </property>
+                    <property name="wordWrap">
+                     <bool>true</bool>
+                    </property>
+                    <property name="margin">
+                     <number>0</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QPushButton" name="mask_btn_project">
+                    <property name="enabled">
+                     <bool>false</bool>
+                    </property>
+                    <property name="text">
+                     <string>Choose mask</string>
                     </property>
                    </widget>
                   </item>

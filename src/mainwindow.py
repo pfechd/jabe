@@ -503,7 +503,7 @@ class MainWindow(QMainWindow):
                 else:
                     self.ui.subtract_group_btn.setChecked(True)
                 self.ui.group_use_mask.setChecked(group.get_setting('use_mask'))
-	        self.ui.group_use_stimuli.setChecked(group.get_setting('use_stimuli'))
+                self.ui.group_use_stimuli.setChecked(group.get_setting('use_stimuli'))
 
                 # Add overview tree in group panel
                 self.ui.individual_overview_tree.clear()
@@ -619,7 +619,30 @@ class MainWindow(QMainWindow):
                 self.ui.group_stimuli_label.setEnabled(group.get_setting('use_stimuli'))
                 self.ui.stimuli_btn_group.setEnabled(group.get_setting('use_stimuli'))
                 self.ui.create_stimuli_group_btn.setEnabled(group.get_setting('use_stimuli'))
+            elif isinstance(self.ui.tree_widget.selectedItems()[0], ProjectTreeItem):
+                group = self.ui.tree_widget.selectedItems()[0]
 
+                if group.anatomy:
+                    self.ui.brainLabel_6.setText('Anatomy chosen: ' + group.anatomy.path.split('/')[-1])
+                else:
+                    self.ui.brainLabel_6.setText('No anatomy chosen')
+                if group.mask:
+                    self.ui.maskLabel_6.setText('Mask chosen: ' + group.mask.path.split('/')[-1])
+                else:
+                    self.ui.maskLabel_6.setText('No mask chosen')
+                if group.stimuli:
+                    self.ui.stimuliLabel_6.setText('Stimuli chosen: ' + group.stimuli.path.split('/')[-1])
+                else:
+                    self.ui.stimuliLabel_6.setText('No stimuli chosen')
+
+                self.ui.maskLabel_6.setEnabled(group.get_setting('use_mask'))
+                self.ui.mask_btn_project.setEnabled(group.get_setting('use_mask'))
+                self.ui.brainLabel_6.setEnabled(group.get_setting('use_mask'))
+                self.ui.anatomy_btn_project.setEnabled(group.get_setting('use_mask'))
+
+                self.ui.stimuliLabel_6.setEnabled(group.get_setting('use_stimuli'))
+                self.ui.stimuli_btn_project.setEnabled(group.get_setting('use_stimuli'))
+                self.ui.create_stimuli_project.setEnabled(group.get_setting('use_stimuli'))
         else:
             for label in [self.ui.session_epi_label, self.ui.session_mask_label, self.ui.session_stimuli_label]:
                 label.setText('')
