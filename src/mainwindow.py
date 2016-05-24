@@ -479,6 +479,8 @@ class MainWindow(QMainWindow):
                     self.ui.percent_session_btn.setChecked(True)
                 else:
                     self.ui.subtract_session_btn.setChecked(True)
+        else:
+            self.ui.stackedWidget.setCurrentIndex(0)
 
     def update_text(self):
         if self.ui.tree_widget.selectedItems():
