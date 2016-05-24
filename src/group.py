@@ -2,6 +2,7 @@ import numpy as np
 from scipy.interpolate import UnivariateSpline
 from scipy.stats import sem
 import nibabel as nib
+from PyQt5.QtWidgets import QMessageBox
 
 from src.brain import Brain
 from src.stimuli import Stimuli
@@ -17,6 +18,7 @@ class Group(object):
         self.name = ""
         self.description = ""
         self.plot_settings = {}
+        self.tr = 0.5
 
         self.mask = None
         self.stimuli = None

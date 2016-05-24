@@ -46,7 +46,7 @@ class MainWindow(QMainWindow):
         self.ui.add_session_anatomy_btn.clicked.connect(self.anatomy_button_pressed)
         self.ui.add_session_epi_btn.clicked.connect(self.brain_button_pressed)
         self.ui.add_session_mask_btn.clicked.connect(self.mask_button_pressed)
-        self.ui.add_session_stimuli_btn.clicked.connect(self.stimuli_button_pressed(0))
+        self.ui.add_session_stimuli_btn.clicked.connect(self.stimuli_button_pressed)
         self.ui.create_session_stimuli_btn.clicked.connect(self.create_stimuli_button_pressed)
         self.ui.add_group_menu_btn.triggered.connect(self.add_group_pressed)
         self.ui.add_group_btn.clicked.connect(self.add_group_pressed)
@@ -286,6 +286,7 @@ class MainWindow(QMainWindow):
     def calculate_button_pressed(self):
         """ Callback function, run when the calculate button is pressed."""
         # Make sure to update plot settings at least once before running
+
         self.plot_settings_changed()
         CustomPlot(self, self.ui.tree_widget.selectedItems()[0])
 
@@ -316,37 +317,44 @@ class MainWindow(QMainWindow):
             print 'Mask not chosen'
         self.update_gui()
 
-    def stimuli_button_pressed(self, level):
-        """ Callback function, run when the choose stimuli button is pressed."""
-        tr = self.get_tr(level)
-        #tr = QInputDialog.getDouble(self, "Time interval", "Enter time interval between images (tr)", 0.0, 0.0)
+    def stimuli_button_pressed(self):
+        """ Callback function, run when the choose stimuli button is pressed.
 
-        if tr > 0.0:
+        :param level: which level to get tr value from (session-, individual- or group-level)
+        """
+        tr = self.get_tr()
+        if tr:
             file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.mat)")
             if file_name[0]:
                 self.load_stimuli(file_name[0], tr)
             else:
                 print 'Stimuli not chosen'
             self.update_gui()
-        else:
-            QMessageBox.warning(self, "Error", "Time interval has to be greater than 0")
 
-
-    def get_tr(self, level):
+    def get_tr(self):
         """
         Checks if Tr value (time between images) is valid and returns tr value if that's the case.
+
+        :param level: which level to get tr value from (session-, individual- or group-level)
         :return: float value of tr
         """
-        tr = [self.ui.tr_value_session.text(), self.ui.tr_value_ind.text(), self.ui.tr_value_group.text()]
-        tr_level = tr[level]
-        print(tr_level)
+        if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
+            tr = self.ui.tr_value_session.text()
+        elif isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
+            tr = self.ui.tr_value_ind.text()
+        else:
+            tr = self.ui.tr_value_group.text()
+
         try:
-            output = float(tr_level)
+            tr = float(tr)
         except ValueError:
             QMessageBox.warning(self, "ValueError", "Tr must be a number, ex. 1.2")
 
-        return output
-
+        if tr > 0.0:
+            return tr
+        else:
+            QMessageBox.warning(self, "ValueError", "Tr must be greater than 0")
+            return None
 
     def create_stimuli_button_pressed(self):
         """ Callback function, run when the create simuli button is pressed."""
@@ -380,10 +388,10 @@ class MainWindow(QMainWindow):
                 self.mask_button_pressed()
             self.update_gui()
 
-    def load_stimuli(self, path, tr):
+    def load_stimuli(self, path):
         if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
             session = self.ui.tree_widget.selectedItems()[0]
-            error = session.load_stimuli(path, tr)
+            error = session.load_stimuli(path)
             if error:
                 QMessageBox.warning(self, "File error", error)
                 self.stimuli_button_pressed()
