@@ -446,6 +446,59 @@
                   </item>
                  </layout>
                 </item>
+                <item>
+                 <widget class="QGroupBox" name="groupBox_13">
+                  <property name="title">
+                   <string>Individuals</string>
+                  </property>
+                  <property name="flat">
+                   <bool>true</bool>
+                  </property>
+                  <layout class="QVBoxLayout" name="verticalLayout_18">
+                   <item>
+                    <widget class="QScrollArea" name="scrollArea_2">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>150</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                     <property name="widgetResizable">
+                      <bool>true</bool>
+                     </property>
+                     <widget class="QWidget" name="scrollAreaWidgetContents_2">
+                      <property name="geometry">
+                       <rect>
+                        <x>0</x>
+                        <y>0</y>
+                        <width>134</width>
+                        <height>20</height>
+                       </rect>
+                      </property>
+                      <layout class="QHBoxLayout" name="horizontalLayout_4">
+                       <item>
+                        <layout class="QVBoxLayout" name="individuals_plot">
+                         <property name="spacing">
+                          <number>6</number>
+                         </property>
+                         <property name="topMargin">
+                          <number>0</number>
+                         </property>
+                        </layout>
+                       </item>
+                      </layout>
+                     </widget>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
                </layout>
               </widget>
              </item>
@@ -823,6 +876,52 @@
                    </widget>
                   </item>
                  </layout>
+                </item>
+                <item>
+                 <widget class="QGroupBox" name="groupBox_45">
+                  <property name="title">
+                   <string>Sessions</string>
+                  </property>
+                  <property name="flat">
+                   <bool>true</bool>
+                  </property>
+                  <layout class="QVBoxLayout" name="verticalLayout_52">
+                   <item>
+                    <widget class="QScrollArea" name="scrollArea_9">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>150</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                     <property name="widgetResizable">
+                      <bool>true</bool>
+                     </property>
+                     <widget class="QWidget" name="scrollAreaWidgetContents_9">
+                      <property name="geometry">
+                       <rect>
+                        <x>0</x>
+                        <y>0</y>
+                        <width>134</width>
+                        <height>20</height>
+                       </rect>
+                      </property>
+                      <layout class="QHBoxLayout" name="horizontalLayout_2">
+                       <item>
+                        <layout class="QVBoxLayout" name="sessions_plot"/>
+                       </item>
+                      </layout>
+                     </widget>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
                 </item>
                </layout>
               </widget>
@@ -1217,6 +1316,11 @@
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="new_config_menu_btn"/>
+    <addaction name="save_config_menu_btn"/>
+    <addaction name="save_config_as_menu_btn"/>
+    <addaction name="load_config_menu_btn"/>
+    <addaction name="separator"/>
     <addaction name="add_group_menu_btn"/>
     <addaction name="separator"/>
     <addaction name="exit_menu_btn"/>
@@ -1244,6 +1348,35 @@
   <action name="actionManual">
    <property name="text">
     <string>Manual</string>
+   </property>
+  </action>
+  <action name="save_config_menu_btn">
+   <property name="text">
+    <string>Save workspace</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="new_config_menu_btn">
+   <property name="text">
+    <string>New configuration</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="load_config_menu_btn">
+   <property name="text">
+    <string>Open workspace</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="save_config_as_menu_btn">
+   <property name="text">
+    <string>Save workspace as...</string>
    </property>
   </action>
  </widget>

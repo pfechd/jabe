@@ -59,6 +59,10 @@ class MainWindow(QMainWindow):
         self.ui.create_stimuli_individual_btn.clicked.connect(self.create_stimuli_button_pressed)
         self.ui.create_stimuli_group_btn.clicked.connect(self.create_stimuli_button_pressed)
         self.ui.add_group_menu_btn.triggered.connect(self.add_group_pressed)
+        self.ui.load_config_menu_btn.triggered.connect(self.load_configuration_button_pressed)
+        self.ui.save_config_menu_btn.triggered.connect(self.save_configuration)
+        self.ui.save_config_as_menu_btn.triggered.connect(self.save_configuration_as)
+        self.ui.new_config_menu_btn.triggered.connect(self.create_new_configuration)
         self.ui.add_group_btn.clicked.connect(self.add_group_pressed)
         self.ui.exit_menu_btn.triggered.connect(self.exit_button_pressed)
         self.ui.add_individual_btn.clicked.connect(self.add_item_clicked)
@@ -96,10 +100,13 @@ class MainWindow(QMainWindow):
         self.individual_buttons = [self.ui.extract_session_btn, self.ui.add_session_epi_btn,
                                    self.ui.add_session_mask_btn, self.ui.add_session_stimuli_btn]
 
+        self.current_config_path = ""
         self.ui.tree_widget.setColumnWidth(0, 200)
         self.groups = []
+        
         self.load_configuration()
         self.plot_settings_changed()
+        self.update_gui()
 
     def check_paths(self, configuration, type = None):
         missing_paths = []
@@ -127,12 +134,29 @@ class MainWindow(QMainWindow):
         return missing_paths
 
     def closeEvent(self, event):
-        self.save_configuration()
+        if self.groups != []:
+            button = QMessageBox.question(self, "Save",
+                                          "Do you want to save the current workspace before quitting?",
+                                          QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
+            if button == QMessageBox.Cancel:
+                event.ignore()
+            if button == QMessageBox.Yes:
+                self.save_configuration()
+
+    def save_configuration_as(self):
+        config_file = QFileDialog.getSaveFileName(self, "", "", ".json")
+        if config_file[0]:
+            self.current_config_path = config_file[0] + config_file[1]
+            self.save_configuration()
 
     def save_configuration(self):
         """
         Save configuration file (configuration.json).
         """
+        config_filename = self.current_config_path
+        if config_filename == "":
+            self.save_configuration_as()
+            return
 
         if self.ui.tree_widget.selectedItems():
             selected = self.ui.tree_widget.selectedItems()[0]
@@ -152,8 +176,6 @@ class MainWindow(QMainWindow):
             'groups': [group.get_configuration() for group in self.groups],
             'current': current
         }
-
-        config_filename = 'configuration.json'
 
         if hasattr(sys, 'frozen'):
             dir_path = os.path.dirname(os.path.realpath(sys.argv[0]))
@@ -181,12 +203,28 @@ class MainWindow(QMainWindow):
         with open(config_path, 'w') as f:
             json.dump(configuration, f, indent=4)
 
+    def load_configuration_button_pressed(self):
+        if self.groups != []:
+            button = QMessageBox.question(
+                self, "Save",
+                "Do you want to save the current workspace before loading?",
+                QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
+            if button == QMessageBox.Cancel:
+                return
+            if button == QMessageBox.Yes:
+                self.save_configuration()
+
+        config_path = QFileDialog.getOpenFileName(self, 'Open file', "", "*.json")
+        if config_path[0]:
+            self.current_config_path = config_path[0]
+            self.load_configuration()
+
     def load_configuration(self):
         """
         Load configuration file (configuration.json).
         """
 
-        config_filename = 'configuration.json'
+        config_filename = self.current_config_path
 
         if hasattr(sys, 'frozen'):
             dir_path = os.path.dirname(os.path.realpath(sys.argv[0]))
@@ -220,6 +258,10 @@ class MainWindow(QMainWindow):
                 QMessageBox.warning(self, "File error", "The following files are missing and will not be loaded:\n" +
                                     "\n".join(missing_paths))
 
+
+            self.ui.tree_widget.clear()
+            self.groups = []
+
             for group_configuration in configuration['groups']:
                 group_tree_item = GroupTreeItem()
                 self.ui.tree_widget.addTopLevelItem(group_tree_item)
@@ -247,6 +289,22 @@ class MainWindow(QMainWindow):
 
             self.update_gui()
 
+    def create_new_configuration(self):
+        if self.groups != []:
+            button = QMessageBox.question(
+                self, "Save",
+                "Do you want to save the current workspace before creating a new one?",
+                QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
+            if button == QMessageBox.Cancel:
+                return
+            if button == QMessageBox.Yes:
+                self.save_configuration()
+
+        self.current_config_path = ""
+        self.groups = []
+        self.ui.tree_widget.clear()
+        self.ui.stackedWidget.setCurrentIndex(2)
+
     def add_group_pressed(self):
         current_row = len(self.groups)
         name = 'Group ' + str(current_row + 1)
@@ -262,7 +320,7 @@ class MainWindow(QMainWindow):
     def add_item_clicked(self):
         if self.ui.tree_widget.selectedItems():
             if isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
-                self.ui.tree_widget.selectedItems()[0].add_child()
+                self.ui.tree_widget.selectedItems()[0].add_new_individual()
             elif isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
                 self.ui.tree_widget.selectedItems()[0].add_new_session()
 
