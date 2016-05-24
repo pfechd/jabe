@@ -15,7 +15,8 @@ from stimuli import Stimuli
 from tree_items.grouptreeitem import GroupTreeItem
 from tree_items.individualtreeitem import IndividualTreeItem
 from tree_items.sessiontreeitem import SessionTreeItem
-
+from createmaskwindow import CreateMaskWindow
+from namedialog import NameDialog
 
 try:
     import Cocoa    # Only used on Mac OS when building .app
@@ -46,6 +47,7 @@ class MainWindow(QMainWindow):
         self.ui.add_session_anatomy_btn.clicked.connect(self.anatomy_button_pressed)
         self.ui.add_session_epi_btn.clicked.connect(self.brain_button_pressed)
         self.ui.add_session_mask_btn.clicked.connect(self.mask_button_pressed)
+        self.ui.create_session_mask_btn.clicked.connect(self.create_mask_button_pressed)
         self.ui.add_session_stimuli_btn.clicked.connect(self.stimuli_button_pressed)
         self.ui.create_session_stimuli_btn.clicked.connect(self.create_stimuli_button_pressed)
         self.ui.add_group_menu_btn.triggered.connect(self.add_group_pressed)
@@ -74,14 +76,10 @@ class MainWindow(QMainWindow):
 
         plot_buttons = [self.ui.global_normalization_individual_btn, self.ui.local_normalization_individual_btn,
                    self.ui.percent_individual_btn, self.ui.subtract_individual_btn,
-                   self.ui.checkbox_amplitude_individual, self.ui.checkbox_peak_individual,
-                   self.ui.checkbox_sem_individual, self.ui.checkbox_fwhm_individual,
                    self.ui.global_normalization_session_btn, self.ui.local_normalization_session_btn,
-                   self.ui.percent_session_btn, self.ui.subtract_session_btn, self.ui.checkbox_amplitude_session,
-                   self.ui.checkbox_peak_session, self.ui.checkbox_sem_session, self.ui.checkbox_fwhm_session,
+                   self.ui.percent_session_btn, self.ui.subtract_session_btn,
                    self.ui.global_normalization_group_btn, self.ui.local_normalization_group_btn,
-                   self.ui.percent_group_btn, self.ui.subtract_group_btn, self.ui.checkbox_amplitude_group,
-                   self.ui.checkbox_peak_group, self.ui.checkbox_sem_group, self.ui.checkbox_fwhm_group]
+                   self.ui.percent_group_btn, self.ui.subtract_group_btn]
 
         for button in plot_buttons:
             button.clicked.connect(self.plot_settings_changed)
@@ -338,13 +336,13 @@ class MainWindow(QMainWindow):
                 button.setEnabled(False)
 
     def calculate_button_pressed(self):
-        """ Callback function, run when the calculate button is pressed."""
+        """ Callback function run when the calculate button is pressed."""
         # Make sure to update plot settings at least once before running
         self.plot_settings_changed()
         CustomPlot(self, self.ui.tree_widget.selectedItems()[0])
 
     def brain_button_pressed(self):
-        """ Callback function, run when the choose brain button is pressed."""
+        """ Callback function run when the choose brain button is pressed."""
         file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii*)")
         if file_name[0]:
             self.load_brain(file_name[0])
@@ -353,7 +351,7 @@ class MainWindow(QMainWindow):
         self.update_gui()
 
     def anatomy_button_pressed(self):
-        """ Callback function, run when the choose anatomy button is pressed."""
+        """ Callback function run when the choose anatomy button is pressed."""
         file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii*)")
         if file_name[0]:
             self.load_anatomy(file_name[0])
@@ -362,7 +360,7 @@ class MainWindow(QMainWindow):
         self.update_gui()
 
     def mask_button_pressed(self):
-        """ Callback function, run when the choose mask button is pressed."""
+        """ Callback function run when the choose mask button is pressed."""
         file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii*)")
         if file_name[0]:
             self.load_mask(file_name[0])
@@ -370,8 +368,17 @@ class MainWindow(QMainWindow):
             print 'Mask not chosen'
         self.update_gui()
 
+    def create_mask_button_pressed(self):
+        """ Callback function run when the create mask button is pressed."""
+        # Make sure EPI-file is choosen before running
+        if self.ui.tree_widget.selectedItems()[0].brain:
+            CreateMaskWindow(self, self.ui.tree_widget.selectedItems()[0].brain.brain_file)
+        else:
+            QMessageBox.warning(self, "Warning", "You have not chosen an EPI-image. Please choose an EPI-image.")
+        self.update_gui()
+
     def stimuli_button_pressed(self):
-        """ Callback function, run when the choose stimuli button is pressed."""
+        """ Callback function run when the choose stimuli button is pressed."""
         file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.mat)")
         if file_name[0]:
             self.load_stimuli(file_name[0])
@@ -380,7 +387,7 @@ class MainWindow(QMainWindow):
         self.update_gui()
 
     def create_stimuli_button_pressed(self):
-        """ Callback function, run when the create simuli button is pressed."""
+        """ Callback function run when the create simuli button is pressed."""
         
         self.stimuli_window = StimuliWindow(self)
         
@@ -423,10 +430,10 @@ class MainWindow(QMainWindow):
     def update_gui(self):
         self.update_buttons()
         self.update_text()
-        self.update_stackedwidget()
+        self.update_stacked_widget()
         self.ui.tree_widget.update()
 
-    def update_stackedwidget(self):
+    def update_stacked_widget(self):
         if self.ui.tree_widget.selectedItems():
             if isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
                 self.ui.stackedWidget.setCurrentIndex(2)
@@ -442,19 +449,12 @@ class MainWindow(QMainWindow):
                     self.ui.percent_individual_btn.setChecked(True)
                 else:
                     self.ui.subtract_individual_btn.setChecked(True)
-                self.ui.checkbox_amplitude_individual.setChecked(individual.get_setting('amplitude'))
-                self.ui.checkbox_peak_individual.setChecked(individual.get_setting('peak'))
-                self.ui.checkbox_sem_individual.setChecked(individual.get_setting('sem'))
-                self.ui.checkbox_fwhm_individual.setChecked(individual.get_setting('fwhm'))
 
                 # Add overview tree in individual panel
                 self.ui.sessions_overview_tree.clear()
                 self.ui.sessions_overview_tree.addTopLevelItems(individual.get_overview_tree())
 
                 # Add checkboxes for individuals in individual panel
-                self.clear_layout(self.ui.sessions_plot)
-                individual.add_sessions_boxes(self.ui.sessions_plot)
-                self.ui.sessions_plot.insertSpacerItem(-1, QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
             elif isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
                 self.ui.stackedWidget.setCurrentIndex(3)
@@ -470,10 +470,6 @@ class MainWindow(QMainWindow):
                     self.ui.percent_session_btn.setChecked(True)
                 else:
                     self.ui.subtract_session_btn.setChecked(True)
-                self.ui.checkbox_amplitude_session.setChecked(session.get_setting('amplitude'))
-                self.ui.checkbox_peak_session.setChecked(session.get_setting('peak'))
-                self.ui.checkbox_sem_session.setChecked(session.get_setting('sem'))
-                self.ui.checkbox_fwhm_session.setChecked(session.get_setting('fwhm'))
             else:
                 self.ui.stackedWidget.setCurrentIndex(0)
                 group = self.ui.tree_widget.selectedItems()[0]
@@ -488,19 +484,12 @@ class MainWindow(QMainWindow):
                     self.ui.percent_group_btn.setChecked(True)
                 else:
                     self.ui.subtract_group_btn.setChecked(True)
-                self.ui.checkbox_amplitude_group.setChecked(group.get_setting('amplitude'))
-                self.ui.checkbox_peak_group.setChecked(group.get_setting('peak'))
-                self.ui.checkbox_sem_group.setChecked(group.get_setting('sem'))
-                self.ui.checkbox_fwhm_group.setChecked(group.get_setting('fwhm'))
 
                 # Add overview tree in group panel
                 self.ui.individual_overview_tree.clear()
                 self.ui.individual_overview_tree.addTopLevelItems(group.get_overview_tree())
 
                 # Add checkboxes for individuals in group panel
-                self.clear_layout(self.ui.individuals_plot)
-                group.add_individuals_boxes(self.ui.individuals_plot)
-                self.ui.individuals_plot.insertSpacerItem(-1, QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
     def update_text(self):
         if self.ui.tree_widget.selectedItems():
@@ -558,26 +547,14 @@ class MainWindow(QMainWindow):
                 individual = self.ui.tree_widget.selectedItems()[0]
                 individual.plot_settings['global'] = self.ui.global_normalization_individual_btn.isChecked()
                 individual.plot_settings['percent'] = self.ui.percent_individual_btn.isChecked()
-                individual.plot_settings['amplitude'] = self.ui.checkbox_amplitude_individual.isChecked()
-                individual.plot_settings['peak'] = self.ui.checkbox_peak_individual.isChecked()
-                individual.plot_settings['sem'] = self.ui.checkbox_sem_individual.isChecked()
-                individual.plot_settings['fwhm'] = self.ui.checkbox_fwhm_individual.isChecked()
             elif isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
                 session = self.ui.tree_widget.selectedItems()[0]
                 session.plot_settings['global'] = self.ui.global_normalization_session_btn.isChecked()
                 session.plot_settings['percent'] = self.ui.percent_session_btn.isChecked()
-                session.plot_settings['amplitude'] = self.ui.checkbox_amplitude_session.isChecked()
-                session.plot_settings['peak'] = self.ui.checkbox_peak_session.isChecked()
-                session.plot_settings['sem'] = self.ui.checkbox_sem_session.isChecked()
-                session.plot_settings['fwhm'] = self.ui.checkbox_fwhm_session.isChecked()
             else:
                 group = self.ui.tree_widget.selectedItems()[0]
                 group.plot_settings['global'] = self.ui.global_normalization_group_btn.isChecked()
                 group.plot_settings['percent'] = self.ui.percent_group_btn.isChecked()
-                group.plot_settings['amplitude'] = self.ui.checkbox_amplitude_group.isChecked()
-                group.plot_settings['peak'] = self.ui.checkbox_peak_group.isChecked()
-                group.plot_settings['sem'] = self.ui.checkbox_sem_group.isChecked()
-                group.plot_settings['fwhm'] = self.ui.checkbox_fwhm_group.isChecked()
 
     def clear_layout(self, layout):
         while layout.count():
