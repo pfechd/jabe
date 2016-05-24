@@ -367,7 +367,7 @@
                   <item row="3" column="0">
                    <widget class="QLabel" name="tr_label_group">
                     <property name="text">
-                     <string>Tr</string>
+                     <string>Time resolution</string>
                     </property>
                     <property name="alignment">
                      <set>Qt::AlignCenter</set>
@@ -853,7 +853,7 @@
                   <item row="3" column="0">
                    <widget class="QLabel" name="tr_label_ind">
                     <property name="text">
-                     <string>Tr</string>
+                     <string>Time resolution</string>
                     </property>
                     <property name="alignment">
                      <set>Qt::AlignCenter</set>
@@ -1403,7 +1403,7 @@
                   <item row="7" column="0">
                    <widget class="QLabel" name="tr_label_session">
                     <property name="text">
-                     <string>Tr</string>
+                     <string>Time resolution</string>
                     </property>
                     <property name="alignment">
                      <set>Qt::AlignCenter</set>
