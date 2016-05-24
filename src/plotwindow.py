@@ -85,14 +85,6 @@ class CustomPlot(QDialog):
         if children and len(children) > 1:
             self.ui.several_responses_btn.setEnabled(True)
 
-        self.ui.checkBox_peak.setChecked(self.session.get_setting('peak'))
-
-        self.ui.checkBox_fwhm.setChecked(self.session.get_setting('fwhm'))
-
-        self.ui.checkBox_amp.setChecked(self.session.get_setting('amplitude'))
-
-        self.ui.checkBox_sem.setChecked(self.session.get_setting('sem'))
-
         # Move the subplot to make space for the legend
         self.fig.subplots_adjust(right=0.8)
 
