@@ -15,7 +15,8 @@ from stimuli import Stimuli
 from tree_items.grouptreeitem import GroupTreeItem
 from tree_items.individualtreeitem import IndividualTreeItem
 from tree_items.sessiontreeitem import SessionTreeItem
-
+from createmaskwindow import CreateMaskWindow
+from namedialog import NameDialog
 
 try:
     import Cocoa    # Only used on Mac OS when building .app
@@ -46,6 +47,7 @@ class MainWindow(QMainWindow):
         self.ui.add_session_anatomy_btn.clicked.connect(self.anatomy_button_pressed)
         self.ui.add_session_epi_btn.clicked.connect(self.brain_button_pressed)
         self.ui.add_session_mask_btn.clicked.connect(self.mask_button_pressed)
+        self.ui.create_session_mask_btn.clicked.connect(self.create_mask_button_pressed)
         self.ui.add_session_stimuli_btn.clicked.connect(self.stimuli_button_pressed)
         self.ui.create_session_stimuli_btn.clicked.connect(self.create_stimuli_button_pressed)
         self.ui.add_group_menu_btn.triggered.connect(self.add_group_pressed)
@@ -212,7 +214,6 @@ class MainWindow(QMainWindow):
                 QMessageBox.warning(self, "File error", "The following files are missing and will not be loaded:\n" +
                                     "\n".join(missing_paths))
 
-
             for group_configuration in configuration['groups']:
                 group_tree_item = GroupTreeItem()
                 self.ui.tree_widget.addTopLevelItem(group_tree_item)
@@ -284,13 +285,13 @@ class MainWindow(QMainWindow):
                 button.setEnabled(False)
 
     def calculate_button_pressed(self):
-        """ Callback function, run when the calculate button is pressed."""
+        """ Callback function run when the calculate button is pressed."""
         # Make sure to update plot settings at least once before running
         self.plot_settings_changed()
         CustomPlot(self, self.ui.tree_widget.selectedItems()[0])
 
     def brain_button_pressed(self):
-        """ Callback function, run when the choose brain button is pressed."""
+        """ Callback function run when the choose brain button is pressed."""
         file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii*)")
         if file_name[0]:
             self.load_brain(file_name[0])
@@ -299,7 +300,7 @@ class MainWindow(QMainWindow):
         self.update_gui()
 
     def anatomy_button_pressed(self):
-        """ Callback function, run when the choose anatomy button is pressed."""
+        """ Callback function run when the choose anatomy button is pressed."""
         file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii*)")
         if file_name[0]:
             self.load_anatomy(file_name[0])
@@ -308,7 +309,7 @@ class MainWindow(QMainWindow):
         self.update_gui()
 
     def mask_button_pressed(self):
-        """ Callback function, run when the choose mask button is pressed."""
+        """ Callback function run when the choose mask button is pressed."""
         file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii*)")
         if file_name[0]:
             self.load_mask(file_name[0])
@@ -316,8 +317,17 @@ class MainWindow(QMainWindow):
             print 'Mask not chosen'
         self.update_gui()
 
+    def create_mask_button_pressed(self):
+        """ Callback function run when the create mask button is pressed."""
+        # Make sure EPI-file is choosen before running
+        if self.ui.tree_widget.selectedItems()[0].brain:
+            CreateMaskWindow(self, self.ui.tree_widget.selectedItems()[0].brain.brain_file)
+        else:
+            QMessageBox.warning(self, "Warning", "You have not chosen an EPI-image. Please choose an EPI-image.")
+        self.update_gui()
+
     def stimuli_button_pressed(self):
-        """ Callback function, run when the choose stimuli button is pressed."""
+        """ Callback function run when the choose stimuli button is pressed."""
         file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.mat)")
         if file_name[0]:
             self.load_stimuli(file_name[0])
@@ -326,7 +336,7 @@ class MainWindow(QMainWindow):
         self.update_gui()
 
     def create_stimuli_button_pressed(self):
-        """ Callback function, run when the create simuli button is pressed."""
+        """ Callback function run when the create simuli button is pressed."""
         
         self.stimuli_window = StimuliWindow(self)
         
@@ -369,10 +379,10 @@ class MainWindow(QMainWindow):
     def update_gui(self):
         self.update_buttons()
         self.update_text()
-        self.update_stackedwidget()
+        self.update_stacked_widget()
         self.ui.tree_widget.update()
 
-    def update_stackedwidget(self):
+    def update_stacked_widget(self):
         if self.ui.tree_widget.selectedItems():
             if isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
                 self.ui.stackedWidget.setCurrentIndex(2)
