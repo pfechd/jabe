@@ -95,16 +95,11 @@ class CustomPlot(QDialog):
         else:
             self.ui.several_responses_btn.hide()
 
-        self.ui.checkBox_peak.setChecked(self.session.get_setting('peak'))
-
-        self.ui.checkBox_fwhm.setChecked(self.session.get_setting('fwhm'))
-
-        self.ui.checkBox_amp.setChecked(self.session.get_setting('amplitude'))
-
-        self.ui.checkBox_sem.setChecked(self.session.get_setting('sem'))
-
         self.ui.toolButton_add_subplot.clicked.connect(self.add_subplot)
         self.ui.toolButton_rem_subplot.clicked.connect(self.remove_subplot)
+
+        # Move the subplot to make space for the legend
+        self.fig.subplots_adjust(right=0.8)
 
         self.canvas.mpl_connect('button_press_event', self.click_plot)
         self.fig.tight_layout(pad=2.0)
@@ -297,7 +292,6 @@ class CustomPlot(QDialog):
             self.ui.fwhm_label.show()
         else:
             self.ui.fwhm_label.hide()
-
         self.canvas.draw()
                 
     def replot(self):
@@ -326,6 +320,7 @@ class CustomPlot(QDialog):
                     peak.remove()
                     self.ui.peak_label.hide()
                     self.ui.checkBox_peak.setChecked(False)
+            self.peak_time = []
 
     def remove_sem(self):
         if self.sem:
@@ -347,6 +342,7 @@ class CustomPlot(QDialog):
                     amp.remove()
                     self.ui.amp_label.hide()
                     self.ui.checkBox_amp.setChecked(False)
+            self.amp = []
 
     def remove_fwhm(self):
         if self.fwhm:
@@ -433,10 +429,10 @@ class CustomPlot(QDialog):
             self.current_ax.relim()
             sem = self.session.get_sem()
             self.sem.append(self.current_ax.errorbar(x, mean, color=self.get_color(), yerr=sem[self.ui.stimuliBox.currentText()]))
-            self.canvas.draw()
+            self.sem =self.ax.errorbar(x, mean, yerr=sem[self.ui.stimuliBox.currentText()])
         else:
             self.remove_sem()
-            self.canvas.draw()
+        self.canvas.draw()
 
     def plot_amplitude(self):
         """
@@ -479,6 +475,7 @@ class CustomPlot(QDialog):
         else:
             self.remove_amplitude()
             self.ui.amp_label.hide()
+        self.canvas.draw()
 
         self.canvas.draw()
 
@@ -524,6 +521,7 @@ class CustomPlot(QDialog):
             self.ui.peak_label.show()
         else:
             self.ui.peak_label.hide()
+        self.canvas.draw()
 
         self.canvas.draw()
 
