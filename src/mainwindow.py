@@ -358,8 +358,6 @@ class MainWindow(QMainWindow):
         file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii*)")
         if file_name[0]:
             self.load_brain(file_name[0])
-        else:
-            print 'File not chosen'
         self.update_gui()
 
     def anatomy_button_pressed(self):
@@ -367,8 +365,6 @@ class MainWindow(QMainWindow):
         file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii*)")
         if file_name[0]:
             self.load_anatomy(file_name[0])
-        else:
-            print 'File not chosen'
         self.update_gui()
 
     def mask_button_pressed(self):
@@ -376,8 +372,6 @@ class MainWindow(QMainWindow):
         file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii*)")
         if file_name[0]:
             self.load_mask(file_name[0])
-        else:
-            print 'Mask not chosen'
         self.update_gui()
 
     def create_mask_button_pressed(self):
@@ -394,8 +388,6 @@ class MainWindow(QMainWindow):
         file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.mat)")
         if file_name[0]:
             self.load_stimuli(file_name[0])
-        else:
-            print 'Stimuli not chosen'
         self.update_gui()
 
     def create_stimuli_button_pressed(self):
