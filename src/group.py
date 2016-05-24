@@ -28,6 +28,12 @@ class Group(object):
 
         # Result of calculations are kept here
         self.responses = {}
+        self.mean_responses = {}
+        self.sem_responses = {}
+        self.smoothed_responses = None
+        self.smoothing_factor = None
+        self.x_axis = None
+        self.peaks = None
 
         if configuration:
             self.load_configuration(configuration)
@@ -45,39 +51,106 @@ class Group(object):
         else:
             return all([stimuli, mask])
 
-    @staticmethod
-    def calculate_fwhm(x, y, smoothing):
+    def get_fwhm(self, stimuli, factor):
         """
-        Returns two positions showing the full width half maximum(fwhm) of a given array y.
+        Returns a dictionary with stimuli values as keys and x posisitions as values
 
-        Calculates two positions r1 and r2 on the x axis where y'[r1] and y'[r2]
-        are equal to half of the maximum value of y where y' is a smoothed version of y.
+        The x posisions are two positions on the x-axis that show where on the y axis
+        the smoothed response with the stimuli value is at half its maximum value.
+        The min value used is the value on the y axis when x equals 0.
+        The max values is the position returend by self.get_peak.
+        Raises Exception if no peak exists in the span or if not enough data points are
+        avaliable for smoothing.
 
-        :param x: Time axis
-        :param y: Value axis, for which fwhm is calculated
-        :param smoothing: float. Smoothing factor for y. 0 gives no smoothing.
-        :return: Two positions on the x axis.
+        :param stimuli: stimuli value for which fwhm is calculated.
+        'All' means fwhm is calculated for all stimuli.
+        :param factor: smoothing factor used for calculating fwhm.
+        :return: Dictionary with stimuli values as keys and tuples with two floats as value
         """
 
-        half_maximum = (np.max(y) + np.min(y)) / 2
-        spline = UnivariateSpline(x, y - half_maximum, s=smoothing)
-        roots = spline.roots()
-        try:
-            assert len(roots) == 2  # Higher smoothing factor required
-        except AssertionError:
-            print "Smoothed function contains ", len(roots), " roots, 2 required"
-            return 0, 1
-        r1, r2 = roots
-        # DEBUG
-        #plt.plot(x, spline(x) + half_maximum)
-        return r1, r2
+        if not self.smoothed_responses:
+            self.get_smooth(factor, splice=True)
+        peaks = self.get_peaks(factor, smooth=True)
 
-    @staticmethod
-    def calculate_amplitude(x, y, smoothing):
+        def calculate_fwhm(stimuli):
+            """
+            Returns a tuple with positions on the x axis
+            Assumes that stimuli exists in self.smooth_responses
+            """
+            top = peaks[stimuli][1]
+            low = float(self.smoothed_responses[stimuli](0))
+            half_max = (top - low)/2
+            y = self.mean_responses[stimuli]
+            spline = UnivariateSpline(self.x_axis, y - half_max - low, s=factor)
+            roots = spline.roots()
+            if np.any(roots):
+                for i in range(1, len(roots)):
+                    if roots[i] > peaks[stimuli][0]:
+                        break
+                roots = (roots[i - 1], roots[i])
+            return roots
 
-        spline = UnivariateSpline(x, y, s=smoothing)  # Remove spline if smoothing is unnecessary
-        max_amp = np.argmax(spline(x))
-        return max_amp, spline(x)[max_amp]
+        if stimuli == "All":
+            res = {}
+            for stimuli in self.smoothed_responses.keys():
+                res[stimuli] = calculate_fwhm(stimuli)
+            return res
+        else:
+            return {stimuli: calculate_fwhm(stimuli)}
+
+    def get_peaks(self, factor=0, smooth=False):
+        """
+        Return the coordinates the peak of every stimuli value in the group.
+
+        :param factor: Smoothing factor used if peak of smoothed curve is used.
+        :param smooth: Whether the peak from the smoothed curve or regular curve
+        should be returned.
+        If True, this function can raise an exception if a smoothed curve has no peak.
+        """
+        if not smooth:
+            peaks = {}
+            for stimuli_val, curve in self.mean_responses.iteritems():
+                max = np.argmax(curve)
+                pos = max * self.get_tr(), curve[max]
+                peaks[stimuli_val] = pos
+            return peaks
+
+        if factor != self.smoothing_factor:
+            self.get_smooth(factor, splice=False)
+
+        if self.peaks:
+            return self.peaks
+        self.calculate_smooth_peaks()
+        return self.peaks
+
+    def calculate_smooth_peaks(self):
+        """
+        Calculate peaks of every curve in self.smoothed_responses and 
+        stores them in self.peaks
+
+        Raises an exception if a curve has no peak.
+        """
+
+        def calc_smooth_peak(curve):
+            """
+            Calculate the peak of given curve>
+            Raises an exception if the curve has no peak.
+            """
+            roots = curve.derivative().roots()
+            valid_roots = filter(
+                    lambda x: x > self.x_axis[0] and x < self.x_axis[-1], roots)
+            if valid_roots < 1:
+                raise Exception
+            top_root = valid_roots[np.argmax(curve(valid_roots))]
+            return top_root, float(curve(top_root))
+
+        self.peaks = {}
+
+        for stimuli_val, curve in self.smoothed_responses.iteritems():
+            try:
+                self.peaks[stimuli_val] = calc_smooth_peak(curve)
+            except Exception:
+                raise Exception("Peak error", str(stimuli_val) + " has no valid peak")
 
     def load_anatomy(self, path):
         try:
@@ -162,7 +235,19 @@ class Group(object):
         else:
             return self._aggregate(percentage, global_, mask, stimuli)
 
-    def calculate_mean(self, percentage = None, global_ = None):
+    def get_mean(self, percentage=None, global_=None):
+        if percentage is None:
+            percentage = self.get_setting('percent')
+        if global_ is None:
+            global_ = self.get_setting('global')
+
+        settings_changed = self.settings_changed(percentage, global_,
+                                                 self.mask, self.stimuli)
+        if settings_changed or not self.mean_responses:
+            self.mean_responses = self.calculate_mean(percentage, global_)
+        return self.mean_responses
+
+    def calculate_mean(self, percentage, global_):
         """
         Calculate the mean of every response grouped by stimuli type
 
@@ -170,10 +255,6 @@ class Group(object):
                  is the vector containing the mean value for the given time
                  frame.
         """
-        if percentage is None:
-            percentage = self.get_setting('percent')
-        if global_ is None:
-            global_ = self.get_setting('global')
 
         responses = self.aggregate(percentage, global_)
         mean_responses = {}
@@ -190,12 +271,68 @@ class Group(object):
             mean_responses[stimuli_type] = response_mean
         return mean_responses
 
-    def calculate_sem(self, percentage = None, global_ = None):
-        """ Calculate the standard error of the mean (SEM) of the response """
+    def get_smooth(self, factor, splice=False):
+        """
+        Returnes the smoothed responses in the group.
+
+        Raises an Exception if a curve has too few data points for smoothing.
+        :param factor: smoothing factor used
+        :param splice: Whether splice data shoud be returned or samples from
+        the spiced data on the x values in self.x_axis
+        :return: A dictionary with stimuli values as keys and curves as values.
+        If splice = False curves are of type numpy.array. If splice = True
+        curves are of type scipy.interpolate.UnivariateSpline
+        """
+        if not self.smoothed_responses:
+            self.smoothing_factor = factor
+            self.peaks = None
+            self.calculate_smooth()
+        if factor != self.smoothing_factor:
+            self.smoothing_factor = factor
+            self.peaks = None
+            for stim, curve in self.smoothed_responses.iteritems():
+                curve.set_smoothing_factor(s=factor)
+        if splice:
+            return self.smoothed_responses
+        smoothed_curves = {}
+        for key in self.smoothed_responses:
+            smoothed_curves[key] = self.smoothed_responses[key](self.x_axis)
+        return smoothed_curves
+
+    def calculate_smooth(self):
+        """
+        Calculates smoothed curves for each stimuli value in the group and 
+        stores them in self.smoothed_responses.
+        Raises Exception if a curve has too few data points for smoothing.
+        """
+        responses = self.get_mean()
+        self.smoothed_responses = {}
+        for key in responses.keys():
+            response = responses[key]
+            try:
+                self.smoothed_responses[key] = UnivariateSpline(
+                        self.x_axis, response, k=4, s=self.smoothing_factor)
+            except:
+                raise Exception("Smoothing error", 
+                        "Not enough data points for smoothing")
+
+    def get_x_axis(self):
+        return self.x_axis
+
+    def get_sem(self, percentage=None, global_=None):
         if percentage is None:
             percentage = self.get_setting('percent')
         if global_ is None:
             global_ = self.get_setting('global')
+
+        settings_changed = self.settings_changed(percentage, global_,
+                                                 self.mask, self.stimuli)
+        if settings_changed or not self.sem_responses:
+            self.sem_responses = self.calculate_sem(percentage, global_)
+        return self.sem_responses
+
+    def calculate_sem(self, percentage, global_):
+        """ Calculate the standard error of the mean (SEM) of the response """
 
         responses = self.aggregate(percentage, global_)
         responses_sem = {}
@@ -239,6 +376,12 @@ class Group(object):
         self.responses = {}
         min_width = float('inf')
 
+        # Invalidate cached mean and sem
+        self.sem_responses = None
+        self.mean_responses = None
+        self.smoothed_responses = None
+        self.peaks = None
+
         for child in self.children + self.sessions:
             # If the child doesn't have the files loaded, skip it.
             if not child.ready_for_calculation():
@@ -254,6 +397,8 @@ class Group(object):
                     self.responses[intensity] = np.concatenate((responses, data))
                 else:
                     self.responses[intensity] = data
+
+        self.x_axis = np.array(list(range(min_width))) * self.get_tr()
 
         # Set all data to match the length of the least wide response
         for intensity, data in self.responses.iteritems():
