@@ -434,8 +434,9 @@ class MainWindow(QMainWindow):
     def tr_changed(self):
         if self.ui.tree_widget.selectedItems():
             tr = self.get_tr()
-            if tr is not None and self.ui.tree_widget.selectedItems()[0].stimuli:
+            if self.ui.tree_widget.selectedItems()[0].stimuli:
                 self.ui.tree_widget.selectedItems()[0].stimuli.tr = tr
+            self.ui.tree_widget.selectedItems()[0].tr = tr
 
     def create_stimuli_button_pressed(self):
         """ Callback function, run when the create simuli button is pressed."""
@@ -488,6 +489,7 @@ class MainWindow(QMainWindow):
                 individual = self.ui.tree_widget.selectedItems()[0]
                 self.ui.individual_name.setText(individual.text(0))
                 self.ui.individual_description.setText(individual.description)
+                self.ui.tr_value_ind.setValue(individual.tr)
 
                 if individual.get_setting('global'):
                     self.ui.global_normalization_individual_btn.setChecked(True)
@@ -511,6 +513,7 @@ class MainWindow(QMainWindow):
                 session = self.ui.tree_widget.selectedItems()[0]
                 self.ui.session_name.setText(session.text(0))
                 self.ui.session_description.setText(session.description)
+                self.ui.tr_value_session.setValue(session.tr)
 
                 if session.get_setting('global'):
                     self.ui.global_normalization_session_btn.setChecked(True)
@@ -525,6 +528,7 @@ class MainWindow(QMainWindow):
                 group = self.ui.tree_widget.selectedItems()[0]
                 self.ui.group_name.setText(group.text(0))
                 self.ui.group_description.setText(group.description)
+                self.ui.tr_value_group.setValue(group.tr)
 
                 if group.get_setting('global'):
                     self.ui.global_normalization_group_btn.setChecked(True)

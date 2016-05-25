@@ -39,6 +39,7 @@ class Group(object):
         self.mask = None
         self.stimuli = None
         self.anatomy = None
+        self.tr = 1
 
         self.children = []
         # TODO: Remove this
@@ -192,6 +193,7 @@ class Group(object):
             return "The times in the stimuli file are too long compared to the length of the EPI sequence"
         else:
             self.stimuli = temp_stimuli
+            self.stimuli.tr = self.tr
             return None
 
     def load_mask(self, path):
@@ -375,7 +377,8 @@ class Group(object):
             'description': self.description,
             'plot_settings': self.plot_settings,
             'individuals': [individual.get_configuration() for individual in self.children],
-            'sessions': [session.get_configuration() for session in self.sessions]
+            'sessions': [session.get_configuration() for session in self.sessions],
+            'tr': self.tr
         }
         if self.anatomy:
             configuration['anatomy_path'] = self.anatomy.path
@@ -387,7 +390,6 @@ class Group(object):
             configuration['stimuli'] = self.stimuli.get_configuration()
 
         return configuration
-
 
     def load_configuration(self, configuration):
         if 'name' in configuration:
@@ -402,6 +404,8 @@ class Group(object):
             self.description = configuration['description']
         if 'plot_settings' in configuration:
             self.plot_settings = configuration['plot_settings']
+        if 'tr' in configuration:
+            self.tr = configuration['tr']
 
     def add_session(self, session):
         self.sessions.append(session)
