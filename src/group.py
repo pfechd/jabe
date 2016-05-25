@@ -92,9 +92,9 @@ class Group(object):
             self.anatomy = temp_anatomy
             return None
 
-    def load_stimuli(self, path, tr):
+    def load_stimuli(self, path):
         try:
-            temp_stimuli = Stimuli(path, tr)
+            temp_stimuli = Stimuli(path)
         except:
             return "The file is not a proper stimuli file. It might be corrupted or in the wrong format"
         if self.brain and temp_stimuli.data[-1, 0] > self.brain.images:

@@ -68,6 +68,11 @@ class MainWindow(QMainWindow):
         self.ui.group_description.textChanged.connect(self.description_changed)
         self.ui.individual_description.textChanged.connect(self.description_changed)
 
+
+        self.ui.tr_value_group.valueChanged.connect(self.tr_changed)
+        self.ui.tr_value_ind.valueChanged.connect(self.tr_changed)
+        self.ui.tr_value_session.valueChanged.connect(self.tr_changed)
+
         plot_buttons = [self.ui.global_normalization_individual_btn, self.ui.local_normalization_individual_btn,
                    self.ui.percent_individual_btn, self.ui.subtract_individual_btn,
                    self.ui.checkbox_amplitude_individual, self.ui.checkbox_peak_individual,
@@ -319,14 +324,12 @@ class MainWindow(QMainWindow):
 
     def stimuli_button_pressed(self):
         """ Callback function, run when the choose stimuli button is pressed. """
-        tr = self.get_tr()
-        if tr:
-            file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.mat)")
-            if file_name[0]:
-                self.load_stimuli(file_name[0], tr)
-            else:
-                print 'Stimuli not chosen'
-            self.update_gui()
+        file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.mat)")
+        if file_name[0]:
+            self.load_stimuli(file_name[0])
+        else:
+            print 'Stimuli not chosen'
+        self.update_gui()
 
     def get_tr(self):
         """
@@ -335,26 +338,22 @@ class MainWindow(QMainWindow):
         :return: float value of tr
         """
         if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
-            tr = self.ui.tr_value_session.text()
+            tr = self.ui.tr_value_session.value()
         elif isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
-            tr = self.ui.tr_value_ind.text()
+            tr = self.ui.tr_value_ind.value()
         else:
-            tr = self.ui.tr_value_group.text()
+            tr = self.ui.tr_value_group.value()
 
-        try:
-            tr = float(tr)
-        except ValueError:
-            QMessageBox.warning(self, "ValueError", "Tr must be a number, ex. 1.2")
+        return tr
 
-        if tr > 0.0:
-            return tr
-        else:
-            QMessageBox.warning(self, "ValueError", "Tr must be greater than 0")
-            return None
+    def tr_changed(self):
+        if self.ui.tree_widget.selectedItems():
+            tr = self.get_tr()
+            if tr is not None and self.ui.tree_widget.selectedItems()[0].stimuli:
+                self.ui.tree_widget.selectedItems()[0].stimuli.tr = tr
 
     def create_stimuli_button_pressed(self):
         """ Callback function, run when the create simuli button is pressed."""
-        
         self.stimuli_window = StimuliWindow(self)
         
     def load_brain(self, path):
@@ -384,10 +383,10 @@ class MainWindow(QMainWindow):
                 self.mask_button_pressed()
             self.update_gui()
 
-    def load_stimuli(self, path, tr):
+    def load_stimuli(self, path):
         if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
             session = self.ui.tree_widget.selectedItems()[0]
-            error = session.load_stimuli(path, tr)
+            error = session.load_stimuli(path)
             if error:
                 QMessageBox.warning(self, "File error", error)
                 self.stimuli_button_pressed()

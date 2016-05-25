@@ -49,8 +49,7 @@ class Session(Group):
             self.load_mask(configuration['mask']['path'])
 
         if 'stimuli' in configuration:
-            self.load_stimuli(configuration['stimuli']['path'],
-                                   configuration['stimuli']['tr'])
+            self.load_stimuli(configuration['stimuli']['path'])
 
     def get_configuration(self):
         configuration = {}
@@ -95,7 +94,8 @@ class Session(Group):
         return any([self.did_percent_normalization != percentage,
                     self.did_global_normalization != global_,
                     self.used_mask != mask,
-                    self.used_stimuli != stimuli])
+                    self.used_stimuli != stimuli]) or \
+                    self.used_stimuli.tr != stimuli.tr
 
     def _aggregate(self, percentage, global_, mask, stimuli):
         """
