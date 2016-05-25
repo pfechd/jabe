@@ -15,10 +15,22 @@
 # You should have received a copy of the GNU General Public License
 # along with JABE.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys
-from src.mainwindow import MainWindow
-from PyQt5 import QtWidgets
+import unittest
+import mock
+from src.brain import Brain
 
-app = QtWidgets.QApplication(sys.argv)
-x = MainWindow()
-sys.exit(app.exec_())
+
+class TestBrain(unittest.TestCase):
+
+    @mock.patch('src.brain.nibabel')
+    def test_brain(self, mock_nib):
+        Brain('src/tests/test-data/brain.nii')
+        mock_nib.load.assert_called_with('src/tests/test-data/brain.nii')
+
+    def test_get_voxel_size(self):
+        ref = Brain('src/tests/test-data/brain.nii')
+        self.assertEqual((1.0, 1.0, 1.0, 1.0), ref.get_voxel_size())
+
+
+if __name__ == '__main__':
+    unittest.main()

@@ -15,30 +15,26 @@
 # You should have received a copy of the GNU General Public License
 # along with JABE.  If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt5.QtWidgets import QDialog
+import unittest
+import mock
+import scipy.io
+from src.stimuli import Stimuli
 
-from src.generated_ui.namedialog import Ui_namedialog
+
+class TestStimuli(unittest.TestCase):
+
+    @mock.patch('src.stimuli.np')
+    @mock.patch('src.stimuli.scipy')
+    def test_stimuli(self, mock_scipy, mock_np):
+        Stimuli('src/tests/test-data/stimuli.mat', 0.5)
+        mock_scipy.io.loadmat.assert_called_with('src/tests/test-data/stimuli.mat')
+
+    def test_get_configuration(self):
+        ref = Stimuli('src/tests/test-data/stimuli.mat', 0.5)
+        expected = {'path': 'src/tests/test-data/stimuli.mat',
+                    'tr': 0.5}
+        self.assertEqual(expected, ref.get_configuration())
 
 
-class NameDialog(QDialog):
-    def __init__(self, parent, name=''):
-        super(NameDialog, self).__init__(parent)
-        self.ui = Ui_namedialog()
-        self.ui.setupUi(self)
-        self.name = name
-
-        self.ui.inputName.setText(name)
-        self.ui.okButton.clicked.connect(self.ok_clicked)
-        self.ui.cancelButton.clicked.connect(self.cancel_clicked)
-
-        self.exec_()
-
-    def ok_clicked(self):
-        self.name = self.ui.inputName.text()
-        self.close()
-
-    def cancel_clicked(self):
-        self.close()
-
-    def get_name(self):
-        return self.name
+if __name__ == '__main__':
+    unittest.main()

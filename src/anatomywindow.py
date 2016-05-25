@@ -1,3 +1,20 @@
+# Copyright (C) 2016 pfechd
+#
+# This file is part of JABE.
+#
+# JABE is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# JABE is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with JABE.  If not, see <http://www.gnu.org/licenses/>.
+
 import numpy as np
 from nibabel.affines import apply_affine
 
@@ -43,7 +60,7 @@ class AnatomyWindow(QDialog):
         self.show_brain()
 
     def convert_coord(self, coord):
-        conversion_matrix = np.linalg.inv(self.session.anatomy.brain_file._affine).dot(self.session.brain.brain_file._affine)
+        conversion_matrix = np.linalg.inv(self.session.anatomy.brain_file._affine).dot(self.session.mask.mask_file._affine)
         return apply_affine(conversion_matrix, coord)
 
     def show_brain(self):

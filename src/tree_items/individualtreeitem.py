@@ -1,4 +1,21 @@
-from PyQt5.QtWidgets import QTreeWidgetItem
+# Copyright (C) 2016 pfechd
+#
+# This file is part of JABE.
+#
+# JABE is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# JABE is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with JABE.  If not, see <http://www.gnu.org/licenses/>.
+
+from PyQt5.QtWidgets import QTreeWidgetItem, QMessageBox
 from PyQt5 import QtWidgets, QtGui
 from sessiontreeitem import SessionTreeItem
 from ..group import Group
@@ -31,6 +48,13 @@ class IndividualTreeItem(QTreeWidgetItem, Group):
         self.add_session(session)
 
     def remove_item(self):
+        remove = None
+        if len(self.sessions) > 0 or self.description != "" or self.mask is not None or self.stimuli is not None or\
+                self.anatomy is not None or self.plot_settings != {}:
+            remove = QMessageBox.question(None, "Remove", "Are you sure you want to remove this?",
+                                          QMessageBox.Yes | QMessageBox.No)
+        if remove == QMessageBox.No:
+            return
         self.parent().remove_child(self)
         self.treeWidget().window().update_gui()
         self.parent().removeChild(self)

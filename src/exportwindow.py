@@ -1,3 +1,20 @@
+ # Copyright (C) 2016 pfechd
+#
+# This file is part of JABE.
+#
+# JABE is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# JABE is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with JABE.  If not, see <http://www.gnu.org/licenses/>.
+
 import numpy as np
 import scipy.io as sio
 from PyQt5.QtWidgets import QFileDialog, QDialog
@@ -29,15 +46,15 @@ class ExportWindow(QDialog):
         filename = QFileDialog.getSaveFileName(self, "Save file as mat", "", ".mat")
         if filename[0]:
             if self.stimuli_type == "All":
-                sio.savemat(filename[0] + filename[1], self.brain.calculate_mean())
+                sio.savemat(filename[0] + filename[1], self.brain.get_mean())
             else:
-                sio.savemat(filename[0] + filename[1], {'data': self.brain.calculate_mean()[self.stimuli_type]})
+                sio.savemat(filename[0] + filename[1], {'data': self.brain.get_mean()[self.stimuli_type]})
         self.close()
 
     def export_txt(self):
         filename = QFileDialog.getSaveFileName(self, "Save file as txt", "", ".txt")
         if filename[0]:
-            data = self.brain.calculate_mean()
+            data = self.brain.get_mean()
             if self.stimuli_type == "All":
                 txtdata = None
                 for type,stim_data in data.iteritems():

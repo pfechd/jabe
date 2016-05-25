@@ -1,3 +1,20 @@
+# Copyright (C) 2016 pfechd
+#
+# This file is part of JABE.
+#
+# JABE is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# JABE is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with JABE.  If not, see <http://www.gnu.org/licenses/>.
+
 import json
 import os
 from collections import Iterable
@@ -5,7 +22,7 @@ import sys
 from sys import platform as _platform
 
 from PyQt5 import QtWidgets, QtGui
-from PyQt5.QtWidgets import QMainWindow, QFileDialog, QSpacerItem, QSizePolicy, QMessageBox, QInputDialog
+from PyQt5.QtWidgets import QMainWindow, QFileDialog, QSpacerItem, QSizePolicy, QMessageBox
 
 from generated_ui.mainwindow import Ui_MainWindow
 from mask import Mask
@@ -15,7 +32,8 @@ from stimuli import Stimuli
 from tree_items.grouptreeitem import GroupTreeItem
 from tree_items.individualtreeitem import IndividualTreeItem
 from tree_items.sessiontreeitem import SessionTreeItem
-
+from createmaskwindow import CreateMaskWindow
+from namedialog import NameDialog
 
 try:
     import Cocoa    # Only used on Mac OS when building .app
@@ -44,11 +62,24 @@ class MainWindow(QMainWindow):
         self.ui.extract_btn_individual.clicked.connect(self.calculate_button_pressed)
         self.ui.extract_btn_group.clicked.connect(self.calculate_button_pressed)
         self.ui.add_session_anatomy_btn.clicked.connect(self.anatomy_button_pressed)
+        self.ui.anatomy_btn_group.clicked.connect(self.anatomy_button_pressed)
+        self.ui.anatomy_btn_individual.clicked.connect(self.anatomy_button_pressed)
         self.ui.add_session_epi_btn.clicked.connect(self.brain_button_pressed)
         self.ui.add_session_mask_btn.clicked.connect(self.mask_button_pressed)
+        self.ui.mask_btn_group.clicked.connect(self.mask_button_pressed)
+        self.ui.mask_btn_individual.clicked.connect(self.mask_button_pressed)
+        self.ui.create_session_mask_btn.clicked.connect(self.create_mask_button_pressed)
         self.ui.add_session_stimuli_btn.clicked.connect(self.stimuli_button_pressed)
+        self.ui.stimuli_btn_individual.clicked.connect(self.stimuli_button_pressed)
+        self.ui.stimuli_btn_group.clicked.connect(self.stimuli_button_pressed)
         self.ui.create_session_stimuli_btn.clicked.connect(self.create_stimuli_button_pressed)
+        self.ui.create_stimuli_individual_btn.clicked.connect(self.create_stimuli_button_pressed)
+        self.ui.create_stimuli_group_btn.clicked.connect(self.create_stimuli_button_pressed)
         self.ui.add_group_menu_btn.triggered.connect(self.add_group_pressed)
+        self.ui.load_config_menu_btn.triggered.connect(self.load_configuration_button_pressed)
+        self.ui.save_config_menu_btn.triggered.connect(self.save_configuration)
+        self.ui.save_config_as_menu_btn.triggered.connect(self.save_configuration_as)
+        self.ui.new_config_menu_btn.triggered.connect(self.create_new_configuration)
         self.ui.add_group_btn.clicked.connect(self.add_group_pressed)
         self.ui.exit_menu_btn.triggered.connect(self.exit_button_pressed)
         self.ui.add_individual_btn.clicked.connect(self.add_item_clicked)
@@ -74,15 +105,13 @@ class MainWindow(QMainWindow):
         self.ui.tr_value_session.valueChanged.connect(self.tr_changed)
 
         plot_buttons = [self.ui.global_normalization_individual_btn, self.ui.local_normalization_individual_btn,
-                   self.ui.percent_individual_btn, self.ui.subtract_individual_btn,
-                   self.ui.checkbox_amplitude_individual, self.ui.checkbox_peak_individual,
-                   self.ui.checkbox_sem_individual, self.ui.checkbox_fwhm_individual,
-                   self.ui.global_normalization_session_btn, self.ui.local_normalization_session_btn,
-                   self.ui.percent_session_btn, self.ui.subtract_session_btn, self.ui.checkbox_amplitude_session,
-                   self.ui.checkbox_peak_session, self.ui.checkbox_sem_session, self.ui.checkbox_fwhm_session,
-                   self.ui.global_normalization_group_btn, self.ui.local_normalization_group_btn,
-                   self.ui.percent_group_btn, self.ui.subtract_group_btn, self.ui.checkbox_amplitude_group,
-                   self.ui.checkbox_peak_group, self.ui.checkbox_sem_group, self.ui.checkbox_fwhm_group]
+                        self.ui.percent_individual_btn, self.ui.subtract_individual_btn,
+                        self.ui.individual_use_mask, self.ui.individual_use_stimuli,
+                        self.ui.global_normalization_session_btn, self.ui.local_normalization_session_btn,
+                        self.ui.percent_session_btn, self.ui.subtract_session_btn,
+                        self.ui.global_normalization_group_btn, self.ui.local_normalization_group_btn,
+                        self.ui.percent_group_btn, self.ui.subtract_group_btn, 
+                        self.ui.group_use_mask, self.ui.group_use_stimuli]
 
         for button in plot_buttons:
             button.clicked.connect(self.plot_settings_changed)
@@ -93,9 +122,11 @@ class MainWindow(QMainWindow):
         self.individual_buttons = [self.ui.extract_session_btn, self.ui.add_session_epi_btn,
                                    self.ui.add_session_mask_btn, self.ui.add_session_stimuli_btn]
 
+        self.current_config_path = ""
         self.ui.tree_widget.setColumnWidth(0, 200)
         self.groups = []
-        self.load_configuration()
+        
+        self.plot_settings_changed()
         self.update_gui()
 
     def check_paths(self, configuration, type = None):
@@ -124,12 +155,29 @@ class MainWindow(QMainWindow):
         return missing_paths
 
     def closeEvent(self, event):
-        self.save_configuration()
+        if self.groups != []:
+            button = QMessageBox.question(self, "Save",
+                                          "Do you want to save the current workspace before quitting?",
+                                          QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
+            if button == QMessageBox.Cancel:
+                event.ignore()
+            if button == QMessageBox.Yes:
+                self.save_configuration()
+
+    def save_configuration_as(self):
+        config_file = QFileDialog.getSaveFileName(self, "", "", ".json")
+        if config_file[0]:
+            self.current_config_path = config_file[0] + config_file[1]
+            self.save_configuration()
 
     def save_configuration(self):
         """
         Save configuration file (configuration.json).
         """
+        config_filename = self.current_config_path
+        if config_filename == "":
+            self.save_configuration_as()
+            return
 
         if self.ui.tree_widget.selectedItems():
             selected = self.ui.tree_widget.selectedItems()[0]
@@ -149,8 +197,6 @@ class MainWindow(QMainWindow):
             'groups': [group.get_configuration() for group in self.groups],
             'current': current
         }
-
-        config_filename = 'configuration.json'
 
         if hasattr(sys, 'frozen'):
             dir_path = os.path.dirname(os.path.realpath(sys.argv[0]))
@@ -178,12 +224,28 @@ class MainWindow(QMainWindow):
         with open(config_path, 'w') as f:
             json.dump(configuration, f, indent=4)
 
+    def load_configuration_button_pressed(self):
+        if self.groups != []:
+            button = QMessageBox.question(
+                self, "Save",
+                "Do you want to save the current workspace before loading?",
+                QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
+            if button == QMessageBox.Cancel:
+                return
+            if button == QMessageBox.Yes:
+                self.save_configuration()
+
+        config_path = QFileDialog.getOpenFileName(self, 'Open file', "", "*.json")
+        if config_path[0]:
+            self.current_config_path = config_path[0]
+            self.load_configuration()
+
     def load_configuration(self):
         """
         Load configuration file (configuration.json).
         """
 
-        config_filename = 'configuration.json'
+        config_filename = self.current_config_path
 
         if hasattr(sys, 'frozen'):
             dir_path = os.path.dirname(os.path.realpath(sys.argv[0]))
@@ -218,6 +280,9 @@ class MainWindow(QMainWindow):
                                     "\n".join(missing_paths))
 
 
+            self.ui.tree_widget.clear()
+            self.groups = []
+
             for group_configuration in configuration['groups']:
                 group_tree_item = GroupTreeItem()
                 self.ui.tree_widget.addTopLevelItem(group_tree_item)
@@ -245,6 +310,22 @@ class MainWindow(QMainWindow):
 
             self.update_gui()
 
+    def create_new_configuration(self):
+        if self.groups != []:
+            button = QMessageBox.question(
+                self, "Save",
+                "Do you want to save the current workspace before creating a new one?",
+                QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
+            if button == QMessageBox.Cancel:
+                return
+            if button == QMessageBox.Yes:
+                self.save_configuration()
+
+        self.current_config_path = ""
+        self.groups = []
+        self.ui.tree_widget.clear()
+        self.ui.stackedWidget.setCurrentIndex(1)
+
     def add_group_pressed(self):
         current_row = len(self.groups)
         name = 'Group ' + str(current_row + 1)
@@ -260,7 +341,7 @@ class MainWindow(QMainWindow):
     def add_item_clicked(self):
         if self.ui.tree_widget.selectedItems():
             if isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
-                self.ui.tree_widget.selectedItems()[0].add_child()
+                self.ui.tree_widget.selectedItems()[0].add_new_individual()
             elif isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
                 self.ui.tree_widget.selectedItems()[0].add_new_session()
 
@@ -282,47 +363,51 @@ class MainWindow(QMainWindow):
                      isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem)):
             for button in self.individual_buttons:
                 button.setEnabled(False)
-            self.ui.extract_btn_group.setEnabled(True)
-            self.ui.extract_btn_individual.setEnabled(True)
+            self.ui.extract_btn_group.setEnabled(self.ui.tree_widget.selectedItems()[0].ready_for_calculation())
+            self.ui.extract_btn_individual.setEnabled(self.ui.tree_widget.selectedItems()[0].ready_for_calculation())
         else:
             for button in self.individual_buttons:
                 button.setEnabled(False)
 
     def calculate_button_pressed(self):
-        """ Callback function, run when the calculate button is pressed."""
+        """ Callback function run when the calculate button is pressed."""
         # Make sure to update plot settings at least once before running
 
         self.plot_settings_changed()
         CustomPlot(self, self.ui.tree_widget.selectedItems()[0])
 
     def brain_button_pressed(self):
-        """ Callback function, run when the choose brain button is pressed."""
+        """ Callback function run when the choose brain button is pressed."""
         file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii*)")
         if file_name[0]:
             self.load_brain(file_name[0])
-        else:
-            print 'File not chosen'
         self.update_gui()
 
     def anatomy_button_pressed(self):
-        """ Callback function, run when the choose anatomy button is pressed."""
+        """ Callback function run when the choose anatomy button is pressed."""
         file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii*)")
         if file_name[0]:
             self.load_anatomy(file_name[0])
-        else:
-            print 'File not chosen'
         self.update_gui()
 
     def mask_button_pressed(self):
-        """ Callback function, run when the choose mask button is pressed."""
+        """ Callback function run when the choose mask button is pressed."""
         file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.nii*)")
         if file_name[0]:
             self.load_mask(file_name[0])
+        self.update_gui()
+
+    def create_mask_button_pressed(self):
+        """ Callback function run when the create mask button is pressed."""
+        # Make sure EPI-file is choosen before running
+        if self.ui.tree_widget.selectedItems()[0].brain:
+            CreateMaskWindow(self, self.ui.tree_widget.selectedItems()[0].brain.brain_file)
         else:
-            print 'Mask not chosen'
+            QMessageBox.warning(self, "Warning", "You have not chosen an EPI-image. Please choose an EPI-image.")
         self.update_gui()
 
     def stimuli_button_pressed(self):
+
         """ Callback function, run when the choose stimuli button is pressed. """
         file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.mat)")
         if file_name[0]:
@@ -354,6 +439,7 @@ class MainWindow(QMainWindow):
 
     def create_stimuli_button_pressed(self):
         """ Callback function, run when the create simuli button is pressed."""
+
         self.stimuli_window = StimuliWindow(self)
         
     def load_brain(self, path):
@@ -366,39 +452,36 @@ class MainWindow(QMainWindow):
             self.update_gui()
 
     def load_anatomy(self, path):
-        if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
-            session = self.ui.tree_widget.selectedItems()[0]
-            error = session.load_anatomy(path)
-            if error:
-                QMessageBox.warning(self, "File error", error)
-                self.anatomy_button_pressed()
-            self.update_gui()
+        session = self.ui.tree_widget.selectedItems()[0]
+        error = session.load_anatomy(path)
+        if error:
+            QMessageBox.warning(self, "File error", error)
+            self.anatomy_button_pressed()
+        self.update_gui()
 
     def load_mask(self, path):
-        if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
-            session = self.ui.tree_widget.selectedItems()[0]
-            error = session.load_mask(path)
-            if error:
-                QMessageBox.warning(self, "File error", error)
-                self.mask_button_pressed()
-            self.update_gui()
+        session = self.ui.tree_widget.selectedItems()[0]
+        error = session.load_mask(path)
+        if error:
+            QMessageBox.warning(self, "File error", error)
+            self.mask_button_pressed()
+        self.update_gui()
 
     def load_stimuli(self, path):
-        if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
-            session = self.ui.tree_widget.selectedItems()[0]
-            error = session.load_stimuli(path)
-            if error:
-                QMessageBox.warning(self, "File error", error)
-                self.stimuli_button_pressed()
-            self.update_gui()
+        session = self.ui.tree_widget.selectedItems()[0]
+        error = session.load_stimuli(path)
+        if error:
+            QMessageBox.warning(self, "File error", error)
+            self.stimuli_button_pressed()
+        self.update_gui()
 
     def update_gui(self):
         self.update_buttons()
         self.update_text()
-        self.update_stackedwidget()
+        self.update_stacked_widget()
         self.ui.tree_widget.update()
 
-    def update_stackedwidget(self):
+    def update_stacked_widget(self):
         if self.ui.tree_widget.selectedItems():
             if isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
                 self.ui.stackedWidget.setCurrentIndex(2)
@@ -414,19 +497,14 @@ class MainWindow(QMainWindow):
                     self.ui.percent_individual_btn.setChecked(True)
                 else:
                     self.ui.subtract_individual_btn.setChecked(True)
-                self.ui.checkbox_amplitude_individual.setChecked(individual.get_setting('amplitude'))
-                self.ui.checkbox_peak_individual.setChecked(individual.get_setting('peak'))
-                self.ui.checkbox_sem_individual.setChecked(individual.get_setting('sem'))
-                self.ui.checkbox_fwhm_individual.setChecked(individual.get_setting('fwhm'))
+                self.ui.individual_use_mask.setChecked(individual.get_setting('use_mask'))
+                self.ui.individual_use_stimuli.setChecked(individual.get_setting('use_stimuli'))
 
                 # Add overview tree in individual panel
                 self.ui.sessions_overview_tree.clear()
                 self.ui.sessions_overview_tree.addTopLevelItems(individual.get_overview_tree())
 
                 # Add checkboxes for individuals in individual panel
-                self.clear_layout(self.ui.sessions_plot)
-                individual.add_sessions_boxes(self.ui.sessions_plot)
-                self.ui.sessions_plot.insertSpacerItem(-1, QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
             elif isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
                 self.ui.stackedWidget.setCurrentIndex(3)
@@ -442,10 +520,6 @@ class MainWindow(QMainWindow):
                     self.ui.percent_session_btn.setChecked(True)
                 else:
                     self.ui.subtract_session_btn.setChecked(True)
-                self.ui.checkbox_amplitude_session.setChecked(session.get_setting('amplitude'))
-                self.ui.checkbox_peak_session.setChecked(session.get_setting('peak'))
-                self.ui.checkbox_sem_session.setChecked(session.get_setting('sem'))
-                self.ui.checkbox_fwhm_session.setChecked(session.get_setting('fwhm'))
             else:
                 self.ui.stackedWidget.setCurrentIndex(0)
                 group = self.ui.tree_widget.selectedItems()[0]
@@ -460,44 +534,88 @@ class MainWindow(QMainWindow):
                     self.ui.percent_group_btn.setChecked(True)
                 else:
                     self.ui.subtract_group_btn.setChecked(True)
-                self.ui.checkbox_amplitude_group.setChecked(group.get_setting('amplitude'))
-                self.ui.checkbox_peak_group.setChecked(group.get_setting('peak'))
-                self.ui.checkbox_sem_group.setChecked(group.get_setting('sem'))
-                self.ui.checkbox_fwhm_group.setChecked(group.get_setting('fwhm'))
+                self.ui.group_use_mask.setChecked(group.get_setting('use_mask'))
+                self.ui.group_use_stimuli.setChecked(group.get_setting('use_stimuli'))
 
                 # Add overview tree in group panel
                 self.ui.individual_overview_tree.clear()
                 self.ui.individual_overview_tree.addTopLevelItems(group.get_overview_tree())
 
                 # Add checkboxes for individuals in group panel
-                self.clear_layout(self.ui.individuals_plot)
-                group.add_individuals_boxes(self.ui.individuals_plot)
-                self.ui.individuals_plot.insertSpacerItem(-1, QSpacerItem(10, 10, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
     def update_text(self):
         if self.ui.tree_widget.selectedItems():
             if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
-                individual = self.ui.tree_widget.selectedItems()[0]
+                session = self.ui.tree_widget.selectedItems()[0]
 
-                if individual.brain:
-                    self.ui.session_epi_label.setText('EPI-images chosen: ' + individual.brain.path.split('/')[-1])
+                if session.brain:
+                    self.ui.session_epi_label.setText('EPI-images chosen: ' + session.brain.path.split('/')[-1])
                 else:
                     self.ui.session_epi_label.setText('No EPI-images chosen')
 
-                if individual.anatomy:
-                    self.ui.session_anatomy_label.setText('Anatomy chosen: ' + individual.anatomy.path.split('/')[-1])
+                if session.anatomy:
+                    self.ui.session_anatomy_label.setText('Anatomy chosen: ' + session.anatomy.path.split('/')[-1])
                 else:
                     self.ui.session_anatomy_label.setText('No anatomy chosen')
 
-                if individual.mask:
-                    self.ui.session_mask_label.setText('Mask picked: ' + individual.mask.path.split('/')[-1])
+                if session.mask:
+                    self.ui.session_mask_label.setText('Mask picked: ' + session.mask.path.split('/')[-1])
                 else:
                     self.ui.session_mask_label.setText('No mask chosen')
 
-                if individual.stimuli:
-                    self.ui.session_stimuli_label.setText('Stimuli picked: ' + individual.stimuli.path.split('/')[-1])
+                if session.stimuli:
+                    self.ui.session_stimuli_label.setText('Stimuli picked: ' + session.stimuli.path.split('/')[-1])
                 else:
                     self.ui.session_stimuli_label.setText('No stimuli chosen')
+            elif isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
+                individual = self.ui.tree_widget.selectedItems()[0]
+
+                if individual.anatomy:
+                    self.ui.individual_anatomy_label.setText('Anatomy chosen: ' + individual.anatomy.path.split('/')[-1])
+                else:
+                    self.ui.individual_anatomy_label.setText('No anatomy chosen')
+                if individual.mask:
+                    self.ui.individual_mask_label.setText('Mask chosen: ' + individual.mask.path.split('/')[-1])
+                else:
+                    self.ui.individual_mask_label.setText('No mask chosen')
+                if individual.stimuli:
+                    self.ui.individual_stimuli_label.setText('Stimuli chosen: ' + individual.stimuli.path.split('/')[-1])
+                else:
+                    self.ui.individual_stimuli_label.setText('No stimuli chosen')
+
+                self.ui.individual_mask_label.setEnabled(individual.get_setting('use_mask'))
+                self.ui.mask_btn_individual.setEnabled(individual.get_setting('use_mask'))
+                self.ui.individual_anatomy_label.setEnabled(individual.get_setting('use_mask'))
+                self.ui.anatomy_btn_individual.setEnabled(individual.get_setting('use_mask'))
+
+                self.ui.individual_stimuli_label.setEnabled(individual.get_setting('use_stimuli'))
+                self.ui.stimuli_btn_individual.setEnabled(individual.get_setting('use_stimuli'))
+                self.ui.create_stimuli_individual_btn.setEnabled(individual.get_setting('use_stimuli'))
+            elif isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
+                group = self.ui.tree_widget.selectedItems()[0]
+
+                if group.anatomy:
+                    self.ui.group_anatomy_label.setText('Anatomy chosen: ' + group.anatomy.path.split('/')[-1])
+                else:
+                    self.ui.group_anatomy_label.setText('No anatomy chosen')
+                if group.mask:
+                    self.ui.group_mask_label.setText('Mask chosen: ' + group.mask.path.split('/')[-1])
+                else:
+                    self.ui.group_mask_label.setText('No mask chosen')
+                if group.stimuli:
+                    self.ui.group_stimuli_label.setText('Stimuli chosen: ' + group.stimuli.path.split('/')[-1])
+                else:
+                    self.ui.group_stimuli_label.setText('No stimuli chosen')
+
+                self.ui.group_mask_label.setEnabled(group.get_setting('use_mask'))
+                self.ui.mask_btn_group.setEnabled(group.get_setting('use_mask'))
+                self.ui.group_anatomy_label.setEnabled(group.get_setting('use_mask'))
+                self.ui.anatomy_btn_group.setEnabled(group.get_setting('use_mask'))
+
+                self.ui.group_stimuli_label.setEnabled(group.get_setting('use_stimuli'))
+                self.ui.stimuli_btn_group.setEnabled(group.get_setting('use_stimuli'))
+                self.ui.create_stimuli_group_btn.setEnabled(group.get_setting('use_stimuli'))
+
         else:
             for label in [self.ui.session_epi_label, self.ui.session_mask_label, self.ui.session_stimuli_label]:
                 label.setText('')
@@ -530,26 +648,19 @@ class MainWindow(QMainWindow):
                 individual = self.ui.tree_widget.selectedItems()[0]
                 individual.plot_settings['global'] = self.ui.global_normalization_individual_btn.isChecked()
                 individual.plot_settings['percent'] = self.ui.percent_individual_btn.isChecked()
-                individual.plot_settings['amplitude'] = self.ui.checkbox_amplitude_individual.isChecked()
-                individual.plot_settings['peak'] = self.ui.checkbox_peak_individual.isChecked()
-                individual.plot_settings['sem'] = self.ui.checkbox_sem_individual.isChecked()
-                individual.plot_settings['fwhm'] = self.ui.checkbox_fwhm_individual.isChecked()
+                individual.plot_settings['use_mask'] = self.ui.individual_use_mask.isChecked()
+                individual.plot_settings['use_stimuli'] = self.ui.individual_use_stimuli.isChecked()
             elif isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
                 session = self.ui.tree_widget.selectedItems()[0]
                 session.plot_settings['global'] = self.ui.global_normalization_session_btn.isChecked()
                 session.plot_settings['percent'] = self.ui.percent_session_btn.isChecked()
-                session.plot_settings['amplitude'] = self.ui.checkbox_amplitude_session.isChecked()
-                session.plot_settings['peak'] = self.ui.checkbox_peak_session.isChecked()
-                session.plot_settings['sem'] = self.ui.checkbox_sem_session.isChecked()
-                session.plot_settings['fwhm'] = self.ui.checkbox_fwhm_session.isChecked()
             else:
                 group = self.ui.tree_widget.selectedItems()[0]
                 group.plot_settings['global'] = self.ui.global_normalization_group_btn.isChecked()
                 group.plot_settings['percent'] = self.ui.percent_group_btn.isChecked()
-                group.plot_settings['amplitude'] = self.ui.checkbox_amplitude_group.isChecked()
-                group.plot_settings['peak'] = self.ui.checkbox_peak_group.isChecked()
-                group.plot_settings['sem'] = self.ui.checkbox_sem_group.isChecked()
-                group.plot_settings['fwhm'] = self.ui.checkbox_fwhm_group.isChecked()
+                group.plot_settings['use_mask'] = self.ui.group_use_mask.isChecked()
+                group.plot_settings['use_stimuli'] = self.ui.group_use_stimuli.isChecked()
+        self.update_gui()
 
     def clear_layout(self, layout):
         while layout.count():
