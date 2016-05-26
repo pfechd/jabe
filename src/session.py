@@ -148,7 +148,7 @@ class Session(Group):
         number_of_stimuli = stimuli.amount
 
         shortest_interval = min([j - i for i, j in zip(stimuli.data[:-1, 0], stimuli.data[1:, 0])])
-        self.x_axis = np.array(list(range(shortest_interval))) * self.get_tr()
+        self.x_axis = np.array(list(range(shortest_interval))) * stimuli.tr
 
         self.responses = {}
 

@@ -440,7 +440,7 @@ class Group(object):
                 else:
                     self.responses[intensity] = data
 
-        self.x_axis = np.array(list(range(min_width))) * self.get_tr()
+        self.x_axis = np.array(list(range(min_width))) * stimuli.tr
 
         # Set all data to match the length of the least wide response
         for intensity, data in self.responses.iteritems():
