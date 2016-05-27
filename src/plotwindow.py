@@ -83,8 +83,8 @@ class CustomPlot(QDialog):
 
         self.ui.checkBox_fwhm.clicked.connect(self.plot_fwhm)
         self.ui.checkBox_sem.clicked.connect(self.plot_sem)
-        self.ui.checkBox_regular.clicked.connect(self.plot_regular)
-        self.ui.checkBox_smooth.clicked.connect(self.plot_smooth)
+        self.ui.checkBox_regular.clicked.connect(self.replot)
+        self.ui.checkBox_smooth.clicked.connect(self.replot)
         self.ui.checkBox_amp.clicked.connect(self.plot_amplitude)
         self.ui.checkBox_peak.clicked.connect(self.plot_peak)
         self.ui.stimuliBox.currentTextChanged.connect(self.replot)
@@ -284,7 +284,7 @@ class CustomPlot(QDialog):
         If fwhm checkbox is not checked this function will remove 
         fwhm span and datalog info.
         """
-        self.remove_fwhm()
+        self.remove_fwhm(uncheck=False)
         if not (self.ui.checkBox_smooth.isChecked() \
                 or self.ui.checkBox_regular.isChecked()) \
                 or self.ui.several_responses_btn.isChecked():
@@ -330,13 +330,14 @@ class CustomPlot(QDialog):
         self.plot_sem()
         self.set_allowed_buttons()
 
-    def remove_peak_time(self):
+    def remove_peak_time(self, uncheck=True):
         if self.peak_time:
             for peak in self.peak_time:
                 if peak.axes == self.current_ax:
                     peak.remove()
                     self.ui.peak_label.hide()
-                    self.ui.checkBox_peak.setChecked(False)
+                    if uncheck:
+                        self.ui.checkBox_peak.setChecked(False)
             self.peak_time = []
 
     def remove_sem(self):
@@ -352,22 +353,24 @@ class CustomPlot(QDialog):
 
                     self.ui.checkBox_sem.setChecked(False)
 
-    def remove_amplitude(self):
+    def remove_amplitude(self, uncheck=True):
         if self.amp:
             for amp in self.amp:
                 if amp.axes == self.current_ax:
                     amp.remove()
                     self.ui.amp_label.hide()
-                    self.ui.checkBox_amp.setChecked(False)
+                    if uncheck:
+                        self.ui.checkBox_amp.setChecked(False)
             self.amp = []
 
-    def remove_fwhm(self):
+    def remove_fwhm(self, uncheck=True):
         if self.fwhm:
             for fwhm in self.fwhm:
                 if fwhm.axes == self.current_ax:
                     fwhm.remove()
                     self.ui.fwhm_label.hide()
-                    self.ui.checkBox_fwhm.setChecked(False)
+                    if uncheck:
+                        self.ui.checkBox_fwhm.setChecked(False)
 
     def remove_regular_plots(self):
         if self.regular:
@@ -457,7 +460,7 @@ class CustomPlot(QDialog):
         If amplitude checkbox is not checked this function will remove 
         amplitude lines and datalog info.
         """
-        self.remove_amplitude()
+        self.remove_amplitude(uncheck=False)
         if not (self.ui.checkBox_smooth.isChecked() \
                 or self.ui.checkBox_regular.isChecked()) \
                 or self.ui.several_responses_btn.isChecked():
@@ -474,26 +477,29 @@ class CustomPlot(QDialog):
                 QMessageBox.warning(self, exc.args[0], exc.args[1])
                 return
             amp_text = ""
+
             if self.ui.stimuliBox.currentText() == "All":
                 for stimuli_val, position in points.iteritems():
-                    self.amp.append(
-                            self.current_ax.axhline(position[1], color=CustomPlot._colors[-1]))
-                    amp_text += "Amplitude " + stimuli_val + ": " + \
-                            str(position[1]) + "\n"
+                    amp_text += self.__plot_amp(stimuli_val, position)
             else:
                 stimuli_val = self.ui.stimuliBox.currentText()
-                self.amp.append(
-                        self.current_ax.axhline(points[stimuli_val][1], color=CustomPlot._colors[-1]))
-                amp_text += "Amplitude " + stimuli_val + ": " + \
-                        str(points[stimuli_val][1]) + "\n"
+                amp_text = self.__plot_amp(stimuli_val, points[stimuli_val])
             self.ui.amp_label.setText(amp_text[0:-1])
             self.ui.amp_label.show()
         else:
-            self.remove_amplitude()
             self.ui.amp_label.hide()
         self.canvas.draw()
 
-        self.canvas.draw()
+
+    def __plot_amp(self, stimuli_val, position):
+        self.amp.append(
+                self.current_ax.axhline(position[1], color=CustomPlot._colors[-1]))
+        if self.ui.checkBox_smooth.isChecked():
+            start_value = self.session.get_smooth(self.ui.spinBox.value())[stimuli_val][0]
+        else:
+            start_value = self.session.get_mean()[stimuli_val][0]
+        return "Amplitude " + stimuli_val + ": " + \
+                str(position[1] - start_value) + "\n"
 
     def plot_peak(self):
         """
@@ -502,7 +508,7 @@ class CustomPlot(QDialog):
         If peak checkbox is not checked this function will remove 
         peak lines and datalog info.
         """
-        self.remove_peak_time()
+        self.remove_peak_time(uncheck=False)
 
         if not (self.ui.checkBox_smooth.isChecked() \
                 or self.ui.checkBox_regular.isChecked()) \
