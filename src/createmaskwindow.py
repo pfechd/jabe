@@ -57,7 +57,7 @@ class CreateMaskWindow(QDialog):
 
     def add_shape_types(self):
         """ Add all shape types that exists to a combobox """
-        self.ui.comboBox_shape.addItem("Box")
+        self.ui.comboBox_shape.addItem("Cube")
         self.ui.comboBox_shape.addItem("Sphere")
 
     def is_pos_number(self, s):
