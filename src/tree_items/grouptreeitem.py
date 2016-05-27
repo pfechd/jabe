@@ -33,8 +33,8 @@ class GroupTreeItem(QTreeWidgetItem, Group):
         # Set the name in the first column of the QTreeWidgetItem
         self.setText(0, self.name)
 
-        if 'individuals' in configuration:
-            for individual_configuration in configuration['individuals']:
+        if 'groups' in configuration:
+            for individual_configuration in configuration['groups']:
                 individual_tree_item = IndividualTreeItem()
                 self.add_individual(individual_tree_item)
                 # Load configuration after adding the individual as it accesses
@@ -64,11 +64,9 @@ class GroupTreeItem(QTreeWidgetItem, Group):
                                           QMessageBox.Yes | QMessageBox.No)
         if remove == QMessageBox.No:
             return
-        tree = self.treeWidget()
-        tree.takeTopLevelItem(tree.indexFromItem(self).row())
-        tree.parent().parent().groups.remove(self)
-        if len(tree.selectedItems()) == 0:
-                tree.window().ui.stackedWidget.setCurrentIndex(1)
+        self.parent().remove_child(self)
+        self.treeWidget().window().update_gui()
+        self.parent().removeChild(self)
 
     def create_buttons(self):
         tree = self.treeWidget()

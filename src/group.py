@@ -376,9 +376,9 @@ class Group(object):
             'name': self.name,
             'description': self.description,
             'plot_settings': self.plot_settings,
-            'individuals': [individual.get_configuration() for individual in self.children],
             'sessions': [session.get_configuration() for session in self.sessions],
-            'tr': self.tr
+            'tr': self.tr,
+            'groups': [group.get_configuration() for group in self.children],
         }
         if self.anatomy:
             configuration['anatomy_path'] = self.anatomy.path
@@ -444,7 +444,7 @@ class Group(object):
                 else:
                     self.responses[intensity] = data
 
-        self.x_axis = np.array(list(range(min_width))) * self.get_tr()
+        self.x_axis = np.array(list(range(min_width))) * stimuli.tr
 
         # Set all data to match the length of the least wide response
         for intensity, data in self.responses.iteritems():
