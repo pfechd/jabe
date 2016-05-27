@@ -135,6 +135,11 @@ class MainWindow(QMainWindow):
         self.ui.individual_description.textChanged.connect(self.description_changed)
         self.ui.project_description.textChanged.connect(self.description_changed)
 
+
+        self.ui.tr_value_group.valueChanged.connect(self.tr_changed)
+        self.ui.tr_value_ind.valueChanged.connect(self.tr_changed)
+        self.ui.tr_value_session.valueChanged.connect(self.tr_changed)
+
         plot_buttons = [self.ui.global_normalization_individual_btn, self.ui.local_normalization_individual_btn,
                         self.ui.percent_individual_btn, self.ui.subtract_individual_btn,
                         self.ui.individual_use_mask, self.ui.individual_use_stimuli,
@@ -298,12 +303,12 @@ class MainWindow(QMainWindow):
                 QMessageBox.warning(self, "File error", "The following files are missing and will not be loaded:\n" +
                                     "\n".join(missing_paths))
 
-            for group_configuration in configuration['groups']:
-                group_tree_item = GroupTreeItem()
-                self.ui.tree_widget.addTopLevelItem(group_tree_item)
-                group_tree_item.load_configuration(group_configuration)
-                self.projects.append(group_tree_item)
-                group_tree_item.create_buttons()
+            for project_configuration in configuration['project']:
+                project_tree_item = ProjectTreeItem()
+                self.ui.tree_widget.addTopLevelItem(project_tree_item)
+                project_tree_item.load_configuration(project_configuration)
+                self.projects.append(project_tree_item)
+                project_tree_item.create_buttons()
 
             self.update_gui()
 
@@ -392,6 +397,7 @@ class MainWindow(QMainWindow):
     def calculate_button_pressed(self):
         """ Callback function run when the calculate button is pressed."""
         # Make sure to update plot settings at least once before running
+
         self.plot_settings_changed()
         CustomPlot(self, self.ui.tree_widget.selectedItems()[0])
 
@@ -426,15 +432,40 @@ class MainWindow(QMainWindow):
         self.update_gui()
 
     def stimuli_button_pressed(self):
-        """ Callback function run when the choose stimuli button is pressed."""
+
+        """ Callback function, run when the choose stimuli button is pressed. """
         file_name = QFileDialog.getOpenFileName(self, 'Open file', "", "Images (*.mat)")
         if file_name[0]:
             self.load_stimuli(file_name[0])
+        else:
+            print 'Stimuli not chosen'
         self.update_gui()
 
+    def get_tr(self):
+        """
+        Checks if Tr value (time between images) is valid and returns tr value if that's the case.
+
+        :return: float value of tr
+        """
+        if isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
+            tr = self.ui.tr_value_session.value()
+        elif isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
+            tr = self.ui.tr_value_ind.value()
+        else:
+            tr = self.ui.tr_value_group.value()
+
+        return tr
+
+    def tr_changed(self):
+        if self.ui.tree_widget.selectedItems():
+            tr = self.get_tr()
+            if self.ui.tree_widget.selectedItems()[0].stimuli:
+                self.ui.tree_widget.selectedItems()[0].stimuli.tr = tr
+            self.ui.tree_widget.selectedItems()[0].tr = tr
+
     def create_stimuli_button_pressed(self):
-        """ Callback function run when the create simuli button is pressed."""
-        
+        """ Callback function, run when the create simuli button is pressed."""
+
         self.stimuli_window = StimuliWindow(self)
         
     def load_brain(self, path):
@@ -464,7 +495,7 @@ class MainWindow(QMainWindow):
 
     def load_stimuli(self, path):
         session = self.ui.tree_widget.selectedItems()[0]
-        error = session.load_stimuli(path, 0.5)
+        error = session.load_stimuli(path)
         if error:
             QMessageBox.warning(self, "File error", error)
             self.stimuli_button_pressed()
@@ -480,22 +511,24 @@ class MainWindow(QMainWindow):
         if self.ui.tree_widget.selectedItems():
             if isinstance(self.ui.tree_widget.selectedItems()[0], ProjectTreeItem):
                 self.ui.stackedWidget.setCurrentIndex(1)
-                group = self.ui.tree_widget.selectedItems()[0]
-                self.ui.project_name.setText(group.text(0))
-                self.ui.project_description.setText(group.description)
+                project = self.ui.tree_widget.selectedItems()[0]
+                self.ui.project_name.setText(project.text(0))
+                self.ui.project_description.setText(project.description)
 
-                if group.get_setting('global'):
-                    self.ui.global_normalization_group_btn.setChecked(True)
+                if project.get_setting('global'):
+                    self.ui.global_normalization_project_btn.setChecked(True)
                 else:
-                    self.ui.local_normalization_group_btn.setChecked(True)
-                if group.get_setting('percent'):
-                    self.ui.percent_group_btn.setChecked(True)
+                    self.ui.local_normalization_project_btn.setChecked(True)
+                if project.get_setting('percent'):
+                    self.ui.percent_project_btn.setChecked(True)
                 else:
-                    self.ui.subtract_group_btn.setChecked(True)
+                    self.ui.subtract_project_btn.setChecked(True)
 
-                # Add overview tree in group panel
-                self.ui.group_overview_tree.clear()
-                self.ui.group_overview_tree.addTopLevelItems(group.get_overview_tree())
+                self.ui.project_use_mask.setChecked(project.get_setting('use_mask'))
+                self.ui.project_use_stimuli.setChecked(project.get_setting('use_stimuli'))
+                # Add overview tree in project panel
+                self.ui.project_overview_tree.clear()
+                self.ui.project_overview_tree.addTopLevelItems(project.get_overview_tree())
 
             elif isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
                 self.ui.stackedWidget.setCurrentIndex(2)
@@ -523,6 +556,7 @@ class MainWindow(QMainWindow):
                 individual = self.ui.tree_widget.selectedItems()[0]
                 self.ui.individual_name.setText(individual.text(0))
                 self.ui.individual_description.setText(individual.description)
+                self.ui.tr_value_ind.setValue(individual.tr)
 
                 if individual.get_setting('global'):
                     self.ui.global_normalization_individual_btn.setChecked(True)
@@ -532,8 +566,6 @@ class MainWindow(QMainWindow):
                     self.ui.percent_individual_btn.setChecked(True)
                 else:
                     self.ui.subtract_individual_btn.setChecked(True)
-                self.ui.individual_use_mask.setChecked(individual.get_setting('use_mask'))
-                self.ui.individual_use_stimuli.setChecked(individual.get_setting('use_stimuli'))
 
                 # Add overview tree in individual panel
                 self.ui.sessions_overview_tree.clear()
@@ -544,6 +576,7 @@ class MainWindow(QMainWindow):
                 session = self.ui.tree_widget.selectedItems()[0]
                 self.ui.session_name.setText(session.text(0))
                 self.ui.session_description.setText(session.description)
+                self.ui.tr_value_session.setValue(session.tr)
 
                 if session.get_setting('global'):
                     self.ui.global_normalization_session_btn.setChecked(True)

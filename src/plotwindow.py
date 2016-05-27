@@ -166,6 +166,7 @@ class CustomPlot(QDialog):
         else:
             self.highlight_current_axis()
 
+
         self.fig.tight_layout()
         self.set_allowed_buttons()
         self.canvas.draw()
@@ -196,10 +197,12 @@ class CustomPlot(QDialog):
     def add_ax(self, ax):
         if ax is not None:
             self.ax_list.append(ax)
+            # Change default value in smooth wheel if percent is used
+            smooth = 2 if self.session.get_setting("percent") else 20
             self.axes[ax] = {'plot': 'mean',
                              'data': {'regular': False,
                                       'smooth': False,
-                                      'smooth_fact': 20,
+                                      'smooth_fact': smooth,
                                       'stimuli_type': 0,
                                       },
                              'settings': {'amp': False,

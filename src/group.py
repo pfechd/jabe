@@ -39,6 +39,7 @@ class Group(object):
         self.mask = None
         self.stimuli = None
         self.anatomy = None
+        self.tr = 1
 
         self.children = []
         # TODO: Remove this
@@ -183,15 +184,16 @@ class Group(object):
             self.anatomy = temp_anatomy
             return None
 
-    def load_stimuli(self, path, tr):
+    def load_stimuli(self, path):
         try:
-            temp_stimuli = Stimuli(path, tr)
+            temp_stimuli = Stimuli(path)
         except:
             return "The file is not a proper stimuli file. It might be corrupted or in the wrong format"
         if isinstance(self, session.Session) and self.brain and temp_stimuli.data[-1, 0] > self.brain.images:
             return "The times in the stimuli file are too long compared to the length of the EPI sequence"
         else:
             self.stimuli = temp_stimuli
+            self.stimuli.tr = self.tr
             return None
 
     def load_mask(self, path):
@@ -374,8 +376,9 @@ class Group(object):
             'name': self.name,
             'description': self.description,
             'plot_settings': self.plot_settings,
+            'sessions': [session.get_configuration() for session in self.sessions],
+            'tr': self.tr,
             'groups': [group.get_configuration() for group in self.children],
-            'sessions': [session.get_configuration() for session in self.sessions]
         }
         if self.anatomy:
             configuration['anatomy_path'] = self.anatomy.path
@@ -387,7 +390,6 @@ class Group(object):
             configuration['stimuli'] = self.stimuli.get_configuration()
 
         return configuration
-
 
     def load_configuration(self, configuration):
         if 'name' in configuration:
@@ -402,6 +404,8 @@ class Group(object):
             self.description = configuration['description']
         if 'plot_settings' in configuration:
             self.plot_settings = configuration['plot_settings']
+        if 'tr' in configuration:
+            self.tr = configuration['tr']
 
     def add_session(self, session):
         self.sessions.append(session)

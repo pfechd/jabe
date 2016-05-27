@@ -40,6 +40,7 @@ class Session(Group):
         self.did_percent_normalization = False
         self.used_mask = None
         self.used_stimuli = None
+        self.used_tr = None  # Used because used stimuli is a pointer
 
         if configuration:
             self.load_configuration(configuration)
@@ -64,8 +65,10 @@ class Session(Group):
             self.load_mask(configuration['mask']['path'])
 
         if 'stimuli' in configuration:
-            self.load_stimuli(configuration['stimuli']['path'],
-                                   configuration['stimuli']['tr'])
+            self.load_stimuli(configuration['stimuli']['path'])
+
+        if 'tr' in configuration:
+            self.tr = configuration['tr']
 
     def get_configuration(self):
         configuration = {}
@@ -91,6 +94,10 @@ class Session(Group):
         if self.plot_settings:
             configuration['plot_settings'] = self.plot_settings
 
+        if self.tr:
+            configuration['tr'] = self.tr
+
+
         return configuration
 
     def ready_for_calculation(self, mask=None, stimuli=None):
@@ -110,7 +117,8 @@ class Session(Group):
         return any([self.did_percent_normalization != percentage,
                     self.did_global_normalization != global_,
                     self.used_mask != mask,
-                    self.used_stimuli != stimuli])
+                    self.used_stimuli != stimuli]) or \
+            self.used_tr != stimuli.tr
 
     def _aggregate(self, percentage, global_, mask, stimuli):
         """
@@ -132,6 +140,7 @@ class Session(Group):
         self.did_global_normalization = global_
         self.used_mask = mask
         self.used_stimuli = stimuli
+        self.used_tr = stimuli.tr
 
         # Invalidate cached mean and sem
         self.sem_responses = None
