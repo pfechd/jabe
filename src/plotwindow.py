@@ -121,6 +121,10 @@ class CustomPlot(QDialog):
         self.canvas.mpl_connect('button_press_event', self.click_plot)
         self.fig.tight_layout(pad=2.0)
 
+        # Change default value in smooth wheel if percent is used
+        if self.session.get_setting("percent"):
+            self.ui.spinBox.setValue(2)
+
         self.replot()
         self.show()
         self.ui.verticalLayout_3.update()
