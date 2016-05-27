@@ -158,6 +158,7 @@ class MainWindow(QMainWindow):
     def check_paths(self, configuration, type = None):
         missing_paths = []
         for project in configuration['project']:
+            missing_paths += (self.check_paths_in_object(project))
             for group in project['groups']:
                 missing_paths += (self.check_paths_in_object(group))
                 for individual in group['groups']:
@@ -314,31 +315,13 @@ class MainWindow(QMainWindow):
 
             self.ui.tree_widget.clear()
             self.projects = []
-
-            for project_configuration in configuration['project']:
-                project_tree_item = ProjectTreeItem()
-                self.ui.tree_widget.addTopLevelItem(project_tree_item)
-                project_tree_item.load_configuration(project_configuration)
-                self.projects.append(project_tree_item)
-                project_tree_item.create_buttons()
-
-            self.update_gui()
-
-            if 'current' in configuration:
-                current = configuration['current']
-                if isinstance(current, list):  # Compatibility with old config files
-                    if len(current) >= 1:
-                        top_item = self.ui.tree_widget.topLevelItem(current[0])
-                        top_item.setSelected(True)
-                        if len(current) >= 2:
-                            top_item.setExpanded(True)
-                            mid_item = top_item.child(current[1])
-                            mid_item.setSelected(True)
-                            top_item.setSelected(False)
-                            if len(current) == 3:
-                                mid_item.setExpanded(True)
-                                mid_item.child(current[2]).setSelected(True)
-                                mid_item.setSelected(False)
+            if 'project' in configuration:
+                for project_configuration in configuration['project']:
+                    project_tree_item = ProjectTreeItem()
+                    self.ui.tree_widget.addTopLevelItem(project_tree_item)
+                    project_tree_item.load_configuration(project_configuration)
+                    self.projects.append(project_tree_item)
+                    project_tree_item.create_buttons()
 
             self.update_gui()
 
