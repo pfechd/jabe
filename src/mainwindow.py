@@ -17,24 +17,19 @@
 
 import json
 import os
-from collections import Iterable
 import sys
 from sys import platform as _platform
 
-from PyQt5 import QtWidgets, QtGui
-from PyQt5.QtWidgets import QMainWindow, QFileDialog, QSpacerItem, QSizePolicy, QMessageBox
+from PyQt5.QtWidgets import QMainWindow, QFileDialog, QMessageBox
 
 from generated_ui.mainwindow import Ui_MainWindow
-from mask import Mask
 from plotwindow import CustomPlot
 from stimuliwindow import StimuliWindow
-from stimuli import Stimuli
 from tree_items.projecttreeitem import ProjectTreeItem
 from tree_items.grouptreeitem import GroupTreeItem
 from tree_items.individualtreeitem import IndividualTreeItem
 from tree_items.sessiontreeitem import SessionTreeItem
 from createmaskwindow import CreateMaskWindow
-from namedialog import NameDialog
 
 try:
     import Cocoa    # Only used on Mac OS when building .app

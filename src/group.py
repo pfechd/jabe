@@ -18,7 +18,6 @@
 import numpy as np
 from scipy.interpolate import UnivariateSpline
 from scipy.stats import sem
-import nibabel as nib
 
 from src.brain import Brain
 from src.stimuli import Stimuli

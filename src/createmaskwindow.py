@@ -16,7 +16,6 @@
 # along with JABE.  If not, see <http://www.gnu.org/licenses/>.
 
 import numpy as np
-import random
 from nibabel.affines import apply_affine
 
 from PyQt5.QtWidgets import QDialog, QFileDialog, QMessageBox

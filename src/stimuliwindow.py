@@ -19,8 +19,6 @@ import os
 import numpy as np
 import scipy.io as sio
 from PyQt5.QtWidgets import QFileDialog, QDialog, QMessageBox
-from PyQt5 import QtWidgets
-import sys
 
 from src.generated_ui.create_stimuli import Ui_Stimuli_window
 

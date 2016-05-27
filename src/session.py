@@ -16,10 +16,7 @@
 # along with JABE.  If not, see <http://www.gnu.org/licenses/>.
 
 import numpy as np
-import nibabel as nib
-from mask import Mask
 from src.brain import Brain
-from stimuli import Stimuli
 from group import Group
 
 
