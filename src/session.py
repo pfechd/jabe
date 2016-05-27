@@ -64,11 +64,11 @@ class Session(Group):
         if 'mask' in configuration:
             self.load_mask(configuration['mask']['path'])
 
-        if 'stimuli' in configuration:
-            self.load_stimuli(configuration['stimuli']['path'])
-
         if 'tr' in configuration:
             self.tr = configuration['tr']
+
+        if 'stimuli' in configuration:
+            self.load_stimuli(configuration['stimuli']['path'])
 
     def get_configuration(self):
         configuration = {}

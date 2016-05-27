@@ -135,10 +135,10 @@ class MainWindow(QMainWindow):
         self.ui.individual_description.textChanged.connect(self.description_changed)
         self.ui.project_description.textChanged.connect(self.description_changed)
 
-
         self.ui.tr_value_group.valueChanged.connect(self.tr_changed)
         self.ui.tr_value_ind.valueChanged.connect(self.tr_changed)
         self.ui.tr_value_session.valueChanged.connect(self.tr_changed)
+        self.ui.tr_value_project.valueChanged.connect(self.tr_changed)
 
         plot_buttons = [self.ui.global_normalization_individual_btn, self.ui.local_normalization_individual_btn,
                         self.ui.percent_individual_btn, self.ui.subtract_individual_btn,
@@ -147,7 +147,10 @@ class MainWindow(QMainWindow):
                         self.ui.percent_session_btn, self.ui.subtract_session_btn,
                         self.ui.global_normalization_group_btn, self.ui.local_normalization_group_btn,
                         self.ui.percent_group_btn, self.ui.subtract_group_btn, 
-                        self.ui.group_use_mask, self.ui.group_use_stimuli]
+                        self.ui.group_use_mask, self.ui.group_use_stimuli,
+                        self.ui.global_normalization_project_btn, self.ui.local_normalization_project_btn,
+                        self.ui.percent_project_btn, self.ui.subtract_project_btn,
+                        self.ui.project_use_mask, self.ui.project_use_stimuli]
 
         for button in plot_buttons:
             button.clicked.connect(self.plot_settings_changed)
@@ -309,6 +312,9 @@ class MainWindow(QMainWindow):
                 QMessageBox.warning(self, "File error", "The following files are missing and will not be loaded:\n" +
                                     "\n".join(missing_paths))
 
+            self.ui.tree_widget.clear()
+            self.projects = []
+
             for project_configuration in configuration['project']:
                 project_tree_item = ProjectTreeItem()
                 self.ui.tree_widget.addTopLevelItem(project_tree_item)
@@ -457,8 +463,10 @@ class MainWindow(QMainWindow):
             tr = self.ui.tr_value_session.value()
         elif isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
             tr = self.ui.tr_value_ind.value()
-        else:
+        elif isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
             tr = self.ui.tr_value_group.value()
+        else:
+            tr = self.ui.tr_value_project.value()
 
         return tr
 
@@ -643,6 +651,8 @@ class MainWindow(QMainWindow):
                 self.ui.individual_stimuli_label.setEnabled(individual.get_setting('use_stimuli'))
                 self.ui.stimuli_btn_individual.setEnabled(individual.get_setting('use_stimuli'))
                 self.ui.create_stimuli_individual_btn.setEnabled(individual.get_setting('use_stimuli'))
+                self.ui.tr_label_ind.setEnabled(individual.get_setting('use_stimuli'))
+                self.ui.tr_value_ind.setEnabled(individual.get_setting('use_stimuli'))
             elif isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
                 group = self.ui.tree_widget.selectedItems()[0]
 
@@ -667,6 +677,8 @@ class MainWindow(QMainWindow):
                 self.ui.group_stimuli_label.setEnabled(group.get_setting('use_stimuli'))
                 self.ui.stimuli_btn_group.setEnabled(group.get_setting('use_stimuli'))
                 self.ui.create_stimuli_group_btn.setEnabled(group.get_setting('use_stimuli'))
+                self.ui.tr_label_group.setEnabled(group.get_setting('use_stimuli'))
+                self.ui.tr_value_group.setEnabled(group.get_setting('use_stimuli'))
             elif isinstance(self.ui.tree_widget.selectedItems()[0], ProjectTreeItem):
                 group = self.ui.tree_widget.selectedItems()[0]
 
@@ -691,6 +703,8 @@ class MainWindow(QMainWindow):
                 self.ui.stimuliLabel_6.setEnabled(group.get_setting('use_stimuli'))
                 self.ui.stimuli_btn_project.setEnabled(group.get_setting('use_stimuli'))
                 self.ui.create_stimuli_project.setEnabled(group.get_setting('use_stimuli'))
+                self.ui.tr_label_project.setEnabled(group.get_setting('use_stimuli'))
+                self.ui.tr_value_project.setEnabled(group.get_setting('use_stimuli'))
         else:
             for label in [self.ui.session_epi_label, self.ui.session_mask_label, self.ui.session_stimuli_label]:
                 label.setText('')
@@ -727,19 +741,25 @@ class MainWindow(QMainWindow):
                 project = self.ui.tree_widget.selectedItems()[0]
                 project.plot_settings['global'] = self.ui.global_normalization_group_btn.isChecked()
                 project.plot_settings['percent'] = self.ui.percent_group_btn.isChecked()
+                project.plot_settings['use_mask'] = self.ui.project_use_mask.isChecked()
+                project.plot_settings['use_stimuli'] = self.ui.project_use_stimuli.isChecked()
             elif isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
                 group = self.ui.tree_widget.selectedItems()[0]
                 group.plot_settings['global'] = self.ui.global_normalization_group_btn.isChecked()
                 group.plot_settings['percent'] = self.ui.percent_group_btn.isChecked()
+                group.plot_settings['use_mask'] = self.ui.group_use_mask.isChecked()
+                group.plot_settings['use_stimuli'] = self.ui.group_use_stimuli.isChecked()
             elif isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
                 individual = self.ui.tree_widget.selectedItems()[0]
                 individual.plot_settings['global'] = self.ui.global_normalization_individual_btn.isChecked()
                 individual.plot_settings['percent'] = self.ui.percent_individual_btn.isChecked()
+                individual.plot_settings['use_mask'] = self.ui.individual_use_mask.isChecked()
+                individual.plot_settings['use_stimuli'] = self.ui.individual_use_stimuli.isChecked()
             else:
                 session = self.ui.tree_widget.selectedItems()[0]
                 session.plot_settings['global'] = self.ui.global_normalization_session_btn.isChecked()
                 session.plot_settings['percent'] = self.ui.percent_session_btn.isChecked()
-
+            self.update_gui()
 
     def clear_layout(self, layout):
         while layout.count():

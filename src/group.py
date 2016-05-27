@@ -220,11 +220,11 @@ class Group(object):
     def get_tr(self):
         children = self.children + self.sessions
         # if we have a stimuli, use that tr. Otherwise check your children
-        if self.stimuli:
-            return self.stimuli.tr
+        if self.get_stimuli:
+            return self.get_stimuli.tr
         elif children:
             for child in children:
-                #loop until we find a child that has a TR
+                # loop until we find a child that has a TR
                 tr = child.get_tr()
                 if tr:
                     return tr
@@ -340,7 +340,7 @@ class Group(object):
                         "Not enough data points for smoothing")
 
     def get_x_axis(self):
-        return self.x_axis
+        return self.x_axis * self.get_tr()
 
     def get_sem(self, percentage=None, global_=None):
         if percentage is None:
@@ -425,8 +425,11 @@ class Group(object):
 
         if not mask:
             mask = self.get_mask()
-        if not stimuli:
+        if stimuli:
+            tr = stimuli.tr
+        else:
             stimuli = self.get_stimuli()
+            tr = self.get_tr()
 
         for child in self.children + self.sessions:
             # If the child doesn't have the files loaded, skip it.
@@ -444,7 +447,7 @@ class Group(object):
                 else:
                     self.responses[intensity] = data
 
-        self.x_axis = np.array(list(range(min_width))) * stimuli.tr
+        self.x_axis = np.array(list(range(min_width)))
 
         # Set all data to match the length of the least wide response
         for intensity, data in self.responses.iteritems():
