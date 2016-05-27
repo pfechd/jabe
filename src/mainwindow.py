@@ -29,6 +29,7 @@ from mask import Mask
 from plotwindow import CustomPlot
 from stimuliwindow import StimuliWindow
 from stimuli import Stimuli
+from tree_items.projecttreeitem import ProjectTreeItem
 from tree_items.grouptreeitem import GroupTreeItem
 from tree_items.individualtreeitem import IndividualTreeItem
 from tree_items.sessiontreeitem import SessionTreeItem
@@ -58,46 +59,81 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
         self.ui.tree_widget.setColumnWidth(1, 25)
         self.ui.tree_widget.setColumnWidth(2, 25)
-        self.ui.extract_session_btn.clicked.connect(self.calculate_button_pressed)
+        self.connect_buttons()
+        self.ui.stackedWidget.setCurrentIndex(1)
+        self.show()
+
+        self.individual_buttons = [self.ui.extract_btn_session, self.ui.add_session_epi_btn,
+                                   self.ui.add_session_mask_btn, self.ui.add_session_stimuli_btn]
+
+        self.current_config_path = ""
+        self.ui.tree_widget.setColumnWidth(0, 200)
+        self.projects = []
+
+        self.update_gui()
+
+    def connect_buttons(self):
+        # Connect extract buttons
+        self.ui.extract_btn_session.clicked.connect(self.calculate_button_pressed)
         self.ui.extract_btn_individual.clicked.connect(self.calculate_button_pressed)
         self.ui.extract_btn_group.clicked.connect(self.calculate_button_pressed)
+        self.ui.extract_btn_project.clicked.connect(self.calculate_button_pressed)
+        # Connect add anatomy buttons
         self.ui.add_session_anatomy_btn.clicked.connect(self.anatomy_button_pressed)
         self.ui.anatomy_btn_group.clicked.connect(self.anatomy_button_pressed)
         self.ui.anatomy_btn_individual.clicked.connect(self.anatomy_button_pressed)
+        # Connect add epi buttons
         self.ui.add_session_epi_btn.clicked.connect(self.brain_button_pressed)
+        # Connect add mask buttons
         self.ui.add_session_mask_btn.clicked.connect(self.mask_button_pressed)
         self.ui.mask_btn_group.clicked.connect(self.mask_button_pressed)
         self.ui.mask_btn_individual.clicked.connect(self.mask_button_pressed)
+        # Connect create mask button
         self.ui.create_session_mask_btn.clicked.connect(self.create_mask_button_pressed)
+        # Connect add menu buttons
         self.ui.add_session_stimuli_btn.clicked.connect(self.stimuli_button_pressed)
         self.ui.stimuli_btn_individual.clicked.connect(self.stimuli_button_pressed)
         self.ui.stimuli_btn_group.clicked.connect(self.stimuli_button_pressed)
         self.ui.create_session_stimuli_btn.clicked.connect(self.create_stimuli_button_pressed)
         self.ui.create_stimuli_individual_btn.clicked.connect(self.create_stimuli_button_pressed)
         self.ui.create_stimuli_group_btn.clicked.connect(self.create_stimuli_button_pressed)
-        self.ui.add_group_menu_btn.triggered.connect(self.add_group_pressed)
         self.ui.load_config_menu_btn.triggered.connect(self.load_configuration_button_pressed)
         self.ui.save_config_menu_btn.triggered.connect(self.save_configuration)
         self.ui.save_config_as_menu_btn.triggered.connect(self.save_configuration_as)
         self.ui.new_config_menu_btn.triggered.connect(self.create_new_configuration)
-        self.ui.add_group_btn.clicked.connect(self.add_group_pressed)
+        self.ui.add_project_menu_btn.triggered.connect(self.add_project_pressed)
+        # Connect add project buttons
+        self.ui.add_project_btn.clicked.connect(self.add_project_pressed)
+        # Connect exit button
         self.ui.exit_menu_btn.triggered.connect(self.exit_button_pressed)
+        # Connect add project button
+        self.ui.add_project_menu_btn.triggered.connect(self.add_project_pressed)
+        # Connect add buttons for tree view
+        self.ui.add_group_btn.clicked.connect(self.add_item_clicked)
         self.ui.add_individual_btn.clicked.connect(self.add_item_clicked)
         self.ui.add_session_btn.clicked.connect(self.add_item_clicked)
+        # Connect remove buttons for tree view
+        self.ui.remove_project_btn.clicked.connect(self.remove_pressed)
         self.ui.remove_session_btn.clicked.connect(self.remove_pressed)
         self.ui.remove_group_btn.clicked.connect(self.remove_pressed)
         self.ui.remove_individual_btn.clicked.connect(self.remove_pressed)
+        # Connect item selection changed for tree view
         self.ui.tree_widget.itemSelectionChanged.connect(self.update_gui)
+        # Connect name changed for tree view
         self.ui.session_name.textChanged.connect(self.name_changed)
         self.ui.group_name.textChanged.connect(self.name_changed)
         self.ui.individual_name.textChanged.connect(self.name_changed)
+        self.ui.project_name.textChanged.connect(self.name_changed)
+        # Clear focus whenever enter is pressed in name field
         self.ui.session_name.returnPressed.connect(self.ui.session_name.clearFocus)
         self.ui.group_name.returnPressed.connect(self.ui.group_name.clearFocus)
         self.ui.individual_name.returnPressed.connect(self.ui.individual_name.clearFocus)
-
+        self.ui.group_name.returnPressed.connect(self.ui.group_name.clearFocus)
+        # Connect text changed events for descriptions
         self.ui.session_description.textChanged.connect(self.description_changed)
         self.ui.group_description.textChanged.connect(self.description_changed)
         self.ui.individual_description.textChanged.connect(self.description_changed)
+        self.ui.project_description.textChanged.connect(self.description_changed)
 
         plot_buttons = [self.ui.global_normalization_individual_btn, self.ui.local_normalization_individual_btn,
                         self.ui.percent_individual_btn, self.ui.subtract_individual_btn,
@@ -111,27 +147,15 @@ class MainWindow(QMainWindow):
         for button in plot_buttons:
             button.clicked.connect(self.plot_settings_changed)
 
-        self.ui.stackedWidget.setCurrentIndex(1)
-        self.show()
-
-        self.individual_buttons = [self.ui.extract_session_btn, self.ui.add_session_epi_btn,
-                                   self.ui.add_session_mask_btn, self.ui.add_session_stimuli_btn]
-
-        self.current_config_path = ""
-        self.ui.tree_widget.setColumnWidth(0, 200)
-        self.groups = []
-        
-        self.plot_settings_changed()
-        self.update_gui()
-
     def check_paths(self, configuration, type = None):
         missing_paths = []
-        for group in configuration['groups']:
-            missing_paths += (self.check_paths_in_object(group))
-            for individual in group['individuals']:
-                missing_paths += (self.check_paths_in_object(individual))
-                for session in individual['sessions']:
-                    missing_paths += (self.check_paths_in_object(session))
+        for project in configuration['project']:
+            for group in project['groups']:
+                missing_paths += (self.check_paths_in_object(group))
+                for individual in group['groups']:
+                    missing_paths += (self.check_paths_in_object(individual))
+                    for session in individual['sessions']:
+                        missing_paths += (self.check_paths_in_object(session))
 
         return missing_paths
 
@@ -150,7 +174,7 @@ class MainWindow(QMainWindow):
         return missing_paths
 
     def closeEvent(self, event):
-        if self.groups != []:
+        if self.projects != []:
             button = QMessageBox.question(self, "Save",
                                           "Do you want to save the current workspace before quitting?",
                                           QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
@@ -189,7 +213,7 @@ class MainWindow(QMainWindow):
             current = []
 
         configuration = {
-            'groups': [group.get_configuration() for group in self.groups],
+            'project': [project.get_configuration() for project in self.projects],
             'current': current
         }
 
@@ -220,7 +244,7 @@ class MainWindow(QMainWindow):
             json.dump(configuration, f, indent=4)
 
     def load_configuration_button_pressed(self):
-        if self.groups != []:
+        if self.projects != []:
             button = QMessageBox.question(
                 self, "Save",
                 "Do you want to save the current workspace before loading?",
@@ -274,15 +298,11 @@ class MainWindow(QMainWindow):
                 QMessageBox.warning(self, "File error", "The following files are missing and will not be loaded:\n" +
                                     "\n".join(missing_paths))
 
-
-            self.ui.tree_widget.clear()
-            self.groups = []
-
             for group_configuration in configuration['groups']:
                 group_tree_item = GroupTreeItem()
                 self.ui.tree_widget.addTopLevelItem(group_tree_item)
                 group_tree_item.load_configuration(group_configuration)
-                self.groups.append(group_tree_item)
+                self.projects.append(group_tree_item)
                 group_tree_item.create_buttons()
 
             self.update_gui()
@@ -306,7 +326,7 @@ class MainWindow(QMainWindow):
             self.update_gui()
 
     def create_new_configuration(self):
-        if self.groups != []:
+        if self.projects != []:
             button = QMessageBox.question(
                 self, "Save",
                 "Do you want to save the current workspace before creating a new one?",
@@ -317,25 +337,28 @@ class MainWindow(QMainWindow):
                 self.save_configuration()
 
         self.current_config_path = ""
-        self.groups = []
+        self.projects = []
         self.ui.tree_widget.clear()
         self.ui.stackedWidget.setCurrentIndex(1)
 
-    def add_group_pressed(self):
-        current_row = len(self.groups)
-        name = 'Group ' + str(current_row + 1)
-        group = GroupTreeItem()
-        group.update_name(name)
-        self.groups.append(group)
-        self.ui.tree_widget.addTopLevelItem(group)
-        group.create_buttons()
+
+    def add_project_pressed(self):
+        current_row = len(self.projects)
+        name = 'Project ' + str(current_row + 1)
+        project = ProjectTreeItem()
+        project.update_name(name)
+        self.projects.append(project)
+        self.ui.tree_widget.addTopLevelItem(project)
+        project.create_buttons()
 
     def exit_button_pressed(self):
         self.close()
 
     def add_item_clicked(self):
         if self.ui.tree_widget.selectedItems():
-            if isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
+            if isinstance(self.ui.tree_widget.selectedItems()[0], ProjectTreeItem):
+                self.ui.tree_widget.selectedItems()[0].add_new_group()
+            elif isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
                 self.ui.tree_widget.selectedItems()[0].add_new_individual()
             elif isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
                 self.ui.tree_widget.selectedItems()[0].add_new_session()
@@ -352,12 +375,14 @@ class MainWindow(QMainWindow):
             individual = self.ui.tree_widget.selectedItems()[0]
             for button in self.individual_buttons:
                 button.setEnabled(True)
-            self.ui.extract_session_btn.setEnabled(individual.ready_for_calculation())
+            self.ui.extract_btn_session.setEnabled(individual.ready_for_calculation())
         elif self.ui.tree_widget.selectedItems() and \
                 (isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem) or
-                     isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem)):
+                    isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem) or
+                    isinstance(self.ui.tree_widget.selectedItems()[0], ProjectTreeItem)):
             for button in self.individual_buttons:
                 button.setEnabled(False)
+            self.ui.extract_btn_project.setEnabled(self.ui.tree_widget.selectedItems()[0].ready_for_calculation())
             self.ui.extract_btn_group.setEnabled(self.ui.tree_widget.selectedItems()[0].ready_for_calculation())
             self.ui.extract_btn_individual.setEnabled(self.ui.tree_widget.selectedItems()[0].ready_for_calculation())
         else:
@@ -453,45 +478,27 @@ class MainWindow(QMainWindow):
 
     def update_stacked_widget(self):
         if self.ui.tree_widget.selectedItems():
-            if isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
+            if isinstance(self.ui.tree_widget.selectedItems()[0], ProjectTreeItem):
+                self.ui.stackedWidget.setCurrentIndex(1)
+                group = self.ui.tree_widget.selectedItems()[0]
+                self.ui.project_name.setText(group.text(0))
+                self.ui.project_description.setText(group.description)
+
+                if group.get_setting('global'):
+                    self.ui.global_normalization_group_btn.setChecked(True)
+                else:
+                    self.ui.local_normalization_group_btn.setChecked(True)
+                if group.get_setting('percent'):
+                    self.ui.percent_group_btn.setChecked(True)
+                else:
+                    self.ui.subtract_group_btn.setChecked(True)
+
+                # Add overview tree in group panel
+                self.ui.group_overview_tree.clear()
+                self.ui.group_overview_tree.addTopLevelItems(group.get_overview_tree())
+
+            elif isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
                 self.ui.stackedWidget.setCurrentIndex(2)
-                individual = self.ui.tree_widget.selectedItems()[0]
-                self.ui.individual_name.setText(individual.text(0))
-                self.ui.individual_description.setText(individual.description)
-
-                if individual.get_setting('global'):
-                    self.ui.global_normalization_individual_btn.setChecked(True)
-                else:
-                    self.ui.local_normalization_individual_btn.setChecked(True)
-                if individual.get_setting('percent'):
-                    self.ui.percent_individual_btn.setChecked(True)
-                else:
-                    self.ui.subtract_individual_btn.setChecked(True)
-                self.ui.individual_use_mask.setChecked(individual.get_setting('use_mask'))
-                self.ui.individual_use_stimuli.setChecked(individual.get_setting('use_stimuli'))
-
-                # Add overview tree in individual panel
-                self.ui.sessions_overview_tree.clear()
-                self.ui.sessions_overview_tree.addTopLevelItems(individual.get_overview_tree())
-
-                # Add checkboxes for individuals in individual panel
-
-            elif isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
-                self.ui.stackedWidget.setCurrentIndex(3)
-                session = self.ui.tree_widget.selectedItems()[0]
-                self.ui.session_name.setText(session.text(0))
-                self.ui.session_description.setText(session.description)
-
-                if session.get_setting('global'):
-                    self.ui.global_normalization_session_btn.setChecked(True)
-                else:
-                    self.ui.local_normalization_session_btn.setChecked(True)
-                if session.get_setting('percent'):
-                    self.ui.percent_session_btn.setChecked(True)
-                else:
-                    self.ui.subtract_session_btn.setChecked(True)
-            else:
-                self.ui.stackedWidget.setCurrentIndex(0)
                 group = self.ui.tree_widget.selectedItems()[0]
                 self.ui.group_name.setText(group.text(0))
                 self.ui.group_description.setText(group.description)
@@ -511,7 +518,43 @@ class MainWindow(QMainWindow):
                 self.ui.individual_overview_tree.clear()
                 self.ui.individual_overview_tree.addTopLevelItems(group.get_overview_tree())
 
-                # Add checkboxes for individuals in group panel
+            elif isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
+                self.ui.stackedWidget.setCurrentIndex(3)
+                individual = self.ui.tree_widget.selectedItems()[0]
+                self.ui.individual_name.setText(individual.text(0))
+                self.ui.individual_description.setText(individual.description)
+
+                if individual.get_setting('global'):
+                    self.ui.global_normalization_individual_btn.setChecked(True)
+                else:
+                    self.ui.local_normalization_individual_btn.setChecked(True)
+                if individual.get_setting('percent'):
+                    self.ui.percent_individual_btn.setChecked(True)
+                else:
+                    self.ui.subtract_individual_btn.setChecked(True)
+                self.ui.individual_use_mask.setChecked(individual.get_setting('use_mask'))
+                self.ui.individual_use_stimuli.setChecked(individual.get_setting('use_stimuli'))
+
+                # Add overview tree in individual panel
+                self.ui.sessions_overview_tree.clear()
+                self.ui.sessions_overview_tree.addTopLevelItems(individual.get_overview_tree())
+
+            else:
+                self.ui.stackedWidget.setCurrentIndex(4)
+                session = self.ui.tree_widget.selectedItems()[0]
+                self.ui.session_name.setText(session.text(0))
+                self.ui.session_description.setText(session.description)
+
+                if session.get_setting('global'):
+                    self.ui.global_normalization_session_btn.setChecked(True)
+                else:
+                    self.ui.local_normalization_session_btn.setChecked(True)
+                if session.get_setting('percent'):
+                    self.ui.percent_session_btn.setChecked(True)
+                else:
+                    self.ui.subtract_session_btn.setChecked(True)
+        else:
+            self.ui.stackedWidget.setCurrentIndex(0)
 
     def update_text(self):
         if self.ui.tree_widget.selectedItems():
@@ -585,52 +628,79 @@ class MainWindow(QMainWindow):
                 self.ui.group_stimuli_label.setEnabled(group.get_setting('use_stimuli'))
                 self.ui.stimuli_btn_group.setEnabled(group.get_setting('use_stimuli'))
                 self.ui.create_stimuli_group_btn.setEnabled(group.get_setting('use_stimuli'))
+            elif isinstance(self.ui.tree_widget.selectedItems()[0], ProjectTreeItem):
+                group = self.ui.tree_widget.selectedItems()[0]
 
+                if group.anatomy:
+                    self.ui.brainLabel_6.setText('Anatomy chosen: ' + group.anatomy.path.split('/')[-1])
+                else:
+                    self.ui.brainLabel_6.setText('No anatomy chosen')
+                if group.mask:
+                    self.ui.maskLabel_6.setText('Mask chosen: ' + group.mask.path.split('/')[-1])
+                else:
+                    self.ui.maskLabel_6.setText('No mask chosen')
+                if group.stimuli:
+                    self.ui.stimuliLabel_6.setText('Stimuli chosen: ' + group.stimuli.path.split('/')[-1])
+                else:
+                    self.ui.stimuliLabel_6.setText('No stimuli chosen')
+
+                self.ui.maskLabel_6.setEnabled(group.get_setting('use_mask'))
+                self.ui.mask_btn_project.setEnabled(group.get_setting('use_mask'))
+                self.ui.brainLabel_6.setEnabled(group.get_setting('use_mask'))
+                self.ui.anatomy_btn_project.setEnabled(group.get_setting('use_mask'))
+
+                self.ui.stimuliLabel_6.setEnabled(group.get_setting('use_stimuli'))
+                self.ui.stimuli_btn_project.setEnabled(group.get_setting('use_stimuli'))
+                self.ui.create_stimuli_project.setEnabled(group.get_setting('use_stimuli'))
         else:
             for label in [self.ui.session_epi_label, self.ui.session_mask_label, self.ui.session_stimuli_label]:
                 label.setText('')
 
     def name_changed(self):
         if self.ui.tree_widget.selectedItems():
-            if isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
-                text = self.ui.individual_name.text()
-            elif isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
-                text = self.ui.session_name.text()
-            else:
+            if isinstance(self.ui.tree_widget.selectedItems()[0], ProjectTreeItem):
+                text = self.ui.project_name.text()
+            elif isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
                 text = self.ui.group_name.text()
+            elif isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
+                text = self.ui.individual_name.text()
+            else:
+                text = self.ui.session_name.text()
 
             self.ui.tree_widget.selectedItems()[0].update_name(text)
 
     def description_changed(self):
         if self.ui.tree_widget.selectedItems():
-            if isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
-                text = self.ui.individual_description.toPlainText()
-            elif isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
-                text = self.ui.session_description.toPlainText()
-            else:
+            if isinstance(self.ui.tree_widget.selectedItems()[0], ProjectTreeItem):
+                text = self.ui.project_description.toPlainText()
+            elif isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
                 text = self.ui.group_description.toPlainText()
+            elif isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
+                text = self.ui.individual_description.toPlainText()
+            else:
+                text = self.ui.session_description.toPlainText()
 
             self.ui.tree_widget.selectedItems()[0].description = text
 
     def plot_settings_changed(self):
         if self.ui.tree_widget.selectedItems():
-            if isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
-                individual = self.ui.tree_widget.selectedItems()[0]
-                individual.plot_settings['global'] = self.ui.global_normalization_individual_btn.isChecked()
-                individual.plot_settings['percent'] = self.ui.percent_individual_btn.isChecked()
-                individual.plot_settings['use_mask'] = self.ui.individual_use_mask.isChecked()
-                individual.plot_settings['use_stimuli'] = self.ui.individual_use_stimuli.isChecked()
-            elif isinstance(self.ui.tree_widget.selectedItems()[0], SessionTreeItem):
-                session = self.ui.tree_widget.selectedItems()[0]
-                session.plot_settings['global'] = self.ui.global_normalization_session_btn.isChecked()
-                session.plot_settings['percent'] = self.ui.percent_session_btn.isChecked()
-            else:
+            if isinstance(self.ui.tree_widget.selectedItems()[0], ProjectTreeItem):
+                project = self.ui.tree_widget.selectedItems()[0]
+                project.plot_settings['global'] = self.ui.global_normalization_group_btn.isChecked()
+                project.plot_settings['percent'] = self.ui.percent_group_btn.isChecked()
+            elif isinstance(self.ui.tree_widget.selectedItems()[0], GroupTreeItem):
                 group = self.ui.tree_widget.selectedItems()[0]
                 group.plot_settings['global'] = self.ui.global_normalization_group_btn.isChecked()
                 group.plot_settings['percent'] = self.ui.percent_group_btn.isChecked()
-                group.plot_settings['use_mask'] = self.ui.group_use_mask.isChecked()
-                group.plot_settings['use_stimuli'] = self.ui.group_use_stimuli.isChecked()
-        self.update_gui()
+            elif isinstance(self.ui.tree_widget.selectedItems()[0], IndividualTreeItem):
+                individual = self.ui.tree_widget.selectedItems()[0]
+                individual.plot_settings['global'] = self.ui.global_normalization_individual_btn.isChecked()
+                individual.plot_settings['percent'] = self.ui.percent_individual_btn.isChecked()
+            else:
+                session = self.ui.tree_widget.selectedItems()[0]
+                session.plot_settings['global'] = self.ui.global_normalization_session_btn.isChecked()
+                session.plot_settings['percent'] = self.ui.percent_session_btn.isChecked()
+
 
     def clear_layout(self, layout):
         while layout.count():
